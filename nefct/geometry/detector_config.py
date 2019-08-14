@@ -2,6 +2,8 @@ from nefct import nef_class
 import numpy as np
 import attr
 
+__all__ = ('DetectorDirectAConfig', 'DetectorDirectBConfig', 'DetectorConfig')
+
 
 @nef_class
 class DetectorDirectAConfig:

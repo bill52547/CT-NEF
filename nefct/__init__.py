@@ -9,6 +9,8 @@
 '''
 from .version import full_version as __version__
 from .base import *
+from . import data
+from .data import *
 # from . import config, utils
 # from .utils import declare_eager_execution
 # # from . import tools

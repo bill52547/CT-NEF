@@ -1,7 +1,146 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f17fe03a-edba-4bed-a375-811ccb4248ff" name="Default Changelist" comment="" />
+    <list default="true" id="f17fe03a-edba-4bed-a375-811ccb4248ff" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/NefCT.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/NefCT.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API_function.json" beforeDir="false" afterPath="$PROJECT_DIR$/API_function.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API_object.json" beforeDir="false" afterPath="$PROJECT_DIR$/API_object.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.rst" beforeDir="false" afterPath="$PROJECT_DIR$/README.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cpp/BUILD" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/BUILD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cpp/compile.sh" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/compile.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cpp/deform/BUILD" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/deform/BUILD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cpp/deform/deform.cc" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/deform/deform.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cpp/deform/deform.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/deform/deform.cu.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cpp/scatter/scatter_correction.cc" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/scatter/scatter_correction.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cpp/scatter/scatter_correction.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/scatter/scatter_correction.cu.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cpp/siddon/BUILD" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/siddon/BUILD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cpp/siddon/siddon_gpu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/siddon/siddon_gpu.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cpp/siddon/siddon_gpu.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/siddon/siddon_gpu.cu.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/api/modules.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/api/modules.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/api/srfnef.correction.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/api/srfnef.correction.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/api/srfnef.model_impl.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/api/srfnef.model_impl.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/api/srfnef.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/api/srfnef.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/conf.py" beforeDir="false" afterPath="$PROJECT_DIR$/docs/conf.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_modules/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_modules/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_modules/srfnef/adapter.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_modules/srfnef/adapter.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_modules/srfnef/correction/PsfMaker.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_modules/srfnef/correction/PsfMaker.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_modules/srfnef/func_types.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_modules/srfnef/func_types.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_modules/srfnef/templating.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_modules/srfnef/templating.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_modules/types.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_modules/types.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_sources/api/modules.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/api/modules.rst.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_sources/api/srfnef.correction.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/api/srfnef.correction.rst.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_sources/api/srfnef.model_impl.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/api/srfnef.model_impl.rst.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_sources/api/srfnef.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/api/srfnef.rst.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_sources/index.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/index.rst.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_sources/installation.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/installation.rst.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_sources/modules.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/modules.rst.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_sources/quickstart.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/quickstart.rst.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_sources/srfnef.correction.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/srfnef.correction.rst.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_sources/srfnef.model_impl.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/srfnef.model_impl.rst.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_sources/srfnef.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/srfnef.rst.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_static/jquery-3.2.1.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/jquery-3.2.1.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_static/jquery.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/jquery.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/_static/searchtools.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/searchtools.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/api/modules.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/api/modules.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/api/srfnef.correction.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/api/srfnef.correction.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/api/srfnef.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/api/srfnef.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/api/srfnef.model_impl.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/api/srfnef.model_impl.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/genindex.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/genindex.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/installation.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/installation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/modules.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/modules.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/py-modindex.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/py-modindex.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/quickstart.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/quickstart.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/search.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/search.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/searchindex.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/searchindex.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/srfnef.correction.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/srfnef.correction.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/srfnef.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/srfnef.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/html/srfnef.model_impl.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/srfnef.model_impl.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/index.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/index.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/installation.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/installation.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/introduction.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/introduction.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/modules.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/modules.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/pic/fig1.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/pic/fig1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/pic/fig1.tif" beforeDir="false" afterPath="$PROJECT_DIR$/docs/pic/fig1.tif" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/quickstart.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/quickstart.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/srfnef.correction.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/srfnef.correction.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/srfnef.model_impl.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/srfnef.model_impl.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/srfnef.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/srfnef.rst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/base/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/base/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/base/barrier_single.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/base/barrier_single.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/base/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/base/base.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/base/basic_types.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/base/basic_types.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/cc/BUILD" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/BUILD" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/cc/compile.sh" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/compile.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/cc/distance_3d/distance_back_3d.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/distance_3d/distance_back_3d.cu.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/cc/pixel_2d/pixel.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/pixel_2d/pixel.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/cc/pixel_2d/pixel.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/pixel_2d/pixel.cu.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/cc/pixel_3d/pixel.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/pixel_3d/pixel.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/cc/pixel_3d/pixel.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/pixel_3d/pixel.cu.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/cc/ray_2d/ray.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/ray_2d/ray.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/cc/ray_2d/ray.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/ray_2d/ray.cu.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/cc/ray_3d/ray.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/ray_3d/ray.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/cc/ray_3d/ray.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/ray_3d/ray.cu.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/cc/siddon_2d/siddon.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/siddon_2d/siddon.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/cc/siddon_2d/siddon.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/siddon_2d/siddon.cu.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/cc/siddon_3d/siddon.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/siddon_3d/siddon.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/cc/siddon_3d/siddon.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/siddon_3d/siddon.cu.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/data/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/data/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/data/full_projection.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/data/full_projection.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/data/image.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/data/image.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/data/image_4d.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/data/image_4d.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/data/projection.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/data/projection.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/data/single_projection.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/data/single_projection.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/functions/project.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/functions/project.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/geometry/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/geometry/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/geometry/detector_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/geometry/detector_config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/geometry/scanner_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/geometry/scanner_config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/io/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/io/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/io/data_io_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/io/data_io_mixin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/io/db_io_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/io/db_io_mixin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/io/json_io_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/io/json_io_mixin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/io/local_io_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/io/local_io_mixin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/ops/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/ops/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/ops/common/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/ops/common/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/ops/common/arithmetic_mixins.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/ops/common/arithmetic_mixins.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/ops/common/imshow_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/ops/common/imshow_mixin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/ops/common/magic_method_mixins.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/ops/common/magic_method_mixins.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/ops/common/plot_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/ops/common/plot_mixin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/ops/common/property_mixins.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/ops/common/property_mixins.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/project/project.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/project/project.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/toy_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/toy_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/version.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/version.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/base/test_base.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/base/test_base.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/base/test_basic_types.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/base/test_basic_types.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/mixins/test_arithmetic_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/mixins/test_arithmetic_mixin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/mixins/test_backproject_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/mixins/test_backproject_mixin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/mixins/test_magic_method_mixins.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/mixins/test_magic_method_mixins.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/mixins/test_project_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/mixins/test_project_mixin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/nef_class/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/nef_class/corrections/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/corrections/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/nef_class/corrections/attenuation/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/corrections/attenuation/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/nef_class/corrections/attenuation/test_attenuation_correction.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/corrections/attenuation/test_attenuation_correction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/nef_class/corrections/normalization/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/corrections/normalization/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/nef_class/corrections/normalization/test_angled_normalization_correction.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/corrections/normalization/test_angled_normalization_correction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/nef_class/corrections/psf/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/corrections/psf/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/nef_class/corrections/psf/_test_deconv.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/corrections/psf/_test_deconv.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/nef_class/corrections/psf/_test_generate_fit_parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/corrections/psf/_test_generate_fit_parameters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/nef_class/io/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/io/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/nef_class/io/test_data_io_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/io/test_data_io_mixin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/nef_class/io/test_local_io_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/io/test_local_io_mixin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/pytest.ini" beforeDir="false" afterPath="$PROJECT_DIR$/tests/pytest.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/write_rst_doc.sh" beforeDir="false" afterPath="$PROJECT_DIR$/write_rst_doc.sh" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,6 +240,9 @@
       <replace>object</replace>
     </replaceStrings>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
@@ -130,6 +272,7 @@
     <option name="width" value="613" />
     <option name="height" value="584" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -228,15 +371,15 @@
       <workItem from="1562056861485" duration="905000" />
       <workItem from="1565336284836" duration="3453000" />
       <workItem from="1565575522003" duration="3740000" />
-      <workItem from="1565781155096" duration="380000" />
+      <workItem from="1565781155096" duration="974000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="18158000" />
+    <option name="totallyTimeSpent" value="18752000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-761" y="168" width="613" height="584" extended-state="0" />
+    <frame x="-761" y="168" width="613" height="584" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.4159132" />

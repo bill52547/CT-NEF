@@ -37,7 +37,7 @@ class Projection2D(Projection):
     data: object
     scanner: ScannerConfig
     angle: float = attr.ib(default = 0.0)
-    offset: List(float, 2) = attr.ib(default = [0.0, 0.0])
+    offset: list = attr.ib(default = [0.0, 0.0])
 
     @property
     def source_position(self):
@@ -47,7 +47,7 @@ class Projection2D(Projection):
 
     @property
     def detector_position(self):
-        x0, y0 = self.scanner.position
+        x0, y0 = self.scanner.positions
         x1, y1 = x0 + self.offset[0], y0 + self.offset[1]
         x2 = x1 * np.cos(self.angle) - y1 * np.sin(self.angle)
         y2 = x1 * np.sin(self.angle) + y1 * np.cos(self.angle)
@@ -59,7 +59,7 @@ class Projection3D(Projection):
     data: object
     scanner: ScannerConfig
     angle: float = attr.ib(default = 0.0)
-    offset: List(float, 3) = attr.ib(default = [0.0, 0.0, 0.0])
+    offset: list = attr.ib(default = [0.0, 0.0, 0.0])
 
     @property
     def source_position(self):
@@ -69,7 +69,7 @@ class Projection3D(Projection):
 
     @property
     def detector_position(self):
-        x0, y0, z0 = self.scanner.position
+        x0, y0, z0 = self.scanner.positions
         x1, y1, z1 = x0 + self.offset[0], y0 + self.offset[
             1], z0 + self.offset[2]
         x2 = x1 * np.cos(self.angle) - y1 * np.sin(self.angle)
@@ -85,7 +85,7 @@ class ProjectionSequence2D:
     offset: list
     timestamps: list
 
-    def __post_attr_init__(self):
+    def __attrs_post_init__(self):
         _n_view = self.data.size
         if self.angle is None:
             _angle = [ind * 2 * np.pi / _n_view for ind in range(_n_view)]
@@ -95,9 +95,10 @@ class ProjectionSequence2D:
         if not isinstance(self.offset[0], list):
             object.__setattr__(self, 'offset', [self.offset] * _n_view)
 
-        if self.timestamps is None:
-            _time_stamp = [0.0 for _ in range(_n_view)]
-            object.__setattr__(self, 'timestamps', _time_stamp)
+            if self.timestamps is None:            
+                object.__setattr__(self, 'timestamps', 0.0)
+            if not isinstance(self.timestamps, list):
+                object.__setattr__(self, 'timestamps', self.timestamps * np.arange(_n_view))
 
     def source_position(self, ind: int):
         x0, y0, z0 = -self.scanner.SAD, 0.0, 0.0
@@ -129,7 +130,7 @@ class ProjectionSequence3D:
     offset: list
     timestamps: list
 
-    def __post_attr_init__(self):
+    def __attrs_post_init__(self):
         _n_view = self.data.size
         if self.angle is None:
             _angle = [ind * 2 * np.pi / _n_view for ind in range(_n_view)]
@@ -139,9 +140,12 @@ class ProjectionSequence3D:
         if not isinstance(self.offset[0], list):
             object.__setattr__(self, 'offset', [self.offset] * _n_view)
 
-        if self.timestamps is None:
-            _time_stamp = [0.0 for _ in range(_n_view)]
-            object.__setattr__(self, 'timestamps', _time_stamp)
+        if self.timestamps is None:            
+            object.__setattr__(self, 'timestamps', 0.0)
+        if not isinstance(self.timestamps, list):
+            object.__setattr__(self, 'timestamps', self.timestamps * np.arange(_n_view))
+        
+            
 
     def source_position(self, ind: int):
         x0, y0, z0 = -self.scanner.SAD, 0.0, 0.0

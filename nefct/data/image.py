@@ -15,8 +15,10 @@ from nefct.ops.common.imshow_mixin import ImshowMixin
 from nefct.ops.common.arithmetic_mixins import ArithmeticMixin
 from nefct.ops.common.magic_method_mixins import GetItemMixin
 from nefct.io import LoadMixin, SaveMixin
+import attr
 
-__all__ = ('Image', 'ImageSequence')
+__all__ = ('Image', 'Image2D', 'Image3D', 'ImageSequence', 'ImageSequence2D',
+           'ImageSequence3D')
 
 
 @nef_class
@@ -62,17 +64,20 @@ class ImageSequence(ShapePropertyMixin, UnitSizePropertyMixin, GetItemMixin,
     def __getitem__(self, ind):
         pass
 
+    @property
+    def n_view(self):
+        return self.data.shape[-1]
+
 
 @nef_class
 class ImageSequence2D(ImageSequence):
     data: object  # should be list of np.ndarray
     center: list
     size: list
-    timestamps: list  # can be number, tuple or a function that return booleans
+    timestamps: list
 
     def __getitem__(self, item):
-        return Image(self.data[:, :, item], self.center,
-                     self.size), self.timestamps[item]
+        return Image(self.data[:, :, item], self.center, self.size)
 
 
 @nef_class
@@ -83,5 +88,4 @@ class ImageSequence3D(ImageSequence):
     timestamps: list  # can be number, tuple or a function that return booleans
 
     def __getitem__(self, item):
-        return Image(self.data[:, :, :, item], self.center,
-                     self.size), self.timestamps[item]
+        return Image(self.data[:, :, :, item], self.center, self.size)
