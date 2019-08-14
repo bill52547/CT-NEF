@@ -1,0 +1,59 @@
+{
+    "id": "123",
+    "creationTimestamp": "1991-01-11 15:15:01",
+    "name": "image_ggg",
+    "creator": "Minghao",
+    "creation": "python nefct make image",
+    "properties": {
+        "description": "a simple image",
+        "tags": [
+            "image",
+            "3D",
+            "PET"
+        ],
+        "fingerprint": "b'0394a2ede332c9a13eb82e9b24631604c31df978b4e2f0fbd2c549944f9d79a5'"
+    },
+    "status": "READY",
+    "diskSizeBytes": "1564564",
+    "sourceDisk": "/root/image/simple_image.hdf5",
+    "family": "Image",
+    "labels": [
+        "TestingData",
+        "DeepLearning",
+        "OwnedByMinghao"
+    ],
+    "environment": "Python 3.6",
+    "dependencies": [
+        "nefct 0.1.0.1"
+    ],
+    "metadata": {
+        "fingerprint": "b'0394a2ede332c9a13eb82e9b24631604c31df978b4e2f0fbd2c549944f9d79a5'",
+        "items": [
+            {
+                "shape": [
+                    100,
+                    100,
+                    52
+                ],
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    400.0,
+                    400.0,
+                    213.2
+                ]
+            }
+        ]
+    },
+    "functional": {
+        "callable": "False",
+        "argumentFamilies": [
+            "items"
+        ],
+        "output": "string"
+    },
+    "deletionProtection": "True"
+}

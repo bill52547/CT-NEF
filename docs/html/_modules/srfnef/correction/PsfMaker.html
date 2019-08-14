@@ -1,0 +1,1038 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible"/>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <title>nefct.correction.PsfMaker &#8212; SRF-NEF 0.5a1 documentation</title>
+    <link href="../../../_static/alabaster.css" rel="stylesheet" type="text/css"/>
+    <link href="../../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+    <script data-url_root="../../../" id="documentation_options"
+            src="../../../_static/documentation_options.js" type="text/javascript"></script>
+    <script src="../../../_static/jquery.js" type="text/javascript"></script>
+    <script src="../../../_static/underscore.js" type="text/javascript"></script>
+    <script src="../../../_static/doctools.js" type="text/javascript"></script>
+    <script src="../../../_static/language_data.js" type="text/javascript"></script>
+    <link href="../../../genindex.html" rel="index" title="Index"/>
+    <link href="../../../search.html" rel="search" title="Search"/>
+
+    <link href="../../../_static/custom.css" rel="stylesheet" type="text/css"/>
+
+
+    <meta content="width=device-width, initial-scale=0.9, maximum-scale=0.9" name="viewport"/>
+
+</head>
+<body>
+
+
+<div class="document">
+    <div class="documentwrapper">
+        <div class="bodywrapper">
+
+
+            <div class="body" role="main">
+
+                <h1>Source code for nefct.correction.PsfMaker</h1>
+                <div class="highlight"><pre>
+<span></span><span class="c1"># encoding: utf-8</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">@author: Minghao Guo</span>
+<span class="sd">@contact: mh.guo0111@gmail.com</span>
+<span class="sd">@software: srf_ct</span>
+<span class="sd">@file: PsfMaker.py</span>
+<span class="sd">@date: 2/15/2019</span>
+<span class="sd">@desc:</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span
+                        class="nn">np</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">nefct</span> <span class="k">import</span> <span
+                        class="n">_tqdm</span>
+
+<div class="viewcode-block" id="PSFMaker"><a class="viewcode-back"
+                                             href="../../../nefct.correction.html#nefct.correction.PsfMaker.PSFMaker">[docs]</a><span
+        class="k">class</span> <span class="nc">PSFMaker</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A collection of the psf matrix creating process,</span>
+<span class="sd">    Input the fitted xy and z kernel parameter(.h5 file with dict)</span>
+<span class="sd">    Output a xy sparse .mat and a z dense .npy.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span
+            class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="PSFMaker.find_xy_kernel_max_sum"><a class="viewcode-back"
+                                                                    href="../../../nefct.correction.html#nefct.correction.PsfMaker.PSFMaker.find_xy_kernel_max_sum">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">find_xy_kernel_max_sum</span><span
+            class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kernel_samples</span><span
+            class="p">):</span>
+        <span class="n">kernel_sum</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">sum</span><span class="p">(</span><span
+            class="n">np</span><span class="o">.</span><span class="n">sum</span><span
+            class="p">(</span><span class="n">kernel_samples</span><span class="p">,</span> <span
+            class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">),</span> <span
+            class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">max_value</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">kernel_sum</span><span
+            class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;max kernel xy sum value&#39;</span><span
+            class="p">,</span> <span class="n">max_value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">max_value</span></div>
+
+<div class="viewcode-block" id="PSFMaker.find_z_kernel_max_sum"><a class="viewcode-back"
+                                                                   href="../../../nefct.correction.html#nefct.correction.PsfMaker.PSFMaker.find_z_kernel_max_sum">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">find_z_kernel_max_sum</span><span class="p">(</span><span
+            class="bp">cls</span><span class="p">,</span> <span class="n">kernel_samples</span><span
+            class="p">):</span>
+        <span class="n">kernel_sum</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">kernel_samples</span><span
+            class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span
+            class="mi">0</span><span class="p">)</span>
+        <span class="n">max_value</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">kernel_sum</span><span
+            class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;max kernel z sum value&#39;</span><span
+            class="p">,</span> <span class="n">max_value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">max_value</span></div>
+
+<div class="viewcode-block" id="PSFMaker.make_meshgrid"><a class="viewcode-back"
+                                                           href="../../../nefct.correction.html#nefct.correction.PsfMaker.PSFMaker.make_meshgrid">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">make_meshgrid</span><span class="p">(</span><span
+            class="bp">cls</span><span class="p">,</span> <span class="n">grid</span><span
+            class="p">,</span> <span class="n">voxsize</span><span class="p">):</span>
+        <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span
+            class="n">grid</span><span class="p">[</span><span class="mi">0</span><span
+            class="p">],</span> <span class="n">grid</span><span class="p">[</span><span class="mi">1</span><span
+            class="p">]</span>
+        <span class="n">ix</span><span class="p">,</span> <span class="n">iy</span> <span class="o">=</span> <span
+            class="n">voxsize</span><span class="p">[</span><span class="mi">0</span><span
+            class="p">],</span> <span class="n">voxsize</span><span class="p">[</span><span
+            class="mi">1</span><span class="p">]</span>
+        <span class="n">sx</span><span class="p">,</span> <span class="n">sy</span> <span class="o">=</span> <span
+            class="n">ix</span> <span class="o">*</span> <span class="n">nx</span><span
+            class="p">,</span> <span class="n">iy</span> <span class="o">*</span> <span
+            class="n">ny</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">linspace</span><span class="p">((</span><span
+            class="o">-</span><span class="n">sx</span> <span class="o">+</span> <span
+            class="n">ix</span><span class="p">)</span> <span class="o">/</span> <span
+            class="mi">2</span><span class="p">,</span> <span class="p">(</span><span
+            class="n">sx</span> <span class="o">-</span> <span class="n">ix</span><span
+            class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span
+            class="p">,</span> <span class="n">nx</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">linspace</span><span class="p">((</span><span
+            class="o">-</span><span class="n">sy</span> <span class="o">+</span> <span
+            class="n">iy</span><span class="p">)</span> <span class="o">/</span> <span
+            class="mi">2</span><span class="p">,</span> <span class="p">(</span><span
+            class="n">sy</span> <span class="o">-</span> <span class="n">iy</span><span
+            class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span
+            class="p">,</span> <span class="n">ny</span><span class="p">)</span>
+        <span class="n">xv</span><span class="p">,</span> <span class="n">yv</span> <span class="o">=</span> <span
+            class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span
+            class="p">(</span><span class="n">x</span><span class="p">,</span> <span
+            class="n">y</span><span class="p">,</span> <span class="n">indexing</span> <span
+            class="o">=</span> <span class="s1">&#39;ij&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">xv</span><span class="p">,</span> <span
+            class="n">yv</span></div>
+
+<div class="viewcode-block" id="PSFMaker.make_polargrid"><a class="viewcode-back"
+                                                            href="../../../nefct.correction.html#nefct.correction.PsfMaker.PSFMaker.make_polargrid">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">make_polargrid</span><span class="p">(</span><span
+            class="bp">cls</span><span class="p">,</span> <span class="n">xmesh</span><span
+            class="p">,</span> <span class="n">ymesh</span><span class="p">):</span>
+        <span class="n">rmesh</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">xmesh</span> <span
+            class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">ymesh</span> <span
+            class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">pmesh</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">ymesh</span><span
+            class="p">,</span> <span class="n">xmesh</span><span class="p">)</span> <span class="o">*</span> <span
+            class="mi">180</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span
+            class="n">pi</span>
+        <span class="k">return</span> <span class="n">rmesh</span><span class="p">,</span> <span
+            class="n">pmesh</span></div>
+
+<div class="viewcode-block" id="PSFMaker.locate_kernel"><a class="viewcode-back"
+                                                           href="../../../nefct.correction.html#nefct.correction.PsfMaker.PSFMaker.locate_kernel">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">locate_kernel</span><span class="p">(</span><span
+            class="bp">cls</span><span class="p">,</span> <span
+            class="n">sampled_kernels</span><span class="p">,</span> <span
+            class="n">x_range</span><span class="p">,</span> <span class="n">r</span><span
+            class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        choose a approximated kernel for a mesh.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sampled_kernels: interpolated kernel parameter array</span>
+<span class="sd">            x_max: the max x position of kernel samples.</span>
+<span class="sd">            r_max: the radial distance of a pixel to the origin.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A kernel image generated according to the samples.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># kernel_image = sampled_kernels[:, :, int(</span>
+        <span class="c1">#     round(r/(x_range/(sampled_kernels.shape[2]-1))))]</span>
+        <span class="c1"># return kernel_image</span>
+
+        <span class="n">nb_samples</span> <span class="o">=</span> <span
+            class="n">sampled_kernels</span><span class="o">.</span><span
+            class="n">shape</span><span class="p">[</span><span class="mi">2</span><span
+            class="p">]</span>
+        <span class="n">interval</span> <span class="o">=</span> <span class="p">(</span><span
+            class="n">x_range</span><span class="p">)</span> <span class="o">/</span> <span
+            class="p">(</span><span class="n">nb_samples</span> <span class="o">-</span> <span
+            class="mi">1</span><span class="p">)</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="nb">int</span><span
+            class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">r</span><span
+            class="p">)</span> <span class="o">/</span> <span class="n">interval</span><span
+            class="p">))</span>
+
+        <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;=</span> <span
+            class="n">nb_samples</span><span class="p">:</span>
+            <span class="c1">#         print(&quot;index {} is out of sample domain.&quot;.format(index))</span>
+            <span class="n">kernel_image</span> <span class="o">=</span> <span
+            class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span
+            class="n">sampled_kernels</span><span class="o">.</span><span
+            class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span
+            class="n">sampled_kernels</span><span class="o">.</span><span
+            class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#         print(&quot;index:&quot;, index)</span>
+            <span class="n">kernel_image</span> <span class="o">=</span> <span class="n">sampled_kernels</span><span
+            class="p">[:,</span> <span class="p">:,</span> <span class="n">index</span><span
+            class="p">]</span>
+        <span class="k">return</span> <span class="n">kernel_image</span></div>
+
+<div class="viewcode-block" id="PSFMaker.rotate_kernel"><a class="viewcode-back"
+                                                           href="../../../nefct.correction.html#nefct.correction.PsfMaker.PSFMaker.rotate_kernel">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">rotate_kernel</span><span class="p">(</span><span
+            class="bp">cls</span><span class="p">,</span> <span class="n">kernel_image</span><span
+            class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        rotate an 2D kernel in X-Y plane.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            kernel_image: input kernel to be rotated</span>
+<span class="sd">            angle: the rotation angle</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            rotated kernel</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="kn">from</span> <span class="nn">scipy</span> <span
+            class="k">import</span> <span class="n">ndimage</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">kernel_image</span>
+        <span class="n">img_r</span> <span class="o">=</span> <span class="n">ndimage</span><span
+            class="o">.</span><span class="n">interpolation</span><span class="o">.</span><span
+            class="n">rotate</span><span class="p">(</span><span class="n">img</span><span
+            class="p">,</span> <span class="n">angle</span><span class="p">)</span>
+        <span class="n">shape0</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">img</span><span
+            class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">shape1</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">img_r</span><span
+            class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="c1"># calculate the valid central part of kernel</span>
+        <span class="n">istart</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">round</span><span class="p">((</span><span class="n">shape1</span> <span
+            class="o">-</span> <span class="n">shape0</span><span class="p">)</span> <span
+            class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">iend</span> <span class="o">=</span> <span class="n">shape0</span> <span
+            class="o">+</span> <span class="n">istart</span>
+        <span class="n">img_r</span> <span class="o">=</span> <span class="n">img_r</span><span
+            class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">istart</span><span
+            class="p">[</span><span class="mi">0</span><span class="p">]):</span><span class="nb">int</span><span
+            class="p">(</span><span class="n">iend</span><span class="p">[</span><span
+            class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span
+            class="p">(</span><span class="n">istart</span><span class="p">[</span><span class="mi">1</span><span
+            class="p">]):</span><span class="nb">int</span><span class="p">(</span><span class="n">iend</span><span
+            class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+        <span class="k">return</span> <span class="n">img_r</span></div>
+
+<div class="viewcode-block" id="PSFMaker.make_xy_kernel"><a class="viewcode-back"
+                                                            href="../../../nefct.correction.html#nefct.correction.PsfMaker.PSFMaker.make_xy_kernel">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">make_xy_kernel</span><span class="p">(</span><span
+            class="bp">cls</span><span class="p">,</span> <span class="n">xmesh</span><span
+            class="p">,</span> <span class="n">ymesh</span><span class="p">,</span> <span class="n">grid</span><span
+            class="p">,</span> <span class="n">x_range</span><span class="p">,</span> <span
+            class="n">kernel_samples</span><span class="p">,</span> <span
+            class="n">epsilon</span> <span class="o">=</span> <span class="mf">1e-4</span><span
+            class="p">):</span>
+        <span class="n">rmesh</span><span class="p">,</span> <span class="n">pmesh</span> <span
+            class="o">=</span> <span class="bp">cls</span><span class="p">()</span><span
+            class="o">.</span><span class="n">make_polargrid</span><span class="p">(</span><span
+            class="n">xmesh</span><span class="p">,</span> <span class="n">ymesh</span><span
+            class="p">)</span>
+        <span class="c1"># import time</span>
+        <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span
+            class="n">grid</span><span class="p">[</span><span class="mi">0</span><span
+            class="p">],</span> <span class="n">grid</span><span class="p">[</span><span class="mi">1</span><span
+            class="p">]</span>
+        <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span
+            class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="p">[],</span> <span
+            class="p">[],</span> <span class="p">[]</span>
+        <span class="c1"># start = time.time()</span>
+        <span class="n">kernel_max</span> <span class="o">=</span> <span class="bp">cls</span><span
+            class="p">()</span><span class="o">.</span><span class="n">find_xy_kernel_max_sum</span><span
+            class="p">(</span><span class="n">kernel_samples</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span
+            class="n">_tqdm</span><span class="p">(</span><span class="nb">range</span><span
+            class="p">(</span><span class="n">nx</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span
+            class="nb">range</span><span class="p">(</span><span class="n">ny</span><span class="p">):</span>
+                <span class="n">irow</span> <span class="o">=</span> <span class="n">j</span> <span
+            class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span
+            class="n">ny</span>
+                <span class="n">ir</span><span class="p">,</span> <span class="n">ip</span> <span
+            class="o">=</span> <span class="n">rmesh</span><span class="p">[</span><span
+            class="n">i</span><span class="p">,</span> <span class="n">j</span><span
+            class="p">],</span> <span class="n">pmesh</span><span class="p">[</span><span class="n">i</span><span
+            class="p">,</span> <span class="n">j</span><span class="p">]</span>
+                <span class="n">original_kernel</span> <span class="o">=</span> <span
+            class="bp">cls</span><span class="p">()</span><span class="o">.</span><span class="n">locate_kernel</span><span
+            class="p">(</span><span class="n">kernel_samples</span><span class="p">,</span> <span
+            class="n">x_range</span><span class="p">,</span> <span class="n">ir</span><span
+            class="p">)</span>
+                <span class="n">kernel</span> <span class="o">=</span> <span
+            class="bp">cls</span><span class="p">()</span><span class="o">.</span><span class="n">rotate_kernel</span><span
+            class="p">(</span><span class="n">original_kernel</span><span class="p">,</span> <span
+            class="n">ip</span><span class="p">)</span>
+                <span class="n">kernel</span> <span class="o">=</span> <span class="n">kernel</span> <span
+            class="o">/</span> <span class="n">kernel_max</span>
+                <span class="n">kernel</span><span class="p">[</span><span
+            class="n">kernel</span> <span class="o">&lt;</span> <span class="n">epsilon</span><span
+            class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="n">kernel_flat</span> <span class="o">=</span> <span
+            class="n">kernel</span><span class="o">.</span><span class="n">reshape</span><span
+            class="p">((</span><span class="o">-</span><span class="mi">1</span><span
+            class="p">))</span>
+                <span class="kn">from</span> <span class="nn">scipy</span> <span
+            class="k">import</span> <span class="n">sparse</span>
+                <span class="n">spa_kernel</span> <span class="o">=</span> <span
+            class="n">sparse</span><span class="o">.</span><span class="n">coo_matrix</span><span
+            class="p">(</span><span class="n">kernel_flat</span><span class="p">)</span>
+                <span class="n">nb_ele</span> <span class="o">=</span> <span
+            class="n">spa_kernel</span><span class="o">.</span><span class="n">data</span><span
+            class="o">.</span><span class="n">size</span>
+                <span class="k">if</span> <span class="n">nb_ele</span> <span class="o">&gt;</span> <span
+            class="mi">0</span><span class="p">:</span>
+                    <span class="n">row</span> <span class="o">=</span> <span
+            class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span
+            class="n">row</span><span class="p">,</span> <span class="p">[</span><span class="n">irow</span><span
+            class="p">]</span> <span class="o">*</span> <span class="n">nb_ele</span><span
+            class="p">)</span>
+                    <span class="n">col</span> <span class="o">=</span> <span
+            class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span
+            class="n">col</span><span class="p">,</span> <span class="n">spa_kernel</span><span
+            class="o">.</span><span class="n">col</span><span class="p">)</span>
+                    <span class="n">data</span> <span class="o">=</span> <span
+            class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span
+            class="n">data</span><span class="p">,</span> <span class="n">spa_kernel</span><span
+            class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span
+            class="n">array</span><span class="p">([</span><span class="n">row</span><span
+            class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">data</span><span
+            class="p">])</span></div>
+
+<div class="viewcode-block" id="PSFMaker.compute_sample_kernels"><a class="viewcode-back"
+                                                                    href="../../../nefct.correction.html#nefct.correction.PsfMaker.PSFMaker.compute_sample_kernels">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">compute_sample_kernels</span><span
+            class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kernel_array</span><span
+            class="p">,</span> <span class="n">xmesh</span><span class="p">,</span> <span class="n">ymesh</span><span
+            class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Compute the all the kernel images of sample points.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            kernel_para: kernel parameters to decide the distribution.</span>
+<span class="sd">            xmesh: the meshgrid in x axis</span>
+<span class="sd">            ymesh: the meshgrid in y axis</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">nb_samples</span> <span class="o">=</span> <span class="nb">len</span><span
+            class="p">(</span><span class="n">kernel_array</span><span class="p">)</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">xmesh</span><span
+            class="o">.</span><span class="n">shape</span>
+        <span class="n">kernel_images</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">grid</span><span
+            class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">grid</span><span
+            class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">nb_samples</span><span
+            class="p">))</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span
+            class="n">_tqdm</span><span class="p">(</span><span class="nb">range</span><span
+            class="p">(</span><span class="n">nb_samples</span><span class="p">)):</span>
+            <span class="n">a</span> <span class="o">=</span> <span
+            class="n">kernel_array</span><span class="p">[</span><span class="n">k</span><span
+            class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">ux</span> <span class="o">=</span> <span
+            class="n">kernel_array</span><span class="p">[</span><span class="n">k</span><span
+            class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">sigx</span> <span class="o">=</span> <span class="n">kernel_array</span><span
+            class="p">[</span><span class="n">k</span><span class="p">,</span> <span
+            class="mi">2</span><span class="p">]</span>
+            <span class="n">uy</span> <span class="o">=</span> <span
+            class="n">kernel_array</span><span class="p">[</span><span class="n">k</span><span
+            class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+            <span class="n">sigy</span> <span class="o">=</span> <span class="n">kernel_array</span><span
+            class="p">[</span><span class="n">k</span><span class="p">,</span> <span
+            class="mi">4</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span
+            class="nb">range</span><span class="p">(</span><span class="n">grid</span><span
+            class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span
+            class="nb">range</span><span class="p">(</span><span class="n">grid</span><span
+            class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                    <span class="n">kernel_images</span><span class="p">[</span><span
+            class="n">i</span><span class="p">,</span> <span class="n">j</span><span
+            class="p">,</span> <span class="n">k</span><span class="p">]</span> <span
+            class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span
+            class="n">np</span><span class="o">.</span><span class="n">exp</span><span
+            class="p">(</span><span class="o">-</span><span class="p">(</span><span
+            class="n">xmesh</span><span class="p">[</span><span class="n">i</span><span
+            class="p">,</span> <span class="n">j</span><span class="p">]</span> <span
+            class="o">-</span> <span class="n">ux</span><span class="p">)</span> <span
+            class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span
+            class="p">(</span>
+                            <span class="mi">2</span> <span class="o">*</span> <span
+            class="n">sigx</span> <span class="o">**</span> <span class="mi">2</span><span
+            class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">ymesh</span><span
+            class="p">[</span><span class="n">i</span><span class="p">,</span> <span
+            class="n">j</span><span class="p">]</span> <span class="o">-</span> <span
+            class="n">uy</span><span class="p">)</span> <span class="o">**</span> <span
+            class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span
+            class="mi">2</span> <span class="o">*</span> <span class="n">sigy</span> <span
+            class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">kernel_images</span></div>
+
+<div class="viewcode-block" id="PSFMaker.compensate_kernel"><a class="viewcode-back"
+                                                               href="../../../nefct.correction.html#nefct.correction.PsfMaker.PSFMaker.compensate_kernel">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">compensate_kernel</span><span
+            class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kernel_array</span><span
+            class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span
+            class="n">xrange</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        The experimental xy_kernel parameters were corase along the x axis.</span>
+<span class="sd">        Interpolate the kernel parameters in the whole range.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            kernel_array: kerenl parameters to be interpolated.</span>
+<span class="sd">            factor: scale ratio to be refined.</span>
+<span class="sd">            xrange: the x axis range of kernel.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            An interpolated kernel parameter array.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="kn">from</span> <span class="nn">scipy</span> <span
+            class="k">import</span> <span class="n">interpolate</span>
+        <span class="n">nb_samples</span> <span class="o">=</span> <span class="nb">len</span><span
+            class="p">(</span><span class="n">kernel_array</span><span class="p">)</span>
+        <span class="n">nb_new_samples</span> <span class="o">=</span> <span
+            class="nb">int</span><span class="p">(</span><span class="n">nb_samples</span> <span
+            class="o">*</span> <span class="n">factor</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">linspace</span><span class="p">(</span><span
+            class="mi">0</span><span class="p">,</span> <span class="n">xrange</span><span
+            class="p">,</span> <span class="n">nb_samples</span><span class="p">)</span>
+        <span class="n">nb_columns</span> <span class="o">=</span> <span
+            class="n">kernel_array</span><span class="o">.</span><span class="n">shape</span><span
+            class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">kernel_new</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">nb_new_samples</span><span
+            class="p">,</span> <span class="n">nb_columns</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i_column</span> <span class="ow">in</span> <span
+            class="nb">range</span><span class="p">(</span><span class="n">nb_columns</span><span
+            class="p">):</span>
+            <span class="n">y</span> <span class="o">=</span> <span
+            class="n">kernel_array</span><span class="p">[:,</span> <span
+            class="n">i_column</span><span class="p">]</span>
+            <span class="n">f</span> <span class="o">=</span> <span
+            class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span
+            class="p">(</span><span class="n">x</span><span class="p">,</span> <span
+            class="n">y</span><span class="p">)</span>
+            <span class="n">xnew</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">linspace</span><span class="p">(</span><span
+            class="mi">0</span><span class="p">,</span> <span class="n">xrange</span><span
+            class="p">,</span> <span class="n">nb_new_samples</span><span class="p">)</span>
+            <span class="n">kernel_new</span><span class="p">[:,</span> <span
+            class="n">i_column</span><span class="p">]</span> <span class="o">=</span> <span
+            class="n">f</span><span class="p">(</span><span class="n">xnew</span><span
+            class="p">)</span>
+        <span class="k">return</span> <span class="n">kernel_new</span></div>
+
+<div class="viewcode-block" id="PSFMaker.preprocess_xy_para"><a class="viewcode-back"
+                                                                href="../../../nefct.correction.html#nefct.correction.PsfMaker.PSFMaker.preprocess_xy_para">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">preprocess_xy_para</span><span
+            class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">para_xy_path</span><span
+            class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">voxsize</span><span
+            class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Preprocess the kernel parameters.</span>
+<span class="sd">        The kernel is shifted to the standard coordinate.</span>
+<span class="sd">        The amplitude is changed in this process, but it</span>
+<span class="sd">        does not matter since the kernel will be normalized</span>
+<span class="sd">        later.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            origin_kernel: the origin kernel fitted from the experiment.</span>
+<span class="sd">            grid: kernel image grid</span>
+<span class="sd">            voxsize: voxel size</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            processed kernel parameter array.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span
+            class="n">File</span><span class="p">(</span><span class="n">para_xy_path</span><span
+            class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span
+            class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+            <span class="n">axy</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">fin</span><span
+            class="p">[</span><span class="s1">&#39;axy&#39;</span><span class="p">])</span>
+            <span class="n">ux</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">fin</span><span
+            class="p">[</span><span class="s1">&#39;ux&#39;</span><span class="p">])</span>
+            <span class="n">uy</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">fin</span><span
+            class="p">[</span><span class="s1">&#39;uy&#39;</span><span class="p">])</span>
+            <span class="n">sigmax</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">fin</span><span
+            class="p">[</span><span class="s1">&#39;sigmax&#39;</span><span class="p">])</span>
+            <span class="n">sigmay</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">fin</span><span
+            class="p">[</span><span class="s1">&#39;sigmay&#39;</span><span class="p">])</span>
+            <span class="c1"># kernel_XY = origin_kernel</span>
+            <span class="c1"># axy = kernel_XY[:, 1]</span>
+            <span class="n">ux</span> <span class="o">=</span> <span class="p">(</span><span
+            class="n">ux</span> <span class="o">-</span> <span class="n">math</span><span class="o">.</span><span
+            class="n">ceil</span><span class="p">(</span><span class="n">grid</span><span class="p">[</span><span
+            class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span
+            class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="n">voxsize</span><span
+            class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">sigmax</span> <span class="o">=</span> <span
+            class="n">sigmax</span> <span class="o">*</span> <span class="n">voxsize</span><span
+            class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">uy</span> <span class="o">=</span> <span class="p">(</span><span
+            class="n">uy</span> <span class="o">-</span> <span class="n">math</span><span class="o">.</span><span
+            class="n">ceil</span><span class="p">(</span><span class="n">grid</span><span class="p">[</span><span
+            class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span
+            class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="n">voxsize</span><span
+            class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">sigmay</span> <span class="o">=</span> <span
+            class="n">sigmay</span> <span class="o">*</span> <span class="n">voxsize</span><span
+            class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span
+            class="n">vstack</span><span class="p">((</span><span class="n">axy</span><span
+            class="p">,</span> <span class="n">ux</span><span class="p">,</span> <span class="n">sigmax</span><span
+            class="p">,</span> <span class="n">uy</span><span class="p">,</span> <span class="n">sigmay</span><span
+            class="p">))</span><span class="o">.</span><span class="n">T</span></div>
+            <span class="c1"># raise DeprecationWarning(&quot;this function is going to be deprecated&quot;)</span>
+
+<div class="viewcode-block" id="PSFMaker.xy_main"><a class="viewcode-back"
+                                                     href="../../../nefct.correction.html#nefct.correction.PsfMaker.PSFMaker.xy_main">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">xy_main</span><span class="p">(</span><span
+            class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span
+            class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="nb">list</span><span
+            class="p">,</span> <span class="n">voxsize</span><span class="p">:</span> <span
+            class="nb">list</span><span class="p">):</span>
+        <span class="c1"># step1: generate kernel array</span>
+        <span class="c1"># print(type(kernel_para_dict))</span>
+        <span class="n">kernel_array</span> <span class="o">=</span> <span
+            class="bp">cls</span><span class="p">()</span><span class="o">.</span><span class="n">preprocess_xy_para</span><span
+            class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">fit_para_xy_path</span><span
+            class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">voxsize</span><span
+            class="p">)</span>
+        <span class="n">x_range</span> <span class="o">=</span> <span class="n">voxsize</span><span
+            class="p">[</span><span class="mi">0</span><span class="p">]</span> <span
+            class="o">*</span> <span class="p">(</span><span class="n">kernel_array</span><span
+            class="o">.</span><span class="n">shape</span><span class="p">[</span><span
+            class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span
+            class="mi">1</span><span class="p">)</span>
+        <span class="c1"># step2: interpolation</span>
+        <span class="n">refined_kernel</span> <span class="o">=</span> <span
+            class="bp">cls</span><span class="p">()</span><span class="o">.</span><span class="n">compensate_kernel</span><span
+            class="p">(</span><span class="n">kernel_array</span><span class="p">,</span> <span
+            class="n">config</span><span class="o">.</span><span
+            class="n">x_refined_factor</span><span class="p">,</span> <span class="n">x_range</span><span
+            class="p">)</span>
+        <span class="n">xmesh</span><span class="p">,</span> <span class="n">ymesh</span> <span
+            class="o">=</span> <span class="bp">cls</span><span class="p">()</span><span
+            class="o">.</span><span class="n">make_meshgrid</span><span class="p">(</span><span
+            class="n">grid</span><span class="p">,</span> <span class="n">voxsize</span><span
+            class="p">)</span>
+        <span class="c1"># step3: compute whole kernel</span>
+        <span class="n">kernel_samples</span> <span class="o">=</span> <span
+            class="bp">cls</span><span class="p">()</span><span class="o">.</span><span class="n">compute_sample_kernels</span><span
+            class="p">(</span><span class="n">refined_kernel</span><span class="p">,</span> <span
+            class="n">xmesh</span><span class="p">,</span> <span class="n">ymesh</span><span
+            class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span
+            class="n">kernel_samples</span><span class="o">.</span><span class="n">shape</span><span
+            class="p">)</span>
+        <span class="c1"># np.save(output_kernel_dir, kernel_samples)</span>
+        <span class="c1"># kernel_samples = np.load(output_kernel_dir)</span>
+
+        <span class="n">kernel</span> <span class="o">=</span> <span class="bp">cls</span><span
+            class="p">()</span><span class="o">.</span><span class="n">make_xy_kernel</span><span
+            class="p">(</span><span class="n">xmesh</span><span class="p">,</span> <span class="n">ymesh</span><span
+            class="p">,</span> <span class="n">grid</span><span class="p">,</span>
+                                      <span class="n">x_range</span><span class="p">,</span> <span
+            class="n">kernel_samples</span><span class="p">,</span> <span
+            class="n">epsilon</span> <span class="o">=</span> <span class="mf">1e-4</span><span
+            class="p">)</span>
+        <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span
+            class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">kernel</span><span
+            class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">kernel</span><span
+            class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">kernel</span><span
+            class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">row</span><span
+            class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span
+            class="p">)</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="n">col</span><span
+            class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span
+            class="p">)</span>
+        <span class="kn">from</span> <span class="nn">scipy</span> <span
+            class="k">import</span> <span class="n">sparse</span>
+        <span class="n">kernel_xy</span> <span class="o">=</span> <span class="n">sparse</span><span
+            class="o">.</span><span class="n">coo_matrix</span><span class="p">((</span><span
+            class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span
+            class="p">,</span> <span class="n">col</span><span class="p">)),</span> <span class="n">shape</span> <span
+            class="o">=</span> <span class="p">(</span>
+            <span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span
+            class="p">]</span> <span class="o">*</span> <span class="n">grid</span><span
+            class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">grid</span><span
+            class="p">[</span><span class="mi">0</span><span class="p">]</span> <span
+            class="o">*</span> <span class="n">grid</span><span class="p">[</span><span
+            class="mi">1</span><span class="p">]),</span> <span class="n">dtype</span> <span
+            class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span
+            class="p">)</span>
+        <span class="c1"># print(kernel_xy.size)</span>
+
+        <span class="kn">import</span> <span class="nn">scipy.io</span> <span
+            class="k">as</span> <span class="nn">sio</span>
+        <span class="n">sio</span><span class="o">.</span><span class="n">savemat</span><span
+            class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">kernel_xy_path</span><span
+            class="p">,</span> <span class="p">{</span><span class="s1">&#39;matrix&#39;</span><span
+            class="p">:</span> <span class="n">kernel_xy</span><span class="p">})</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span
+            class="s1">&#39;siddon kernel_xy size = </span><span
+            class="si">{kernel_xy.size}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PSFMaker.compute_z_sample_kernels"><a class="viewcode-back"
+                                                                      href="../../../nefct.correction.html#nefct.correction.PsfMaker.PSFMaker.compute_z_sample_kernels">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">compute_z_sample_kernels</span><span
+            class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kernel_samples</span><span
+            class="p">,</span> <span class="n">grid_z</span><span class="p">,</span> <span
+            class="n">zmesh</span><span class="p">):</span>
+        <span class="n">nb_samples</span> <span class="o">=</span> <span class="nb">len</span><span
+            class="p">(</span><span class="n">kernel_samples</span><span class="p">)</span>
+        <span class="n">kernel_z</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">grid_z</span><span
+            class="p">,</span> <span class="n">grid_z</span><span class="p">),</span> <span
+            class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span
+            class="nb">range</span><span class="p">(</span><span class="n">nb_samples</span><span
+            class="p">):</span>
+            <span class="n">az</span> <span class="o">=</span> <span class="n">kernel_samples</span><span
+            class="p">[</span><span class="n">k</span><span class="p">,</span> <span
+            class="mi">0</span><span class="p">]</span>
+            <span class="n">uz</span> <span class="o">=</span> <span class="n">kernel_samples</span><span
+            class="p">[</span><span class="n">k</span><span class="p">,</span> <span
+            class="mi">1</span><span class="p">]</span>
+            <span class="n">sigz</span> <span class="o">=</span> <span
+            class="n">kernel_samples</span><span class="p">[</span><span class="n">k</span><span
+            class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span
+            class="nb">range</span><span class="p">(</span><span class="n">grid_z</span><span
+            class="p">):</span>
+                <span class="n">kernel_z</span><span class="p">[</span><span class="n">i</span><span
+            class="p">,</span> <span class="n">k</span><span class="p">]</span> <span
+            class="o">=</span> <span class="n">az</span> <span class="o">*</span> <span
+            class="n">np</span><span class="o">.</span><span class="n">exp</span><span
+            class="p">(</span><span class="o">-</span><span class="p">(</span><span
+            class="n">zmesh</span><span class="p">[</span><span class="n">i</span><span
+            class="p">]</span> <span class="o">-</span> <span class="n">uz</span><span
+            class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span
+            class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span
+            class="o">*</span> <span class="n">sigz</span> <span class="o">**</span> <span
+            class="mi">2</span><span class="p">))</span>
+
+        <span class="n">kernel_max</span> <span class="o">=</span> <span class="bp">cls</span><span
+            class="p">()</span><span class="o">.</span><span
+            class="n">find_z_kernel_max_sum</span><span class="p">(</span><span
+            class="n">kernel_z</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">kernel_z</span> <span class="o">/</span> <span
+            class="n">kernel_max</span></div>
+
+<div class="viewcode-block" id="PSFMaker.preprocess_z_para"><a class="viewcode-back"
+                                                               href="../../../nefct.correction.html#nefct.correction.PsfMaker.PSFMaker.preprocess_z_para">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">preprocess_z_para</span><span
+            class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">para_z_path</span><span
+            class="p">,</span> <span class="n">grid_z</span><span class="p">,</span> <span
+            class="n">voxsize_z</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Preprocess the kernel parameters in z.</span>
+<span class="sd">        The kernel is shifted to the standard coordinate.</span>
+<span class="sd">        The amplitude is changed in this process, but it</span>
+<span class="sd">        does not matter since the kernel will be normalized</span>
+<span class="sd">        later.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            origin_kernel: the origin kernel fitted from the</span>
+<span class="sd">            experiment.</span>
+<span class="sd">            grid: kernel image grid</span>
+<span class="sd">            size: image domain size</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            processed kernel parameter array.</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span
+            class="n">File</span><span class="p">(</span><span class="n">para_z_path</span><span
+            class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span
+            class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+            <span class="n">az</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">fin</span><span
+            class="p">[</span><span class="s1">&#39;az&#39;</span><span class="p">])</span>
+            <span class="n">uz</span> <span class="o">=</span> <span class="p">(</span><span
+            class="n">np</span><span class="o">.</span><span class="n">array</span><span
+            class="p">(</span><span class="n">fin</span><span class="p">[</span><span class="s1">&#39;uz&#39;</span><span
+            class="p">])</span> <span class="o">-</span> <span class="n">math</span><span class="o">.</span><span
+            class="n">ceil</span><span class="p">(</span><span class="n">grid_z</span> <span
+            class="o">/</span> <span class="mi">2</span><span class="p">))</span> <span
+            class="o">*</span> <span class="n">voxsize_z</span>
+            <span class="n">sigmaz</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">fin</span><span
+            class="p">[</span><span class="s1">&#39;sigmaz&#39;</span><span
+            class="p">])</span> <span class="o">*</span> <span class="n">voxsize_z</span>
+
+            <span class="n">az_neg</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">az</span><span
+            class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="n">uz_neg</span> <span class="o">=</span> <span class="o">-</span><span
+            class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span
+            class="n">uz</span><span class="p">[</span><span class="mi">1</span><span
+            class="p">:])</span>
+            <span class="n">sigmaz_neg</span> <span class="o">=</span> <span
+            class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span
+            class="n">sigmaz</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+            <span class="n">compen_len</span> <span class="o">=</span> <span
+            class="nb">int</span><span class="p">((</span><span class="n">grid_z</span> <span
+            class="o">-</span> <span class="nb">len</span><span class="p">(</span><span
+            class="n">az</span><span class="p">)</span> <span class="o">*</span> <span
+            class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span
+            class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span
+            class="p">)</span>
+            <span class="c1"># print(compen_len)</span>
+            <span class="n">az</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">hstack</span><span class="p">(</span>
+                <span class="p">([</span><span class="mf">0.0</span><span class="p">]</span> <span
+            class="o">*</span> <span class="n">compen_len</span><span class="p">,</span> <span
+            class="n">az_neg</span><span class="p">,</span> <span class="n">az</span><span
+            class="p">,</span> <span class="p">[</span><span class="mf">0.0</span><span
+            class="p">]</span> <span class="o">*</span> <span class="n">compen_len</span><span
+            class="p">))</span>
+            <span class="n">uz</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">hstack</span><span class="p">(</span>
+                <span class="p">([</span><span class="mf">0.0</span><span class="p">]</span> <span
+            class="o">*</span> <span class="n">compen_len</span><span class="p">,</span> <span
+            class="n">uz_neg</span><span class="p">,</span> <span class="n">uz</span><span
+            class="p">,</span> <span class="p">[</span><span class="mf">0.0</span><span
+            class="p">]</span> <span class="o">*</span> <span class="n">compen_len</span><span
+            class="p">))</span>
+            <span class="n">sigmaz</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">hstack</span><span class="p">(</span>
+                <span class="p">([</span><span class="mf">1.0</span><span class="p">]</span> <span
+            class="o">*</span> <span class="n">compen_len</span><span class="p">,</span> <span
+            class="n">sigmaz_neg</span><span class="p">,</span> <span class="n">sigmaz</span><span
+            class="p">,</span> <span class="p">[</span><span class="mf">1.0</span><span
+            class="p">]</span> <span class="o">*</span> <span class="n">compen_len</span><span
+            class="p">))</span>
+
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span
+            class="n">vstack</span><span class="p">((</span><span class="n">az</span><span
+            class="p">,</span> <span class="n">uz</span><span class="p">,</span> <span class="n">sigmaz</span><span
+            class="p">))</span><span class="o">.</span><span class="n">T</span></div>
+
+<div class="viewcode-block" id="PSFMaker.z_main"><a class="viewcode-back"
+                                                    href="../../../nefct.correction.html#nefct.correction.PsfMaker.PSFMaker.z_main">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">z_main</span><span class="p">(</span><span
+            class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span
+            class="p">,</span> <span class="n">grid_z</span><span class="p">,</span> <span
+            class="n">voxsize_z</span><span class="p">):</span>
+        <span class="n">zmesh</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">linspace</span><span class="p">((</span><span
+            class="o">-</span><span class="n">voxsize_z</span> <span class="o">*</span> <span
+            class="p">(</span><span class="n">grid_z</span> <span class="o">-</span> <span
+            class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span
+            class="mi">2</span><span class="p">,</span>
+                            <span class="p">(</span><span class="n">voxsize_z</span> <span
+            class="o">*</span> <span class="p">(</span><span class="n">grid_z</span> <span
+            class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span
+            class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">grid_z</span><span
+            class="p">)</span>
+        <span class="n">kernel_samples</span> <span class="o">=</span> <span
+            class="bp">cls</span><span class="p">()</span><span class="o">.</span><span class="n">preprocess_z_para</span><span
+            class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">fit_para_z_path</span><span
+            class="p">,</span> <span class="n">grid_z</span><span class="p">,</span> <span
+            class="n">voxsize_z</span><span class="p">)</span>
+        <span class="n">kernel_z</span> <span class="o">=</span> <span class="bp">cls</span><span
+            class="p">()</span><span class="o">.</span><span
+            class="n">compute_z_sample_kernels</span><span class="p">(</span><span class="n">kernel_samples</span><span
+            class="p">,</span> <span class="n">grid_z</span><span class="p">,</span> <span
+            class="n">zmesh</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span
+            class="n">config</span><span class="o">.</span><span class="n">kernel_z_path</span><span
+            class="p">,</span> <span class="n">kernel_z</span><span class="p">)</span></div>
+        <span class="c1"># return kernel_z</span>
+
+<div class="viewcode-block" id="PSFMaker.run"><a class="viewcode-back"
+                                                 href="../../../nefct.correction.html#nefct.correction.PsfMaker.PSFMaker.run">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">cls</span><span
+            class="p">,</span> <span class="n">fitter</span><span class="p">,</span> <span
+            class="n">pnt_img_path</span><span class="p">,</span> <span
+            class="n">kernel_config</span><span class="p">,</span> <span class="n">map_config</span><span
+            class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;step 1/4: fitting parameters...&quot;</span><span
+            class="p">)</span>
+        <span class="n">fitter</span><span class="p">(</span><span
+            class="n">pnt_img_path</span><span class="p">)</span>
+
+        <span class="c1"># from srf.io.listmode import load_h5</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kernel_config</span><span
+            class="o">.</span><span class="n">grid</span><span class="p">)</span>
+        <span class="n">voxel_size</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kernel_config</span><span
+            class="o">.</span><span class="n">voxel_size</span><span class="p">)</span>
+        <span class="c1"># kernel_z_dict = load_h5(kernel_z_para_dir)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;step 2/4: making xy kernel...&quot;</span><span
+            class="p">)</span>
+        <span class="bp">cls</span><span class="p">()</span><span class="o">.</span><span class="n">xy_main</span><span
+            class="p">(</span><span class="n">kernel_config</span><span class="p">,</span> <span
+            class="n">grid</span><span class="p">[</span><span class="mi">0</span><span
+            class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="n">voxel_size</span><span
+            class="p">[</span><span class="mi">0</span><span class="p">:</span><span
+            class="mi">2</span><span class="p">])</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;step 3/4: making z kernel...&quot;</span><span
+            class="p">)</span>
+        <span class="bp">cls</span><span class="p">()</span><span class="o">.</span><span class="n">z_main</span><span
+            class="p">(</span><span class="n">kernel_config</span><span class="p">,</span> <span
+            class="n">grid</span><span class="p">[</span><span class="mi">2</span><span
+            class="p">],</span> <span class="n">voxel_size</span><span class="p">[</span><span
+            class="mi">2</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;step 4/4: generating psf efficiency map...&quot;</span><span
+            class="p">)</span>
+        <span class="bp">cls</span><span class="p">()</span><span class="o">.</span><span class="n">map_process</span><span
+            class="p">(</span><span class="n">map_config</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Task complete!&quot;</span><span
+            class="p">)</span></div>
+
+<div class="viewcode-block" id="PSFMaker.map_process"><a class="viewcode-back"
+                                                         href="../../../nefct.correction.html#nefct.correction.PsfMaker.PSFMaker.map_process">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">map_process</span><span class="p">(</span><span
+            class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span
+            class="p">):</span>
+        <span class="kn">import</span> <span class="nn">scipy.io</span> <span
+            class="k">as</span> <span class="nn">sio</span>
+        <span class="kn">from</span> <span class="nn">scipy</span> <span
+            class="k">import</span> <span class="n">sparse</span>
+        <span class="n">kernel_xy</span> <span class="o">=</span> <span class="n">sparse</span><span
+            class="o">.</span><span class="n">coo_matrix</span><span class="p">(</span><span
+            class="n">sio</span><span class="o">.</span><span class="n">loadmat</span><span
+            class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">kernel_xy_path</span><span
+            class="p">)[</span><span class="s1">&#39;matrix&#39;</span><span class="p">])</span>
+        <span class="c1"># print(kernel_xy)</span>
+        <span class="n">kernel_z</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">config</span><span
+            class="o">.</span><span class="n">kernel_z_path</span><span class="p">)</span>
+        <span class="c1"># plt.figure(figsize = (16,16))</span>
+        <span class="c1"># plt.imshow(kernel_z)</span>
+        <span class="c1"># plt.colorbar()</span>
+        <span class="n">effmap</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">config</span><span
+            class="o">.</span><span class="n">map_path</span><span class="p">)</span>
+        <span class="c1"># print(&#39;max effmap value&#39;, np.max(effmap))</span>
+        <span class="c1"># print(&#39;min effmap value&#39;, np.min(effmap))</span>
+        <span class="c1"># mask = effmap &gt;1e5</span>
+        <span class="c1"># effmap[effmap &gt; 700] = 0</span>
+
+        <span class="n">effmap</span><span class="p">[</span><span class="n">effmap</span> <span
+            class="o">&gt;=</span> <span class="mi">1</span><span class="p">]</span> <span
+            class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">effmap</span><span
+            class="p">[</span><span class="n">effmap</span> <span class="o">&gt;=</span> <span
+            class="mi">1</span><span class="p">]</span>
+        <span class="c1"># print(&#39;max effmap value&#39;, np.max(effmap))</span>
+        <span class="c1"># print(&#39;min effmap value&#39;, np.min(effmap))</span>
+        <span class="c1"># effmap[effmap &lt;= 1e-7] = 0</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">effmap</span><span
+            class="o">.</span><span class="n">shape</span>
+        <span class="n">effmap_reshaped</span> <span class="o">=</span> <span
+            class="n">effmap</span><span class="o">.</span><span class="n">reshape</span><span
+            class="p">((</span><span class="o">-</span><span class="mi">1</span><span
+            class="p">,</span> <span class="n">grid</span><span class="p">[</span><span
+            class="mi">2</span><span class="p">]))</span>
+
+        <span class="n">z_effmap</span> <span class="o">=</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">effmap_reshaped</span><span
+            class="p">,</span> <span class="n">kernel_z</span><span class="p">)</span>
+        <span class="c1"># kernel_xy transpose</span>
+        <span class="n">kernel_xy</span> <span class="o">=</span> <span class="n">sparse</span><span
+            class="o">.</span><span class="n">coo_matrix</span><span class="p">((</span><span
+            class="n">kernel_xy</span><span class="o">.</span><span class="n">data</span><span
+            class="p">,</span> <span class="p">(</span><span class="n">kernel_xy</span><span
+            class="o">.</span><span class="n">col</span><span class="p">,</span> <span class="n">kernel_xy</span><span
+            class="o">.</span><span class="n">row</span><span class="p">)),</span>
+                                      <span class="n">shape</span> <span class="o">=</span> <span
+            class="p">(</span><span class="n">grid</span><span class="p">[</span><span
+            class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">grid</span><span
+            class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">grid</span><span
+            class="p">[</span><span class="mi">0</span><span class="p">]</span> <span
+            class="o">*</span> <span class="n">grid</span><span class="p">[</span><span
+            class="mi">1</span><span class="p">]),</span>
+                                      <span class="n">dtype</span> <span class="o">=</span> <span
+            class="n">np</span><span class="o">.</span><span class="n">float32</span><span
+            class="p">)</span>
+
+        <span class="c1"># print(kernel_xy)</span>
+        <span class="n">psf_effmap</span> <span class="o">=</span> <span
+            class="n">kernel_xy</span><span class="o">.</span><span class="n">dot</span><span
+            class="p">(</span><span class="n">z_effmap</span><span class="p">)</span>
+
+        <span class="c1"># z_effmap = z_effmap.reshape(grid)</span>
+        <span class="c1"># z_effmap = z_effmap/np.max(z_effmap)</span>
+        <span class="c1"># print(&#39;max psfz effmap value&#39;, np.max(z_effmap))</span>
+        <span class="c1"># print(&#39;min psfz effmap value&#39;, np.min(z_effmap))</span>
+        <span class="c1"># z_effmap[z_effmap &lt;= 1e-7] = 0</span>
+        <span class="c1"># z_effmap[z_effmap&gt;1e-7] = 1/z_effmap[z_effmap&gt;1e-7]</span>
+        <span class="c1"># print(&#39;max psfz effmap value&#39;, np.max(z_effmap))</span>
+        <span class="c1"># print(&#39;min psfz effmap value&#39;, np.min(z_effmap))</span>
+
+        <span class="n">psf_effmap</span> <span class="o">=</span> <span class="n">psf_effmap</span><span
+            class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">grid</span><span
+            class="p">)</span>
+
+        <span class="n">psf_effmap</span> <span class="o">=</span> <span class="n">psf_effmap</span> <span
+            class="o">/</span> <span class="n">np</span><span class="o">.</span><span
+            class="n">max</span><span class="p">(</span><span class="n">psf_effmap</span><span
+            class="p">)</span>
+        <span class="c1"># print(&#39;max psf effmap value&#39;, np.max(psf_effmap))</span>
+        <span class="c1"># print(&#39;min psf effmap value&#39;, np.min(psf_effmap))</span>
+        <span class="n">psf_effmap</span><span class="p">[</span><span
+            class="n">psf_effmap</span> <span class="o">&lt;=</span> <span
+            class="n">config</span><span class="o">.</span><span class="n">epsilon</span><span
+            class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">psf_effmap</span><span class="p">[</span><span
+            class="n">psf_effmap</span> <span class="o">&lt;=</span> <span
+            class="n">config</span><span class="o">.</span><span class="n">epsilon</span><span
+            class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">psf_effmap</span><span class="p">[</span><span
+            class="n">psf_effmap</span> <span class="o">&gt;</span> <span
+            class="n">config</span><span class="o">.</span><span class="n">epsilon</span><span
+            class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span
+            class="o">/</span> <span class="n">psf_effmap</span><span class="p">[</span><span
+            class="n">psf_effmap</span> <span class="o">&gt;</span> <span
+            class="n">config</span><span class="o">.</span><span class="n">epsilon</span><span
+            class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;max psf effmap value&#39;</span><span
+            class="p">,</span> <span class="n">np</span><span class="o">.</span><span
+            class="n">max</span><span class="p">(</span><span class="n">psf_effmap</span><span
+            class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;min psf effmap value&#39;</span><span
+            class="p">,</span> <span class="n">np</span><span class="o">.</span><span
+            class="n">min</span><span class="p">(</span><span class="n">psf_effmap</span><span
+            class="p">))</span>
+
+        <span class="c1"># effmap[effmap&gt; 1e-7] = 1/effmap[effmap&gt; 1e-7]</span>
+
+        <span class="c1"># np.save(&#39;exp_short_siddon_map_psfz.npy&#39;, z_effmap)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span
+            class="n">config</span><span class="o">.</span><span class="n">psf_map_path</span><span
+            class="p">,</span> <span class="n">psf_effmap</span><span class="p">)</span></div></div>
+</pre>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+        <div class="sphinxsidebarwrapper">
+            <h1 class="logo"><a href="../../../index.html">SRF-NEF</a></h1>
+
+
+            <h3>Navigation</h3>
+            <ul>
+                <li class="toctree-l1"><a class="reference internal"
+                                          href="../../../installation.html">Installation</a></li>
+                <li class="toctree-l1"><a class="reference internal"
+                                          href="../../../quickstart.html">QuickStart</a></li>
+            </ul>
+            <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../../nefct.html">nefct
+                    package</a></li>
+            </ul>
+
+            <div class="relations">
+                <h3>Related Topics</h3>
+                <ul>
+                    <li><a href="../../../index.html">Documentation overview</a>
+                        <ul>
+                            <li><a href="../../index.html">Module code</a>
+                                <ul>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div id="searchbox" role="search" style="display: none">
+                <h3>Quick search</h3>
+                <div class="searchformwrapper">
+                    <form action="../../../search.html" class="search" method="get">
+                        <input name="q" type="text"/>
+                        <input type="submit" value="Go"/>
+                        <input name="check_keywords" type="hidden" value="yes"/>
+                        <input name="area" type="hidden" value="default"/>
+                    </form>
+                </div>
+            </div>
+            <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+        </div>
+    </div>
+    <div class="clearer"></div>
+</div>
+<div class="footer">
+    &copy;2019, Minghao Guo.
+
+    |
+    Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+    &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+
+</div>
+
+
+</body>
+</html>

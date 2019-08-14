@@ -1,0 +1,656 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible"/>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <title>QuickStart &#8212; SRF-NEF 0.5a1 documentation</title>
+    <link href="_static/alabaster.css" rel="stylesheet" type="text/css"/>
+    <link href="_static/pygments.css" rel="stylesheet" type="text/css"/>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"
+            type="text/javascript"></script>
+    <script src="_static/jquery.js" type="text/javascript"></script>
+    <script src="_static/underscore.js" type="text/javascript"></script>
+    <script src="_static/doctools.js" type="text/javascript"></script>
+    <script src="_static/language_data.js" type="text/javascript"></script>
+    <link href="genindex.html" rel="index" title="Index"/>
+    <link href="search.html" rel="search" title="Search"/>
+    <link href="nefct.html" rel="next" title="nefct package"/>
+    <link href="installation.html" rel="prev" title="Installation"/>
+
+    <link href="_static/custom.css" rel="stylesheet" type="text/css"/>
+
+
+    <meta content="width=device-width, initial-scale=0.9, maximum-scale=0.9" name="viewport"/>
+
+</head>
+<body>
+
+
+<div class="document">
+    <div class="documentwrapper">
+        <div class="bodywrapper">
+
+
+            <div class="body" role="main">
+
+                <div class="section" id="quickstart">
+                    <span id="id1"></span>
+                    <h1>QuickStart<a class="headerlink" href="#quickstart"
+                                     title="Permalink to this headline">¶</a></h1>
+                    <p>It assumes you already have <cite>nefct</cite> installed, if you do not,
+                        head over to the
+                        <a class="reference internal" href="installation.html#installation"><span
+                                class="std std-ref">Installation</span></a> section.</p>
+                    <p>Assuming you have access to <cite>/mnt/gluster/Techpi/</cite> which is the
+                        official gluster directory of
+                        <em>Tech-Pi</em> company.</p>
+                    <div class="section" id="a-minimal-application">
+                        <h2>A minimal application<a class="headerlink" href="#a-minimal-application"
+                                                    title="Permalink to this headline">¶</a></h2>
+                        <p>A minimal SRF-NEF application looks something like this:</p>
+                        <div class="highlight-python notranslate">
+                            <div class="highlight"><pre><span></span><span class="o">%</span><span
+                                    class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">import</span> <span class="nn">nefct</span> <span class="kn">as</span> <span
+                                        class="nn">nef</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">nef</span><span
+                                        class="o">.</span><span class="n">load</span><span
+                                        class="p">(</span><span class="s1">&#39;/mnt/gluster/Techpi/SRF-NEF/resource/demo/helloworld/image.hdf5&#39;</span><span
+                                        class="p">)</span>
+<span class="k">if</span> <span class="n">nef</span><span class="o">.</span><span
+                                        class="n">utils</span><span class="o">.</span><span
+                                        class="n">is_notebook</span><span class="p">():</span>
+    <span class="n">img</span><span class="o">.</span><span class="n">imshow</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span
+                                        class="s1">&#39;helloworld!&#39;</span><span
+                                        class="p">)</span>
+</pre>
+                            </div>
+                        </div>
+                        <p>if you see <em>helloworld!</em> printed, good job! You are now a <strong>Nefer</strong>!
+                        </p>
+                    </div>
+                    <div class="section" id="a-simple-reconstruction">
+                        <h2>A simple reconstruction<a class="headerlink"
+                                                      href="#a-simple-reconstruction"
+                                                      title="Permalink to this headline">¶</a></h2>
+                        <p>The application above only imports package <cite>nefct</cite> and
+                            illustrates a slice of existing image (if
+                            you are in <cite>jupyter notebook</cite> environment). Let’s move on to
+                            reconstructing projection. We will
+                            use <strong>brain16</strong> phantom to do this reconstruction. Before
+                            this, please check if you have at least
+                            one GPU mounted and CUDA toolkit installed.</p>
+                        <div class="highlight-python notranslate">
+                            <div class="highlight"><pre><span></span><span class="o">%</span><span
+                                    class="n">matplotlib</span> <span class="n">inline</span>
+<span class="kn">import</span> <span class="nn">nefct</span> <span class="kn">as</span> <span
+                                        class="nn">nef</span>
+<span class="n">mlem</span> <span class="o">=</span> <span class="n">nef</span><span
+                                        class="o">.</span><span class="n">load</span><span
+                                        class="p">(</span><span class="s1">&#39;/mnt/gluster/Techpi/SRF-NEF/resource/demo/simple_recon/mlem.hdf5&#39;</span><span
+                                        class="p">)</span>
+<span class="n">listmode</span> <span class="o">=</span> <span class="n">nef</span><span
+                                        class="o">.</span><span class="n">load</span><span
+                                        class="p">(</span><span class="s1">&#39;/mnt/gluster/Techpi/SRF-NEF/resource/demo/simple_recon/listmode.hdf5&#39;</span><span
+                                        class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">mlem</span><span
+                                        class="p">(</span><span class="n">listmode</span><span
+                                        class="p">)</span>
+<span class="k">if</span> <span class="n">nef</span><span class="o">.</span><span
+                                        class="n">utils</span><span class="o">.</span><span
+                                        class="n">is_notebook</span><span class="p">():</span>
+    <span class="n">img</span><span class="o">.</span><span class="n">imshow</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span
+                                        class="s1">&#39;helloworld, again!&#39;</span><span
+                                        class="p">)</span>
+</pre>
+                            </div>
+                        </div>
+                        <p>If you see <strong>helloworld, again!</strong> printed, well done! This
+                            is a whole reconstruction of
+                            <strong>brain16</strong>.</p>
+                        <p>So what dis that code do?</p>
+                        <ol class="arabic simple">
+                            <li>First we imported the package <cite>nefct</cite> as
+                                <cite>nef</cite>.
+                            </li>
+                            <li>Next we loaded a <cite>mlem</cite> and <cite>listmode</cite> which
+                                is a function and a data, separately. Yes. We saved a function in
+                                memory. In this way, a existing <cite>mlem</cite> reconstruction
+                                program (function) can be repeatedly used on different listmode. The
+                                <cite>listmode</cite> is the data to be reconstructed.
+                            </li>
+                            <li>We then apply the <cite>mlem</cite> function on data
+                                <cite>listmode</cite> to do the reconstruction. This reconstruction
+                                will last 10 iterations.
+                            </li>
+                            <li>an <cite>img</cite> will come out being displayed. It should be
+                                exactly same with that in <cite>helloworld</cite>.
+                            </li>
+                        </ol>
+                        <p>During we importing <cite>nefct</cite>, we</p>
+                        <ol class="arabic simple">
+                            <li>checking the package is well installed,</li>
+                            <li>write <cite>TYPE_BIND</cite> with necessary components,</li>
+                            <li>import <cite>nef.load</cite> we would use later.</li>
+                        </ol>
+                        <p>The <cite>TYPE_BIND</cite> was initialized as a empty dictionary and been
+                            updated later. It records the bind
+                            bewteen a <cite>type</cite> and a <cite>string</cite> to parse from
+                            string to corresponding type. Common types in
+                            <cite>nefct</cite> package have been fulfilled in
+                            <cite>TYPE_BIND</cite>. Once new types are defined as a
+                            <cite>DataClass</cite>,
+                            you need to add it to <cite>TYPE_BIND</cite> as</p>
+                        <div class="highlight-python notranslate">
+                            <div class="highlight"><pre><span></span><span
+                                    class="kn">from</span> <span class="nn">nefct.templating</span> <span
+                                    class="kn">import</span> <span class="n">TYPE_BIND</span>
+<span class="n">TYPE_BIND</span><span class="o">.</span><span class="n">update</span><span
+                                        class="p">({</span><span
+                                        class="s1">&#39;your-type&#39;</span><span
+                                        class="p">:</span> <span class="n">your</span><span
+                                        class="o">-</span><span class="nb">type</span><span
+                                        class="p">})</span>
+</pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section" id="a-comprehensive-reconstruction">
+                        <h2>A comprehensive Reconstruction<a class="headerlink"
+                                                             href="#a-comprehensive-reconstruction"
+                                                             title="Permalink to this headline">¶</a>
+                        </h2>
+                        <p>Somtimes, a full reconstruction need to be built personally from system
+                            descriptions. We take a <strong>PET</strong> system as example.</p>
+                        <div class="highlight-python notranslate">
+                            <div class="highlight"><pre><span></span><span class="kn">import</span> <span
+                                    class="nn">numpy</span> <span class="kn">as</span> <span
+                                    class="nn">np</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="kn">import</span> <span class="nn">nefct</span> <span class="kn">as</span> <span
+                                        class="nn">nef</span>
+
+<span class="n">block</span> <span class="o">=</span> <span class="n">nef</span><span
+                                        class="o">.</span><span class="n">Block</span><span
+                                        class="p">(</span><span class="n">np</span><span
+                                        class="o">.</span><span class="n">array</span><span
+                                        class="p">([</span><span class="mi">20</span><span
+                                        class="p">,</span> <span class="mf">33.4</span><span
+                                        class="p">,</span> <span class="mf">33.4</span><span
+                                        class="p">]),</span> <span class="n">np</span><span
+                                        class="o">.</span><span class="n">array</span><span
+                                        class="p">([</span><span class="mi">1</span><span class="p">,</span> <span
+                                        class="mi">10</span><span class="p">,</span> <span
+                                        class="mi">10</span><span class="p">]))</span>
+<span class="n">scanner</span> <span class="o">=</span> <span class="n">nef</span><span
+                                        class="o">.</span><span
+                                        class="n">PETCylindricalScanner</span><span
+                                        class="p">(</span><span class="mf">99.0</span><span
+                                        class="p">,</span> <span class="mf">119.0</span><span
+                                        class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span
+                                        class="mi">16</span><span class="p">,</span> <span
+                                        class="mi">0</span><span class="p">,</span> <span class="n">block</span><span
+                                        class="p">)</span>
+<span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span
+                                        class="o">.</span><span class="n">array</span><span
+                                        class="p">([</span><span class="mi">90</span><span
+                                        class="p">,</span> <span class="mi">90</span><span
+                                        class="p">,</span> <span class="mi">10</span><span
+                                        class="p">])</span>
+<span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span
+                                        class="o">.</span><span class="n">array</span><span
+                                        class="p">([</span><span class="mf">0.</span><span
+                                        class="p">,</span><span class="mf">0.</span><span class="p">,</span><span
+                                        class="mf">0.</span><span class="p">])</span>
+<span class="n">size</span> <span class="o">=</span> <span class="n">np</span><span
+                                        class="o">.</span><span class="n">array</span><span
+                                        class="p">([</span><span class="mf">180.</span><span
+                                        class="p">,</span> <span class="mf">180.</span><span
+                                        class="p">,</span> <span class="mf">33.4</span><span
+                                        class="p">])</span>
+
+<span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span
+                                        class="n">File</span><span class="p">(</span><span
+                                        class="s1">&#39;/mnt/gluster/Techpi/brain16/recon/data/cylinder/small_cylinder_air_trans.h5&#39;</span><span
+                                        class="p">,</span> <span class="s1">&#39;r&#39;</span><span
+                                        class="p">)</span> <span class="k">as</span> <span
+                                        class="n">fin</span><span class="p">:</span>
+    <span class="n">fst</span> <span class="o">=</span> <span class="n">np</span><span
+                                        class="o">.</span><span class="n">array</span><span
+                                        class="p">(</span><span class="n">fin</span><span class="p">[</span><span
+                                        class="s1">&#39;listmode_data&#39;</span><span
+                                        class="p">][</span><span
+                                        class="s1">&#39;fst&#39;</span><span class="p">])</span>
+    <span class="n">snd</span> <span class="o">=</span> <span class="n">np</span><span
+                                        class="o">.</span><span class="n">array</span><span
+                                        class="p">(</span><span class="n">fin</span><span class="p">[</span><span
+                                        class="s1">&#39;listmode_data&#39;</span><span
+                                        class="p">][</span><span
+                                        class="s1">&#39;snd&#39;</span><span class="p">])</span>
+
+<span class="n">listmode</span> <span class="o">=</span> <span class="n">nef</span><span
+                                        class="o">.</span><span class="n">Listmode</span><span
+                                        class="o">.</span><span class="n">from_lors</span><span
+                                        class="p">(</span><span class="n">nef</span><span class="o">.</span><span
+                                        class="n">LORs</span><span class="o">.</span><span
+                                        class="n">from_fst_snd</span><span class="p">(</span><span
+                                        class="n">fst</span><span class="p">,</span> <span
+                                        class="n">snd</span><span class="p">))</span><span
+                                        class="o">.</span><span class="n">compress</span><span
+                                        class="p">(</span><span class="n">scanner</span><span
+                                        class="p">)</span>
+
+<span class="n">projector</span> <span class="o">=</span> <span class="n">nef</span><span class="o">.</span><span
+                                        class="n">projector_picker</span><span
+                                        class="p">(</span><span
+                                        class="s1">&#39;siddon&#39;</span><span
+                                        class="p">)(</span><span
+                                        class="s1">&#39;gpu&#39;</span><span class="p">)</span>
+<span class="n">bprojector</span> <span class="o">=</span> <span class="n">nef</span><span
+                                        class="o">.</span><span
+                                        class="n">bprojector_picker</span><span
+                                        class="p">(</span><span
+                                        class="s1">&#39;siddon&#39;</span><span
+                                        class="p">)(</span><span class="n">shape</span><span
+                                        class="p">,</span> <span class="n">center</span><span
+                                        class="p">,</span> <span class="n">size</span><span
+                                        class="p">,</span> <span
+                                        class="s1">&#39;gpu&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span
+                                        class="s1">&#39;emaping...&#39;</span><span
+                                        class="p">)</span>
+<span class="n">emap</span> <span class="o">=</span> <span class="n">nef</span><span
+                                        class="o">.</span><span class="n">Emap_MLEM</span><span
+                                        class="o">.</span><span class="n">from_scanner</span><span
+                                        class="p">(</span><span class="n">scanner</span><span
+                                        class="p">,</span> <span class="n">bprojector</span><span
+                                        class="p">,</span> <span
+                                        class="s1">&#39;full&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;reconstructing with MLEM...&#39;</span><span
+                                        class="p">)</span>
+<span class="n">mlem</span> <span class="o">=</span> <span class="n">nef</span><span
+                                        class="o">.</span><span class="n">MLEM</span><span
+                                        class="p">(</span><span class="mi">10</span><span class="p">,</span> <span
+                                        class="n">projector</span><span class="p">,</span> <span
+                                        class="n">bprojector</span><span class="p">,</span> <span
+                                        class="n">emap</span><span class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">mlem</span><span
+                                        class="p">(</span><span class="n">listmode</span><span
+                                        class="p">)</span>
+<span class="k">if</span> <span class="n">nef</span><span class="o">.</span><span
+                                        class="n">utils</span><span class="o">.</span><span
+                                        class="n">is_notebook</span><span class="p">():</span>
+    <span class="n">img</span><span class="o">.</span><span class="n">imshow</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;helloworld, again again!&#39;</span><span
+                                        class="p">)</span>
+</pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section" id="a-sample-to-build-of-dataclass-and-funcclass">
+                        <h2>A sample to build of DataClass and FuncClass<a class="headerlink"
+                                                                           href="#a-sample-to-build-of-dataclass-and-funcclass"
+                                                                           title="Permalink to this headline">¶</a>
+                        </h2>
+                        <p>With <cite>nefct</cite> package, new functions or data can be added as
+                            esay as breath. We provide some examples here about how to build a new
+                            <cite>DataClass</cite> or <cite>FuncClass</cite> with
+                            <cite>nefct</cite> and their features.</p>
+                        <div class="section" id="example-1-build-a-new-dataclass">
+                            <h3>Example 1. Build a new DataClass<a class="headerlink"
+                                                                   href="#example-1-build-a-new-dataclass"
+                                                                   title="Permalink to this headline">¶</a>
+                            </h3>
+                            <p>Before build a new <cite>DataClass</cite>, we need to clarify what is
+                                a <cite>DataClass</cite>. Similar with it been implemented in <a
+                                        class="reference external"
+                                        href="https://hackernoon.com/a-brief-tour-of-python-3-7-data-classes-22ee5e046517">Python
+                                    3.7</a>, The <cite>DataClass</cite> is a way of automating the
+                                generation of boiler-plate code for classes which store multiple
+                                properties. A DataClass is built with a <cite>dataclass</cite>
+                                decorator over class definition.</p>
+                            <div class="highlight-python notranslate">
+                                <div class="highlight"><pre><span></span><span
+                                        class="kn">from</span> <span
+                                        class="nn">nefct.templating</span> <span
+                                        class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">SimpleClass</span><span class="p">(</span><span
+                                            class="nb">object</span><span class="p">):</span>
+    <span class="n">field_0</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="kn">from</span> <span class="nn">nefct.templating</span> <span
+                                            class="kn">import</span> <span
+                                            class="n">TYPE_BIND</span>
+<span class="n">TYPE_BIND</span><span class="o">.</span><span class="n">update</span><span
+                                            class="p">({</span><span class="s1">&#39;SimpleClass&#39;</span><span
+                                            class="p">:</span> <span
+                                            class="n">SimpleClass</span><span class="p">})</span>
+
+<span class="n">simple_obj</span> <span class="o">=</span> <span class="n">SimpleClass</span><span
+                                            class="p">(</span><span
+                                            class="s1">&#39;hello&#39;</span><span
+                                            class="p">)</span>
+</pre>
+                                </div>
+                            </div>
+                            <ol class="arabic simple">
+                                <li><cite>dataclass</cite> decorator, for decorating a data class
+                                </li>
+                                <li>The <cite>field</cite> method for configuration fields.</li>
+                                <li>Update the <cite>TYPE_BIND</cite> in
+                                    <cite>nefct.templating</cite> to bind the string (class name)
+                                    with this class. This step help the <cite>io</cite> to parse the
+                                    classname to corresponding class.
+                                </li>
+                            </ol>
+                            <p>(TODO: refering Python 3.7, implement the dataclass from official
+                                site.)</p>
+                            <p>Note, all the fields of a <cite>DataClass</cite> are frozen. We
+                                prefer the users to build a new instance but changing one. To build
+                                a new instance from the current, we implemented a
+                                <cite>replace</cite> method in <cite>DataClass</cite>, replacing
+                                fields with values from changes. Some more features can be found in
+                                the following examples.</p>
+                            <div class="highlight-python notranslate">
+                                <div class="highlight"><pre><span></span><span class="c1"># simple_obj.field_0 = &#39;world&#39; -&gt; FrozenInstanceError()</span>
+<span class="n">simple_obj2</span> <span class="o">=</span> <span class="n">simple_obj</span><span
+                                            class="o">.</span><span class="n">replace</span><span
+                                            class="p">(</span><span class="n">field_0</span> <span
+                                            class="o">=</span> <span
+                                            class="s1">&#39;world&#39;</span><span
+                                            class="p">)</span>
+
+<span class="n">_dict</span> <span class="o">=</span> <span class="n">simple_obj</span><span
+                                            class="o">.</span><span class="n">as_dict</span><span
+                                            class="p">()</span>
+<span class="c1"># _dict = {&#39;field_0&#39;: &#39;hello&#39;}</span>
+</pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section" id="example-2-build-a-new-funcclass">
+                            <h3>Example 2. Build a new <cite>FuncClass</cite><a class="headerlink"
+                                                                                href="#example-2-build-a-new-funcclass"
+                                                                                title="Permalink to this headline">¶</a>
+                            </h3>
+                            <p>As the name <cite>FuncClass</cite> says, a FuncClass is a ‘Function
+                                Class’. It is a special <cite>DataClass</cite> which has <cite>__call__</cite>
+                                method. In this way, it can behave as a function, to be called with.
+                                It works similar with <cite>DataClass</cite>,being built with a
+                                decorator <cite>funcclass</cite>.</p>
+                            <div class="highlight-python notranslate">
+                                <div class="highlight"><pre><span></span><span
+                                        class="kn">from</span> <span
+                                        class="nn">nefct.templating</span> <span
+                                        class="kn">import</span> <span class="n">funcclass</span>
+
+<span class="nd">@funcclass</span>
+<span class="k">class</span> <span class="nc">PrintClass</span><span class="p">(</span><span
+                                            class="nb">object</span><span class="p">):</span>
+    <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span
+                                            class="bp">self</span><span class="p">,</span> <span
+                                            class="n">string1</span><span class="p">,</span> <span
+                                            class="n">string2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span
+                                            class="n">prefix</span> <span class="o">+</span> <span
+                                            class="s1">&#39; &#39;</span> <span
+                                            class="o">+</span> <span class="n">string1</span> <span
+                                            class="o">+</span> <span
+                                            class="s1">&#39; &#39;</span> <span
+                                            class="o">+</span> <span class="n">string2</span>
+
+<span class="kn">from</span> <span class="nn">nefct.templating</span> <span
+                                            class="kn">import</span> <span
+                                            class="n">TYPE_BIND</span>
+<span class="n">TYPE_BIND</span><span class="o">.</span><span class="n">update</span><span
+                                            class="p">({</span><span
+                                            class="s1">&#39;PrintClass&#39;</span><span
+                                            class="p">:</span> <span
+                                            class="n">PrintClass</span><span class="p">})</span>
+
+<span class="n">hello_sth</span> <span class="o">=</span> <span class="n">PrintClass</span><span
+                                            class="p">(</span><span
+                                            class="s1">&#39;hello&#39;</span><span
+                                            class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">hello_sth</span><span class="p">(</span><span
+                                            class="s1">&#39;world,&#39;</span><span
+                                            class="p">,</span> <span
+                                            class="s1">&#39;my friend&#39;</span><span
+                                            class="p">))</span>
+<span class="c1"># hello world, my frien</span>
+</pre>
+                                </div>
+                            </div>
+                            <p>Some more features have been implemented on <cite>FuncClass</cite>,
+                                with examples shown below.</p>
+                            <div class="highlight-python notranslate">
+                                <div class="highlight"><pre><span></span>hello_sth_my_friend = hello_sth.currying(&#39;my friend&#39;)
+print(hello_sth_my_friend(&#39;moto,&#39;))
+# hello moto, my friend
+
+the = PrintClass(&#39;the&#39;)
+what_world = the.currying(&#39;world&#39;)
+
+print((hello_sth_my_friend @ what_world)(&#39;cruel&#39;))
+# hello the cruel world my friend
+# _sth = hello_sth_my_friend @ what_world(&#39;cruel&#39;)
+# _sth() -&gt; AttributeError
+</pre>
+                                </div>
+                            </div>
+                            <p>We firstly implemented <cite>FuncClass.currying</cite> to provide
+                                function <a class="reference external"
+                                            href="https://en.wikipedia.org/wiki/Currying">currying</a>.
+                                Currying provides a way for working with functions that take
+                                multiple arguments, and using them in frameworks where functions
+                                might take only one argument. Our function currying is not exactly
+                                same with its strict definition. We binded the rest arguments as
+                                fields in a new <cite>FuncClass</cite> instance for regarding the
+                                first argument as the only one. So we call the first argument of a
+                                <cite>FuncClass</cite> instance as <strong>key argument</strong>.
+                                This is a nautral thought! A function should accept one argument and
+                                return one output. For sure, this preference is not strict in <cite>nefct</cite>
+                                package.</p>
+                            <p>Function currying make it more clear to do function compositions. An
+                                regular function composition is implemented by nesting, even
+                                multiple nesting. For example <cite>f(g(a, b), c)</cite>. What if
+                                composition with more functions is needed. It would be a disaster
+                                After currying them, we can simplicit it to <cite>f1(g1(a)) = f1
+                                    &#64; g1(a)</cite>. We used &#64; in <cite>nefct</cite> package
+                                to present function composition.</p>
+                            <p>As we mentioned above, we can save a function with package <cite>nefct</cite>.
+                                This is implemented with <cite>FuncClass</cite>. In this way, some
+                                useful function can be saved and loaded when needed.</p>
+                            <div class="highlight-python notranslate">
+                                <div class="highlight"><pre><span></span><span
+                                        class="kn">from</span> <span class="nn">nefct</span> <span
+                                        class="kn">import</span> <span class="n">save</span><span
+                                        class="p">,</span> <span class="n">load</span>
+<span class="n">save</span><span class="p">(</span><span
+                                            class="s1">&#39;./what_world.hdf5&#39;</span><span
+                                            class="p">,</span> <span
+                                            class="n">what_world</span><span class="p">)</span>
+<span class="n">what_world2</span> <span class="o">=</span> <span class="n">load</span><span
+                                            class="p">(</span><span class="s1">&#39;./what_world.hdf5&#39;</span><span
+                                            class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">what_world2</span><span
+                                            class="p">(</span><span
+                                            class="s1">&#39;better&#39;</span><span
+                                            class="p">))</span>
+<span class="c1"># the better world</span>
+</pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section" id="example-3-a-special-dataclass">
+                            <h3>Example 3. A special DataClass<a class="headerlink"
+                                                                 href="#example-3-a-special-dataclass"
+                                                                 title="Permalink to this headline">¶</a>
+                            </h3>
+                            <p>There is a special DataClass in <cite>nefct</cite>, DataClass with
+                                <cite>data</cite>, literally. it is a DataClass with field <cite>data</cite>.
+                                We defined this kind of class because most of the fields in a
+                                DataClass are mostly unwanted changable. For example, if you defined
+                                an BankAccount class, the only field that changes usually is your
+                                balance. The other fields, for example, <cite>name</cite> and <cite>address</cite>
+                                would rarelly change. We say the balance is the data in your <cite>BankAccount</cite>.
+                            </p>
+                            <div class="highlight-python notranslate">
+                                <div class="highlight"><pre><span></span><span
+                                        class="kn">from</span> <span
+                                        class="nn">nefct.templating</span> <span
+                                        class="kn">import</span> <span class="n">dataclass</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">BankAccount</span><span class="p">:</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">address</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">balance</span><span class="p">(</span><span
+                                            class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span
+                                            class="n">data</span>
+</pre>
+                                </div>
+                            </div>
+                            <p>We used data to represent your balance in your BankAccount for some
+                                reason. We can define a <cite>&#64;property</cite> function <cite>balance</cite>
+                                to return the balance(data). We used a special field name
+                                <cite>data</cite> because we have defined some math operators on
+                                DataClass, which works on field data by default. For example, you
+                                have two account in this stupid bank (because it doesn’t recognize
+                                bank account with account numbers) and you want to combine them to a
+                                new account.</p>
+                            <div class="highlight-python notranslate">
+                                <div class="highlight"><pre><span></span><span
+                                        class="n">account1</span> <span class="o">=</span> <span
+                                        class="n">BankAccount</span><span class="p">(</span><span
+                                        class="mi">100</span><span class="p">,</span> <span
+                                        class="s1">&#39;Minghao&#39;</span><span class="p">,</span> <span
+                                        class="s1">&#39;Tech-Pi&#39;</span><span class="p">)</span>
+<span class="n">account2</span> <span class="o">=</span> <span class="n">BankAccount</span><span
+                                            class="p">(</span><span class="mi">200</span><span
+                                            class="p">,</span> <span
+                                            class="s1">&#39;Minghao&#39;</span><span
+                                            class="p">,</span> <span
+                                            class="s1">&#39;Tech-Pi&#39;</span><span
+                                            class="p">)</span>
+<span class="n">new_account</span> <span class="o">=</span> <span class="n">account1</span> <span
+                                            class="o">+</span> <span class="n">account2</span>
+<span class="c1"># new_account.balance = 300</span>
+</pre>
+                                </div>
+                            </div>
+                            <p>And you can do some business and double your BankAccount balance.</p>
+                            <div class="highlight-python notranslate">
+                                <div class="highlight"><pre><span></span><span
+                                        class="n">im_rich</span> <span class="o">=</span> <span
+                                        class="n">new_account</span> <span class="o">*</span> <span
+                                        class="mi">2</span>
+<span class="c1"># im_rich.balance = 600</span>
+</pre>
+                                </div>
+                            </div>
+                            <p>All these ufunc operators have been implemented in <cite>numpy.ndarray</cite>
+                                and <cite>numba.cuda</cite>. With the second one, it will work on
+                                GPUs.</p>
+                            <p>123</p>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+    <div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+        <div class="sphinxsidebarwrapper">
+            <h1 class="logo"><a href="index.html">SRF-NEF</a></h1>
+
+
+            <h3>Navigation</h3>
+            <ul class="current">
+                <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a>
+                </li>
+                <li class="toctree-l1 current"><a class="current reference internal" href="#">QuickStart</a>
+                    <ul>
+                        <li class="toctree-l2"><a class="reference internal"
+                                                  href="#a-minimal-application">A minimal
+                            application</a></li>
+                        <li class="toctree-l2"><a class="reference internal"
+                                                  href="#a-simple-reconstruction">A simple
+                            reconstruction</a></li>
+                        <li class="toctree-l2"><a class="reference internal"
+                                                  href="#a-comprehensive-reconstruction">A
+                            comprehensive Reconstruction</a></li>
+                        <li class="toctree-l2"><a class="reference internal"
+                                                  href="#a-sample-to-build-of-dataclass-and-funcclass">A
+                            sample to build of DataClass and FuncClass</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul>
+                <li class="toctree-l1"><a class="reference internal" href="nefct.html">nefct
+                    package</a></li>
+            </ul>
+
+            <div class="relations">
+                <h3>Related Topics</h3>
+                <ul>
+                    <li><a href="index.html">Documentation overview</a>
+                        <ul>
+                            <li>Previous: <a href="installation.html" title="previous chapter">Installation</a>
+                            </li>
+                            <li>Next: <a href="nefct.html" title="next chapter">nefct package</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div id="searchbox" role="search" style="display: none">
+                <h3>Quick search</h3>
+                <div class="searchformwrapper">
+                    <form action="search.html" class="search" method="get">
+                        <input name="q" type="text"/>
+                        <input type="submit" value="Go"/>
+                        <input name="check_keywords" type="hidden" value="yes"/>
+                        <input name="area" type="hidden" value="default"/>
+                    </form>
+                </div>
+            </div>
+            <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+        </div>
+    </div>
+    <div class="clearer"></div>
+</div>
+<div class="footer">
+    &copy;2019, Minghao Guo.
+
+    |
+    Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+    &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+
+    |
+    <a href="_sources/quickstart.rst.txt"
+       rel="nofollow">Page source</a>
+</div>
+
+
+</body>
+</html>

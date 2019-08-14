@@ -1,0 +1,1139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible"/>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <title>nefct.templating &#8212; SRF-NEF 0.5a1 documentation</title>
+    <link href="../../_static/alabaster.css" rel="stylesheet" type="text/css"/>
+    <link href="../../_static/pygments.css" rel="stylesheet" type="text/css"/>
+    <script data-url_root="../../" id="documentation_options"
+            src="../../_static/documentation_options.js" type="text/javascript"></script>
+    <script src="../../_static/jquery.js" type="text/javascript"></script>
+    <script src="../../_static/underscore.js" type="text/javascript"></script>
+    <script src="../../_static/doctools.js" type="text/javascript"></script>
+    <script src="../../_static/language_data.js" type="text/javascript"></script>
+    <link href="../../genindex.html" rel="index" title="Index"/>
+    <link href="../../search.html" rel="search" title="Search"/>
+
+    <link href="../../_static/custom.css" rel="stylesheet" type="text/css"/>
+
+
+    <meta content="width=device-width, initial-scale=0.9, maximum-scale=0.9" name="viewport"/>
+
+</head>
+<body>
+
+
+<div class="document">
+    <div class="documentwrapper">
+        <div class="bodywrapper">
+
+
+            <div class="body" role="main">
+
+                <h1>Source code for nefct.templating</h1>
+                <div class="highlight"><pre>
+<span></span><span class="c1"># encoding: utf-8</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">nefct.templating</span>
+<span class="sd">~~~~~~~~~~~~~~~~~</span>
+
+<span class="sd">This module provides basic data and function types of the whole package,</span>
+<span class="sd">including `dataclass` for data and `funcclass` for functions.</span>
+
+<span class="sd">`DataClass`, as well as `FuncClass`, instances `io` to `.hdf5` files are implemented in `save`</span>
+<span class="sd">and `load` natual modes.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span
+                        class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span
+                        class="n">copy</span>
+
+<span class="kn">import</span> <span class="nn">attr</span>
+<span class="kn">import</span> <span class="nn">deepdish</span> <span class="k">as</span> <span
+                        class="nn">dd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span
+                        class="nn">np</span>
+
+<span class="n">_tiny</span> <span class="o">=</span> <span class="mf">1e-8</span>
+
+<span class="n">_huge</span> <span class="o">=</span> <span class="mf">1e8</span>
+
+<span class="n">TYPE_BIND</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<div class="viewcode-block" id="DataClass"><a class="viewcode-back"
+                                              href="../../nefct.html#nefct.templating.DataClass">[docs]</a><span
+        class="k">class</span> <span class="nc">DataClass</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;`DataClass` is suited for storing data objects. It is the most basic class type in</span>
+<span class="sd">    `nefct` package. All data and functions would be seriously considered to be defined as a</span>
+<span class="sd">    Dataclass instance. More specific, only the field `.data` in a `DataClass` would be regarded</span>
+<span class="sd">    as the only computable part with in an instance. Any other class that defined to contained</span>
+<span class="sd">    data would a subclass of `DataClass`.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="DataClass.replace"><a class="viewcode-back"
+                                                      href="../../nefct.html#nefct.templating.DataClass.replace">[docs]</a>    <span
+        class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span
+        class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span
+        class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Creates a new object of the same type of instance, replacing fields with values from</span>
+<span class="sd">        changes.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">attr</span><span class="o">.</span><span
+            class="n">evolve</span><span class="p">(</span><span class="bp">self</span><span
+            class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span
+            class="p">)</span></div>
+
+<div class="viewcode-block" id="DataClass.fields"><a class="viewcode-back"
+                                                     href="../../nefct.html#nefct.templating.DataClass.fields">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">fields</span><span class="p">(</span><span
+            class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Returns a tuple of field names for this `DataClass` instance.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">attr</span><span class="o">.</span><span
+            class="n">fields_dict</span><span class="p">(</span><span class="bp">cls</span><span
+            class="p">)</span></div>
+
+<div class="viewcode-block" id="DataClass.to_dict"><a class="viewcode-back"
+                                                      href="../../nefct.html#nefct.templating.DataClass.to_dict">[docs]</a>    <span
+        class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span
+        class="bp">self</span><span class="p">,</span> <span class="n">recurse</span> <span
+        class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Return a dictionary of fields for this &#39;DataClass` instance.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">attr</span><span class="o">.</span><span
+            class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span
+            class="p">,</span> <span class="n">recurse</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataClass.to_tuple"><a class="viewcode-back"
+                                                       href="../../nefct.html#nefct.templating.DataClass.to_tuple">[docs]</a>    <span
+        class="k">def</span> <span class="nf">to_tuple</span><span class="p">(</span><span
+        class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Return a tuple of fields for this &#39;DataClass` instance.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">attr</span><span class="o">.</span><span
+            class="n">astuple</span><span class="p">(</span><span class="bp">self</span><span
+            class="p">)</span></div>
+
+<div class="viewcode-block" id="DataClass.to_json"><a class="viewcode-back"
+                                                      href="../../nefct.html#nefct.templating.DataClass.to_json">[docs]</a>    <span
+        class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span
+        class="bp">self</span><span class="p">,</span> <span class="n">file_path</span> <span
+        class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">file_path</span> <span
+            class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span
+            class="s1">&#39;.hdf5&#39;</span> <span class="ow">in</span> <span
+            class="n">file_path</span><span class="p">:</span>
+            <span class="n">x_saver</span><span class="p">(</span><span
+            class="n">file_path</span><span class="p">,</span> <span class="bp">self</span><span
+            class="p">)</span>
+        <span class="n">_dict</span> <span class="o">=</span> <span class="p">{</span><span
+            class="s1">&#39;file_path&#39;</span><span class="p">:</span> <span
+            class="n">file_path</span><span class="p">,</span> <span
+            class="s1">&#39;classname&#39;</span><span class="p">:</span> <span
+            class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span
+            class="o">.</span><span class="vm">__name__</span><span class="p">}</span>
+        <span class="n">_dict</span><span class="o">.</span><span class="n">update</span><span
+            class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span
+            class="p">(</span><span class="n">recurse</span> <span class="o">=</span> <span
+            class="kc">False</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span
+            class="n">val</span> <span class="ow">in</span> <span class="n">_dict</span><span
+            class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span
+            class="p">(</span><span class="n">val</span><span class="p">,</span> <span
+            class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">):</span>
+                <span class="n">_dict</span><span class="p">[</span><span class="n">key</span><span
+            class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span
+            class="p">(</span><span class="n">val</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span
+            class="p">(</span><span class="n">val</span><span class="p">,</span> <span
+            class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span
+            class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span
+            class="n">key</span> <span class="o">==</span> <span
+            class="s1">&#39;data&#39;</span><span class="p">:</span>
+                <span class="n">_dict</span><span class="p">[</span><span class="n">key</span><span
+            class="p">]</span> <span class="o">=</span> <span class="n">val</span><span
+            class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span
+            class="p">(</span><span class="n">val</span><span class="p">,</span> <span
+            class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span
+            class="p">)</span> <span class="ow">and</span> <span class="n">key</span> <span
+            class="o">==</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span>
+                <span class="n">_dict</span><span class="p">[</span><span class="n">key</span><span
+            class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;numpy.ndarray(shape = </span><span
+            class="si">{val.shape}</span><span class="s1">, dtype = </span><span class="si">{val.dtype}</span><span
+            class="s1">)&#39;</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span
+            class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">DataClass</span><span
+            class="p">):</span>
+                <span class="n">_dict</span><span class="p">[</span><span class="n">key</span><span
+            class="p">]</span> <span class="o">=</span> <span class="n">json</span><span
+            class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">val</span><span
+            class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">file_path</span> <span
+            class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span
+            class="n">key</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span
+            class="n">dumps</span><span class="p">(</span><span class="n">_dict</span><span
+            class="p">)</span></div>
+
+<div class="viewcode-block" id="DataClass.from_json"><a class="viewcode-back"
+                                                        href="../../nefct.html#nefct.templating.DataClass.from_json">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span
+            class="bp">cls</span><span class="p">,</span> <span class="n">_json</span><span
+            class="p">):</span>
+        <span class="n">_dict</span> <span class="o">=</span> <span class="n">json</span><span
+            class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">_json</span><span
+            class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_dict</span><span
+            class="p">[</span><span class="s1">&#39;file_path&#39;</span><span
+            class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span
+            class="ow">and</span> <span class="s1">&#39;.hdf5&#39;</span> <span class="ow">in</span> <span
+            class="n">_dict</span><span class="p">[</span><span
+            class="s1">&#39;file_path&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">x_loader</span><span
+            class="p">(</span><span class="n">_dict</span><span class="p">[</span><span class="s1">&#39;file_path&#39;</span><span
+            class="p">])</span>
+        <span class="n">_class</span> <span class="o">=</span> <span class="n">TYPE_BIND</span><span
+            class="p">[</span><span class="n">_dict</span><span class="p">[</span><span class="s1">&#39;classname&#39;</span><span
+            class="p">]]</span>
+        <span class="n">_dict</span><span class="o">.</span><span class="n">pop</span><span
+            class="p">(</span><span class="s1">&#39;file_path&#39;</span><span class="p">)</span>
+        <span class="n">_dict</span><span class="o">.</span><span class="n">pop</span><span
+            class="p">(</span><span class="s1">&#39;classname&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span
+            class="n">val</span> <span class="ow">in</span> <span class="n">_dict</span><span
+            class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span
+            class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span
+            class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span
+            class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&gt;</span> <span
+            class="mi">13</span> <span class="ow">and</span> <span class="n">val</span><span
+            class="p">[:</span><span class="mi">13</span><span class="p">]</span> <span
+            class="o">==</span> <span class="s1">&#39;{&quot;file_path&quot;:&#39;</span><span
+            class="p">:</span>
+                <span class="n">_dict</span><span class="p">[</span><span class="n">key</span><span
+            class="p">]</span> <span class="o">=</span> <span class="n">DataClass</span><span
+            class="o">.</span><span class="n">from_json</span><span class="p">(</span><span
+            class="n">val</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_class</span><span class="p">(</span><span
+            class="o">**</span><span class="n">_dict</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataClass.map"><a class="viewcode-back"
+                                                  href="../../nefct.html#nefct.templating.DataClass.map">[docs]</a>    <span
+        class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span
+        class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;`Map` applis a function to the field `.data` of this DataClass instance, and return a</span>
+<span class="sd">        new instance with the same type&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span
+            class="n">replace</span><span class="p">(</span><span class="n">data</span> <span
+            class="o">=</span> <span class="n">f</span><span class="p">(</span><span
+            class="bp">self</span><span class="o">.</span><span class="n">data</span><span
+            class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">_map_bin</span><span class="p">(</span><span
+            class="bp">self</span><span class="p">,</span> <span class="n">f</span><span
+            class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;`_map_bim` applis a binary function to this instance with another `DataClass`</span>
+<span class="sd">        instance or np.ndarray or scale values. This function would apply on the field `.data`</span>
+<span class="sd">        and return a new instance with same type&#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span
+            class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span
+            class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span
+            class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span
+            class="p">))</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span
+            class="n">isscalar</span><span class="p">(</span><span class="n">other</span><span
+            class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span
+            class="n">replace</span><span class="p">(</span><span class="n">data</span> <span
+            class="o">=</span> <span class="n">f</span><span class="p">(</span><span
+            class="bp">self</span><span class="o">.</span><span class="n">data</span><span
+            class="p">,</span> <span class="n">other</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span
+            class="n">other</span><span class="p">,</span> <span class="n">DataClass</span><span
+            class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span
+            class="n">replace</span><span class="p">(</span><span class="n">data</span> <span
+            class="o">=</span> <span class="n">f</span><span class="p">(</span><span
+            class="bp">self</span><span class="o">.</span><span class="n">data</span><span
+            class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">data</span><span
+            class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span
+            class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not implemented yet.&#39;</span><span
+            class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span
+            class="p">(</span><span class="n">other</span><span class="p">)))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span
+            class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; return the `shape` of `self.data`.&#39;&#39;&#39;</span>
+        <span class="k">assert</span> <span class="s1">&#39;data&#39;</span> <span
+            class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span
+            class="n">fields</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span
+            class="n">array</span><span class="p">(</span><span class="bp">self</span><span
+            class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span
+            class="p">)</span>
+
+<div class="viewcode-block" id="DataClass.register"><a class="viewcode-back"
+                                                       href="../../nefct.html#nefct.templating.DataClass.register">[docs]</a>    <span
+        class="k">def</span> <span class="nf">register</span><span class="p">(</span><span
+        class="bp">self</span><span class="p">,</span> <span class="n">func</span><span
+        class="p">):</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span
+            class="o">.</span><span class="n">replace</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span
+            class="n">func</span><span class="p">,</span> <span class="nb">list</span><span
+            class="p">):</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span
+            class="n">func</span><span class="p">:</span>
+                <span class="n">obj</span> <span class="o">=</span> <span class="n">f</span><span
+            class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span
+            class="n">func</span><span class="p">):</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">func</span><span
+            class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span
+            class="p">(</span><span class="s1">&#39;func argument must be callable or a list of callables&#39;</span><span
+            class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="DataClass.class_register"><a class="viewcode-back"
+                                                             href="../../nefct.html#nefct.templating.DataClass.class_register">[docs]</a>    <span
+        class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">class_register</span><span class="p">(</span><span
+            class="bp">cls</span><span class="p">,</span> <span class="n">func</span><span
+            class="p">):</span>
+        <span class="n">_cls</span> <span class="o">=</span> <span class="bp">cls</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span
+            class="n">func</span><span class="p">,</span> <span class="nb">list</span><span
+            class="p">):</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span
+            class="n">func</span><span class="p">:</span>
+                <span class="n">_cls</span> <span class="o">=</span> <span class="n">f</span><span
+            class="p">(</span><span class="n">_cls</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span
+            class="n">func</span><span class="p">):</span>
+            <span class="n">_cls</span> <span class="o">=</span> <span class="n">func</span><span
+            class="p">(</span><span class="n">_cls</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span
+            class="p">(</span><span class="s1">&#39;func argument must be callable or a list of callables&#39;</span><span
+            class="p">)</span>
+        <span class="k">return</span> <span class="n">_cls</span></div></div>
+
+
+<div class="viewcode-block" id="dataclass"><a class="viewcode-back"
+                                              href="../../nefct.html#nefct.templating.dataclass">[docs]</a><span
+        class="k">def</span> <span class="nf">dataclass</span><span class="p">(</span><span
+        class="bp">cls</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;This function is a decorator that is used to add generated special methods to classes, as</span>
+<span class="sd">    described below.</span>
+
+<span class="sd">    The `dataclass()` decorator examines the class to find fields. A field is defined as class</span>
+<span class="sd">    variable that has a type annotation. The order of the fields in all of the generated methods</span>
+<span class="sd">    is the order in which they appear in the class definition.</span>
+<span class="sd">    Be default the instance decorated by `dataclass` is attributed frozen, which means we prefer</span>
+<span class="sd">    it to be immutable.</span>
+
+<span class="sd">    Some basic arithmetic operators are mounted and would apply on `.data` field.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span
+            class="n">s</span><span class="p">(</span><span class="n">frozen</span> <span class="o">=</span> <span
+            class="kc">True</span><span class="p">,</span> <span class="n">auto_attribs</span> <span
+            class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">slots</span> <span
+            class="o">=</span> <span class="kc">True</span><span class="p">)(</span><span
+            class="bp">cls</span><span class="p">)</span>
+    <span class="bp">cls</span> <span class="o">=</span> <span class="n">types</span><span
+            class="o">.</span><span class="n">new_class</span><span class="p">(</span><span
+            class="n">base</span><span class="o">.</span><span class="vm">__name__</span><span
+            class="p">,</span> <span class="p">(</span><span class="n">base</span><span
+            class="p">,</span> <span class="n">DataClass</span><span class="p">))</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span
+            class="n">class_register</span><span class="p">([</span><span class="n">unary_ops</span><span
+            class="p">,</span> <span class="n">binary_ops</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="FuncClass"><a class="viewcode-back"
+                                              href="../../nefct.html#nefct.templating.FuncClass">[docs]</a><span
+        class="k">class</span> <span class="nc">FuncClass</span><span class="p">(</span><span
+        class="n">DataClass</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;`FuncClass` is special subclass of `DataClass` which is callable. We prefer all functional</span>
+<span class="sd">    class in this package would be defined as a subclass of `FuncClass`.</span>
+
+<span class="sd">    Be default, the first input argument would be regarded as the key input.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span
+            class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span
+            class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span
+            class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;`__call__` must be defined by any subclass of `FunClass`&#39;&#39;&#39;</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="FuncClass.currying"><a class="viewcode-back"
+                                                       href="../../nefct.html#nefct.templating.FuncClass.currying">[docs]</a>    <span
+        class="k">def</span> <span class="nf">currying</span><span class="p">(</span><span
+        class="bp">self</span><span class="p">,</span> <span class="o">*</span><span
+        class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span
+        class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; `currying` translate this `FuncClass` instance to a single-argument function and</span>
+<span class="sd">        return it as a anonymous(namely `Curried) `FunClass`. Only the key argument would be the</span>
+<span class="sd">        only argument in the new instance. The other arguments would be stored in the new `FuncClass`</span>
+<span class="sd">        instance.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">Curried</span><span class="p">(</span><span
+            class="bp">self</span><span class="p">,</span> <span class="n">args</span><span
+            class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_curried</span><span class="p">(</span><span
+            class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;check this `FuncClass` is `curried`, which means it only accepts one arguments.&#39;&#39;&#39;</span>
+        <span class="kn">import</span> <span class="nn">inspect</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">==</span> <span
+            class="nb">len</span><span class="p">(</span><span class="n">inspect</span><span
+            class="o">.</span><span class="n">signature</span><span class="p">(</span><span
+            class="bp">self</span><span class="o">.</span><span class="fm">__call__</span><span
+            class="p">)</span><span class="o">.</span><span class="n">parameters</span><span
+            class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__matmul__</span><span class="p">(</span><span
+            class="bp">self</span><span class="p">,</span> <span class="n">func</span><span
+            class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; return a compostion of two `FuncClass` to a new anonymous(namely `Composited&#39;)</span>
+<span class="sd">        instance. It only support two `is_curried` functions to composite.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">Composited</span><span class="p">(</span><span
+            class="bp">self</span><span class="p">,</span> <span class="n">func</span><span
+            class="p">)</span>
+
+<div class="viewcode-block" id="FuncClass.map"><a class="viewcode-back"
+                                                  href="../../nefct.html#nefct.templating.FuncClass.map">[docs]</a>    <span
+        class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span
+        class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="c1"># TODO comments</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span
+            class="n">f</span><span class="p">,</span> <span class="n">FuncClass</span><span
+            class="p">):</span>
+            <span class="k">return</span> <span class="n">f</span> <span class="o">@</span> <span
+            class="bp">self</span>
+        <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span
+            class="n">f</span><span class="p">):</span>
+            <span class="nd">@funcclass</span>
+            <span class="k">class</span> <span class="nc">UnaryOp</span><span class="p">:</span>
+                <span class="k">def</span> <span class="nf">__call__</span><span
+            class="p">(</span><span class="bp">self</span><span class="p">,</span> <span
+            class="n">x</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">f</span><span
+            class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+            <span class="n">op</span> <span class="o">=</span> <span class="n">UnaryOp</span><span
+            class="p">()</span>
+            <span class="k">return</span> <span class="n">op</span> <span class="o">@</span> <span
+            class="bp">self</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span
+            class="p">(</span><span
+            class="s1">&#39;f must be a FuncClass or callable&#39;</span><span
+            class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_map_bin</span><span class="p">(</span><span
+            class="bp">self</span><span class="p">,</span> <span class="n">f</span><span
+            class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="c1"># TODO</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span
+            class="n">f</span><span class="p">,</span> <span class="n">FuncClass</span><span
+            class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">f</span><span
+            class="o">.</span><span class="n">currying</span><span class="p">(</span><span
+            class="n">other</span><span class="p">))</span> <span class="o">@</span> <span
+            class="bp">self</span>
+        <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span
+            class="n">f</span><span class="p">):</span>
+            <span class="nd">@funcclass</span>
+            <span class="k">class</span> <span class="nc">BinaryOp</span><span class="p">:</span>
+                <span class="k">def</span> <span class="nf">__call__</span><span
+            class="p">(</span><span class="bp">self</span><span class="p">,</span> <span
+            class="n">x</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">f</span><span
+            class="p">(</span><span class="n">x</span><span class="p">,</span> <span
+            class="n">other</span><span class="p">)</span>
+
+            <span class="n">op</span> <span class="o">=</span> <span class="n">BinaryOp</span><span
+            class="p">()</span>
+            <span class="k">return</span> <span class="n">op</span> <span class="o">@</span> <span
+            class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="funcclass"><a class="viewcode-back"
+                                              href="../../nefct.html#nefct.templating.funcclass">[docs]</a><span
+        class="k">def</span> <span class="nf">funcclass</span><span class="p">(</span><span
+        class="bp">cls</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;This function is a decorator that is used to add generated special methods to classes, as</span>
+<span class="sd">    described below.</span>
+
+<span class="sd">    The `funcclass()` decorator are used to define function typed class in this package.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span
+            class="n">s</span><span class="p">(</span><span class="n">frozen</span> <span class="o">=</span> <span
+            class="kc">True</span><span class="p">,</span> <span class="n">auto_attribs</span> <span
+            class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">slots</span> <span
+            class="o">=</span> <span class="kc">True</span><span class="p">)(</span><span
+            class="bp">cls</span><span class="p">)</span>
+    <span class="bp">cls</span> <span class="o">=</span> <span class="n">types</span><span
+            class="o">.</span><span class="n">new_class</span><span class="p">(</span><span
+            class="n">base</span><span class="o">.</span><span class="vm">__name__</span><span
+            class="p">,</span> <span class="p">(</span><span class="n">base</span><span
+            class="p">,</span> <span class="n">FuncClass</span><span class="p">))</span>
+    <span class="k">return</span> <span class="bp">cls</span></div>
+
+
+<span class="nd">@funcclass</span>
+<span class="k">class</span> <span class="nc">Composited</span><span class="p">(</span><span
+                        class="n">FuncClass</span><span class="p">):</span>
+    <span class="n">f1</span><span class="p">:</span> <span class="n">FuncClass</span>
+    <span class="n">f2</span><span class="p">:</span> <span class="n">FuncClass</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span
+                        class="bp">self</span><span class="p">,</span> <span class="o">*</span><span
+                        class="n">args</span><span class="p">,</span> <span class="o">**</span><span
+                        class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span
+                        class="bp">self</span><span class="o">.</span><span class="n">f1</span><span
+                        class="p">,</span> <span class="n">FuncClass</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span
+                        class="n">f1</span><span class="o">.</span><span class="n">is_curried</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span
+                        class="n">f1</span><span class="p">(</span><span class="bp">self</span><span
+                        class="o">.</span><span class="n">f2</span><span class="p">(</span><span
+                        class="o">*</span><span class="n">args</span><span class="p">,</span> <span
+                        class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+
+
+<span class="nd">@funcclass</span>
+<span class="k">class</span> <span class="nc">Curried</span><span class="p">:</span>
+    <span class="n">f</span><span class="p">:</span> <span class="n">FuncClass</span>
+    <span class="n">args</span><span class="p">:</span> <span class="nb">list</span>
+    <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span
+                        class="bp">self</span><span class="p">,</span> <span class="n">x</span><span
+                        class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span
+                        class="n">f</span><span class="p">(</span><span class="n">x</span><span
+                        class="p">,</span> <span class="o">*</span><span class="bp">self</span><span
+                        class="o">.</span><span class="n">args</span><span class="p">,</span> <span
+                        class="o">**</span><span class="bp">self</span><span class="o">.</span><span
+                        class="n">kwargs</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="UnaryOps"><a class="viewcode-back"
+                                             href="../../nefct.html#nefct.templating.UnaryOps">[docs]</a><span
+        class="k">class</span> <span class="nc">UnaryOps</span><span class="p">:</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="BinaryOps"><a class="viewcode-back"
+                                              href="../../nefct.html#nefct.templating.BinaryOps">[docs]</a><span
+        class="k">class</span> <span class="nc">BinaryOps</span><span class="p">:</span>
+    <span class="nd">@funcclass</span>
+    <span class="k">class</span> <span class="nc">Add</span><span class="p">:</span>
+        <span class="n">other</span><span class="p">:</span> <span class="n">DataClass</span>
+
+        <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span
+            class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span
+            class="p">):</span>
+            <span class="k">return</span> <span class="n">obj</span> <span class="o">+</span> <span
+            class="bp">self</span><span class="o">.</span><span class="n">other</span>
+
+    <span class="nd">@funcclass</span>
+    <span class="k">class</span> <span class="nc">Sub</span><span class="p">:</span>
+        <span class="n">other</span><span class="p">:</span> <span class="n">DataClass</span>
+
+        <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span
+            class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span
+            class="p">):</span>
+            <span class="k">return</span> <span class="n">obj</span> <span class="o">-</span> <span
+            class="bp">self</span><span class="o">.</span><span class="n">other</span>
+
+    <span class="nd">@funcclass</span>
+    <span class="k">class</span> <span class="nc">Mul</span><span class="p">:</span>
+        <span class="n">other</span><span class="p">:</span> <span class="n">DataClass</span>
+
+        <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span
+            class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span
+            class="p">):</span>
+            <span class="k">return</span> <span class="n">obj</span> <span class="o">*</span> <span
+            class="bp">self</span><span class="o">.</span><span class="n">other</span>
+
+    <span class="nd">@funcclass</span>
+    <span class="k">class</span> <span class="nc">Truediv</span><span class="p">:</span>
+        <span class="n">other</span><span class="p">:</span> <span class="n">DataClass</span>
+
+        <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span
+            class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span
+            class="p">):</span>
+            <span class="k">return</span> <span class="n">obj</span> <span class="o">/</span> <span
+            class="bp">self</span><span class="o">.</span><span class="n">other</span></div>
+
+
+<div class="viewcode-block" id="unary_ops"><a class="viewcode-back"
+                                              href="../../nefct.html#nefct.templating.unary_ops">[docs]</a><span
+        class="k">def</span> <span class="nf">unary_ops</span><span class="p">(</span><span
+        class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">abs</span><span class="p">(</span><span class="n">obj</span><span
+            class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span
+            class="n">map</span><span class="p">(</span><span class="n">operator</span><span
+            class="o">.</span><span class="n">abs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__neg__</span><span class="p">(</span><span
+            class="n">obj</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span
+            class="n">map</span><span class="p">(</span><span class="n">operator</span><span
+            class="o">.</span><span class="n">neg</span><span class="p">)</span>
+
+    <span class="n">obj</span><span class="o">.</span><span class="n">abs</span> <span
+            class="o">=</span> <span class="nb">abs</span>
+    <span class="n">obj</span><span class="o">.</span><span class="fm">__neg__</span> <span
+            class="o">=</span> <span class="fm">__neg__</span>
+    <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<div class="viewcode-block" id="binary_ops"><a class="viewcode-back"
+                                               href="../../nefct.html#nefct.templating.binary_ops">[docs]</a><span
+        class="k">def</span> <span class="nf">binary_ops</span><span class="p">(</span><span
+        class="n">obj</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span
+            class="n">obj</span><span class="p">:</span> <span class="n">DataClass</span><span
+            class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span
+            class="n">_map_bin</span><span class="p">(</span><span class="n">operator</span><span
+            class="o">.</span><span class="n">eq</span><span class="p">,</span> <span class="n">other</span><span
+            class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__gt__</span><span class="p">(</span><span
+            class="n">obj</span><span class="p">:</span> <span class="n">DataClass</span><span
+            class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span
+            class="n">_map_bin</span><span class="p">(</span><span class="n">operator</span><span
+            class="o">.</span><span class="n">gt</span><span class="p">,</span> <span class="n">other</span><span
+            class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__ge__</span><span class="p">(</span><span
+            class="n">obj</span><span class="p">:</span> <span class="n">DataClass</span><span
+            class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span
+            class="n">_map_bin</span><span class="p">(</span><span class="n">operator</span><span
+            class="o">.</span><span class="n">ge</span><span class="p">,</span> <span class="n">other</span><span
+            class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__lt__</span><span class="p">(</span><span
+            class="n">obj</span><span class="p">:</span> <span class="n">DataClass</span><span
+            class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span
+            class="n">_map_bin</span><span class="p">(</span><span class="n">operator</span><span
+            class="o">.</span><span class="n">lt</span><span class="p">,</span> <span class="n">other</span><span
+            class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__le__</span><span class="p">(</span><span
+            class="n">obj</span><span class="p">:</span> <span class="n">DataClass</span><span
+            class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span
+            class="n">_map_bin</span><span class="p">(</span><span class="n">operator</span><span
+            class="o">.</span><span class="n">le</span><span class="p">,</span> <span class="n">other</span><span
+            class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span
+            class="n">obj</span><span class="p">:</span> <span class="n">DataClass</span><span
+            class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span
+            class="n">_map_bin</span><span class="p">(</span><span class="n">operator</span><span
+            class="o">.</span><span class="n">add</span><span class="p">,</span> <span class="n">other</span><span
+            class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span
+            class="n">obj</span><span class="p">:</span> <span class="n">DataClass</span><span
+            class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span
+            class="n">_map_bin</span><span class="p">(</span><span class="n">operator</span><span
+            class="o">.</span><span class="n">sub</span><span class="p">,</span> <span class="n">other</span><span
+            class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__mul__</span><span class="p">(</span><span
+            class="n">obj</span><span class="p">:</span> <span class="n">DataClass</span><span
+            class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span
+            class="n">_map_bin</span><span class="p">(</span><span class="n">operator</span><span
+            class="o">.</span><span class="n">mul</span><span class="p">,</span> <span class="n">other</span><span
+            class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__truediv__</span><span class="p">(</span><span
+            class="n">obj</span><span class="p">:</span> <span class="n">DataClass</span><span
+            class="p">,</span> <span class="n">other</span><span class="p">):</span>
+
+        <span class="k">def</span> <span class="nf">remove_zeros</span><span class="p">(</span><span
+            class="n">current</span><span class="p">,</span> <span class="n">threshold</span> <span
+            class="o">=</span> <span class="n">_tiny</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span
+            class="p">(</span><span class="n">current</span><span class="p">,</span> <span
+            class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span
+            class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span
+            class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span
+            class="n">current</span><span class="p">):</span>
+                <span class="n">_data</span> <span class="o">=</span> <span
+            class="n">copy</span><span class="p">(</span><span class="n">current</span><span
+            class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_data</span> <span class="o">=</span> <span
+            class="n">copy</span><span class="p">(</span><span class="n">current</span><span
+            class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">_data</span><span class="p">[</span><span class="n">_data</span> <span
+            class="o">&lt;</span> <span class="n">threshold</span><span class="p">]</span> <span
+            class="o">=</span> <span class="n">_huge</span>
+            <span class="k">return</span> <span class="n">current</span><span
+            class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">data</span> <span
+            class="o">=</span> <span class="n">_data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span
+            class="n">other</span><span class="p">,</span> <span class="n">DataClass</span><span
+            class="p">):</span>
+            <span class="n">_other</span> <span class="o">=</span> <span
+            class="n">remove_zeros</span><span class="p">(</span><span class="n">other</span><span
+            class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_other</span> <span class="o">=</span> <span class="n">other</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span
+            class="n">_map_bin</span><span class="p">(</span><span class="n">operator</span><span
+            class="o">.</span><span class="n">truediv</span><span class="p">,</span> <span
+            class="n">_other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__floordiv__</span><span class="p">(</span><span
+            class="n">obj</span><span class="p">:</span> <span class="n">DataClass</span><span
+            class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span
+            class="n">_map_bin</span><span class="p">(</span><span class="n">operator</span><span
+            class="o">.</span><span class="n">floordiv</span><span class="p">,</span> <span
+            class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__mod__</span><span class="p">(</span><span
+            class="n">obj</span><span class="p">:</span> <span class="n">DataClass</span><span
+            class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span
+            class="n">_map_bin</span><span class="p">(</span><span class="n">operator</span><span
+            class="o">.</span><span class="n">mod</span><span class="p">,</span> <span class="n">other</span><span
+            class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__pow__</span><span class="p">(</span><span
+            class="n">obj</span><span class="p">:</span> <span class="n">DataClass</span><span
+            class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span
+            class="n">_map_bin</span><span class="p">(</span><span class="n">operator</span><span
+            class="o">.</span><span class="n">pow</span><span class="p">,</span> <span class="n">other</span><span
+            class="p">)</span>
+
+    <span class="n">obj</span><span class="o">.</span><span class="fm">__eq__</span> <span
+            class="o">=</span> <span class="fm">__eq__</span>
+    <span class="n">obj</span><span class="o">.</span><span class="fm">__gt__</span> <span
+            class="o">=</span> <span class="fm">__gt__</span>
+    <span class="n">obj</span><span class="o">.</span><span class="fm">__ge__</span> <span
+            class="o">=</span> <span class="fm">__ge__</span>
+    <span class="n">obj</span><span class="o">.</span><span class="fm">__lt__</span> <span
+            class="o">=</span> <span class="fm">__lt__</span>
+    <span class="n">obj</span><span class="o">.</span><span class="fm">__le__</span> <span
+            class="o">=</span> <span class="fm">__le__</span>
+    <span class="n">obj</span><span class="o">.</span><span class="fm">__add__</span> <span
+            class="o">=</span> <span class="fm">__add__</span>
+    <span class="n">obj</span><span class="o">.</span><span class="fm">__sub__</span> <span
+            class="o">=</span> <span class="fm">__sub__</span>
+    <span class="n">obj</span><span class="o">.</span><span class="fm">__mul__</span> <span
+            class="o">=</span> <span class="fm">__mul__</span>
+    <span class="n">obj</span><span class="o">.</span><span class="fm">__truediv__</span> <span
+            class="o">=</span> <span class="fm">__truediv__</span>
+    <span class="n">obj</span><span class="o">.</span><span class="fm">__floordiv__</span> <span
+            class="o">=</span> <span class="fm">__floordiv__</span>
+    <span class="n">obj</span><span class="o">.</span><span class="fm">__mod__</span> <span
+            class="o">=</span> <span class="fm">__mod__</span>
+    <span class="n">obj</span><span class="o">.</span><span class="fm">__pow__</span> <span
+            class="o">=</span> <span class="fm">__pow__</span>
+    <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<span class="k">def</span> <span class="nf">_parse_dataclass_to_dict</span><span
+                        class="p">(</span><span class="n">instance</span><span
+                        class="p">:</span> <span class="n">DataClass</span><span class="p">):</span>
+    <span class="n">dct</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;classname&#39;</span><span
+                        class="p">:</span> <span class="nb">type</span><span class="p">(</span><span
+                        class="n">instance</span><span class="p">)</span><span
+                        class="o">.</span><span class="vm">__name__</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span
+                        class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span
+                        class="n">to_dict</span><span class="p">(</span><span
+                        class="n">recurse</span> <span class="o">=</span> <span
+                        class="kc">False</span><span class="p">)</span><span class="o">.</span><span
+                        class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span
+                        class="n">value</span><span class="p">,</span> <span
+                        class="n">DataClass</span><span class="p">):</span>
+            <span class="n">dct</span><span class="p">[</span><span class="n">key</span><span
+                        class="p">]</span> <span class="o">=</span> <span class="n">_parse_dataclass_to_dict</span><span
+                        class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dct</span><span class="p">[</span><span class="n">key</span><span
+                        class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="n">dct</span>
+
+
+<span class="k">def</span> <span class="nf">_parse_dict_to_dataclass</span><span
+                        class="p">(</span><span class="n">dct</span><span class="p">:</span> <span
+                        class="nb">dict</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dct</span><span class="p">[</span><span class="s1">&#39;classname&#39;</span><span
+                        class="p">]</span> <span class="ow">not</span> <span
+                        class="ow">in</span> <span class="n">TYPE_BIND</span><span
+                        class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span
+                        class="p">(</span><span class="s1">&#39;</span><span
+                        class="si">{}</span><span class="s1"> not in TYPE_BIND: </span><span
+                        class="si">{}</span><span class="s1">&#39;</span><span
+                        class="o">.</span><span class="n">format</span><span class="p">(</span><span
+                        class="n">dct</span><span class="p">[</span><span class="s1">&#39;classname&#39;</span><span
+                        class="p">],</span>
+                                                                   <span class="n">TYPE_BIND</span><span
+                        class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+    <span class="n">_cls</span> <span class="o">=</span> <span class="n">TYPE_BIND</span><span
+                        class="p">[</span><span class="n">dct</span><span class="p">[</span><span
+                        class="s1">&#39;classname&#39;</span><span class="p">]]</span>
+    <span class="n">_dct</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span
+                        class="ow">in</span> <span class="n">dct</span><span class="o">.</span><span
+                        class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span
+                        class="n">value</span><span class="p">,</span> <span
+                        class="nb">dict</span><span class="p">):</span>
+            <span class="n">_dct</span><span class="p">[</span><span class="n">key</span><span
+                        class="p">]</span> <span class="o">=</span> <span class="n">_parse_dict_to_dataclass</span><span
+                        class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">key</span> <span
+                        class="o">==</span> <span class="s1">&#39;classname&#39;</span> <span
+                        class="ow">and</span> <span class="ow">not</span> <span class="n">key</span><span
+                        class="o">.</span><span class="n">startswith</span><span
+                        class="p">(</span><span class="s1">&#39;_&#39;</span><span
+                        class="p">):</span>
+            <span class="n">_dct</span><span class="p">[</span><span class="n">key</span><span
+                        class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">_cls</span><span class="p">(</span><span
+                        class="o">**</span><span class="n">_dct</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="x_saver"><a class="viewcode-back"
+                                            href="../../nefct.html#nefct.templating.x_saver">[docs]</a><span
+        class="k">def</span> <span class="nf">x_saver</span><span class="p">(</span><span class="n">path</span><span
+        class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">DataClass</span><span
+        class="p">,</span> <span class="n">compression</span> <span class="o">=</span> <span
+        class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save a DataClass object to an HDF5 file. for more details please visit</span>
+<span class="sd">    &#39;https://deepdish.readthedocs.io/en/latest/_modules/deepdish/io/hdf5io.html#save&#39;</span>
+
+<span class="sd">    This function requires the `deepdish`_ module to be installed.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : string</span>
+<span class="sd">        Filename to which the data is saved, must ends with &#39;.hdf5</span>
+<span class="sd">    data : DataClass or Funcclass</span>
+<span class="sd">        Data to be saved. This can be any DataClass with fields a Numpy array, a string,</span>
+<span class="sd">        another DataClass</span>
+
+<span class="sd">    compression : string or tuple</span>
+<span class="sd">        Set compression method, choosing from `blosc`, `zlib`, `lzo`, `bzip2`</span>
+<span class="sd">        and more (see PyTables documentation). It can also be specified as a</span>
+<span class="sd">        tuple (e.g. ``(&#39;blosc&#39;, 5)``), with the latter value specifying the</span>
+<span class="sd">        level of compression, choosing from 0 (no compression) to 9 (maximum</span>
+<span class="sd">        compression). The default is None</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    load</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span
+            class="p">(</span><span class="s1">&#39;.hdf5&#39;</span><span class="p">):</span>
+        <span class="n">dd</span><span class="o">.</span><span class="n">io</span><span
+            class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span
+            class="p">,</span> <span class="n">_parse_dataclass_to_dict</span><span
+            class="p">(</span><span class="n">instance</span><span class="p">),</span> <span
+            class="n">compression</span> <span class="o">=</span> <span class="n">compression</span><span
+            class="p">)</span></div>
+
+
+<div class="viewcode-block" id="x_loader"><a class="viewcode-back"
+                                             href="../../nefct.html#nefct.templating.x_loader">[docs]</a><span
+        class="k">def</span> <span class="nf">x_loader</span><span class="p">(</span><span
+        class="n">path</span><span class="p">,</span> <span class="n">sel</span> <span
+        class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">unpack</span> <span
+        class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads an HDF5 saved with `save` and end with &#39;.hdf5&#39;. It will return a DataClass</span>
+<span class="sd">    object which is well-formed.</span>
+
+<span class="sd">    This function requires the `deepdish`_ module to be installed.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : string</span>
+<span class="sd">        Filename from which to load the data. must end with &#39;.hdf5&#39;</span>
+<span class="sd">        path can be in form of path + x_path, for example</span>
+<span class="sd">        &#39;a.hdf5/b/c&#39;</span>
+<span class="sd">        it will load the &#39;/b/c&#39; group in a.hdf5</span>
+<span class="sd">    sel : slice or tuple of slices</span>
+<span class="sd">        If you specify `group` and the target is a numpy array, then you can</span>
+<span class="sd">        use this to slice it. This is useful for opening subsets of large HDF5</span>
+<span class="sd">        files. To compose the selection, you can use `deepdish.aslice`.</span>
+<span class="sd">    unpack : bool</span>
+<span class="sd">        If True, a single-entry dictionaries will be unpacked and the value</span>
+<span class="sd">        will be returned directly. That is, if you save ``dict(a=100)``, only</span>
+<span class="sd">        ``100`` will be loaded.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    data : DataClass</span>
+<span class="sd">        It will visit TYPE_BIND to find the bind bewteen a string and a specific</span>
+<span class="sd">        DataClass class.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    save</span>
+<span class="sd">    TYPE_BIND</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span
+            class="s1">&#39;.hdf5&#39;</span> <span class="ow">in</span> <span class="n">path</span><span
+            class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">_path</span><span class="p">,</span> <span class="n">x_path</span> <span
+            class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span
+            class="p">(</span><span class="s1">&#39;.hdf5&#39;</span><span class="p">)</span>
+    <span class="n">_path</span> <span class="o">+=</span> <span class="s1">&#39;.hdf5&#39;</span>
+    <span class="k">if</span> <span class="n">x_path</span> <span class="o">==</span> <span
+            class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">x_path</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">_parse_dict_to_dataclass</span><span
+            class="p">(</span><span class="n">dd</span><span class="o">.</span><span
+            class="n">io</span><span class="o">.</span><span class="n">load</span><span
+            class="p">(</span><span class="n">_path</span><span class="p">,</span> <span class="n">x_path</span><span
+            class="p">,</span> <span class="n">sel</span><span class="p">,</span> <span class="n">unpack</span><span
+            class="p">))</span></div>
+
+
+<div class="viewcode-block" id="save"><a class="viewcode-back"
+                                         href="../../nefct.html#nefct.templating.save">[docs]</a><span
+        class="k">def</span> <span class="nf">save</span><span class="p">(</span><span
+        class="o">*</span><span class="n">args</span><span class="p">,</span> <span
+        class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;same as `x_loader`</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    x_loader, load</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">x_saver</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span
+            class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span
+            class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load"><a class="viewcode-back"
+                                         href="../../nefct.html#nefct.templating.load">[docs]</a><span
+        class="k">def</span> <span class="nf">load</span><span class="p">(</span><span
+        class="o">*</span><span class="n">args</span><span class="p">,</span> <span
+        class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;same as `x_saver`</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    x_saver, load</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">x_loader</span><span class="p">(</span><span
+            class="o">*</span><span class="n">args</span><span class="p">,</span> <span
+            class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="nd">@funcclass</span>
+<span class="k">class</span> <span class="nc">Saver</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;This type of `FuncClass` defined the saver during iteration.&#39;&#39;&#39;</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">interval</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span
+                        class="bp">self</span><span class="p">,</span> <span
+                        class="n">ind</span><span class="p">,</span> <span class="n">x</span><span
+                        class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span
+                        class="n">interval</span> <span class="o">==</span> <span
+                        class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">ind</span> <span class="o">%</span> <span
+                        class="bp">self</span><span class="o">.</span><span
+                        class="n">interval</span> <span class="o">==</span> <span
+                        class="mi">0</span><span class="p">:</span>
+            <span class="n">x_saver</span><span class="p">(</span><span class="bp">self</span><span
+                        class="o">.</span><span class="n">path</span><span class="o">.</span><span
+                        class="n">replace</span><span class="p">(</span><span
+                        class="s1">&#39;?&#39;</span><span class="p">,</span> <span
+                        class="nb">str</span><span class="p">(</span><span class="n">ind</span><span
+                        class="p">)),</span> <span class="n">x</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="saver"><a class="viewcode-back"
+                                          href="../../nefct.html#nefct.templating.saver">[docs]</a><span
+        class="k">def</span> <span class="nf">saver</span><span class="p">(</span><span class="n">path</span><span
+        class="p">,</span> <span class="n">interval</span> <span class="o">=</span> <span
+        class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span
+            class="n">obj</span><span class="p">):</span>
+        <span class="n">_saver</span> <span class="o">=</span> <span class="n">Saver</span><span
+            class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">interval</span><span
+            class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span
+            class="n">replace</span><span class="p">(</span><span class="n">saver</span> <span
+            class="o">=</span> <span class="n">_saver</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<span class="nd">@funcclass</span>
+<span class="k">class</span> <span class="nc">Noop</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Do nothing&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span
+                        class="bp">self</span><span class="p">,</span> <span class="o">*</span><span
+                        class="n">args</span><span class="p">,</span> <span class="o">**</span><span
+                        class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span>
+
+
+<span class="n">noop</span> <span class="o">=</span> <span class="n">Noop</span><span
+                        class="p">()</span>
+
+
+<span class="nd">@funcclass</span>
+<span class="k">class</span> <span class="nc">Indentity</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Indentity&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span
+                        class="bp">self</span><span class="p">,</span> <span class="o">*</span><span
+                        class="n">args</span><span class="p">,</span> <span class="o">**</span><span
+                        class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">args</span><span class="p">,</span> <span
+                        class="n">kwargs</span>
+
+
+<span class="n">TYPE_BIND</span><span class="o">.</span><span class="n">update</span><span
+                        class="p">({</span><span class="s1">&#39;DataClass&#39;</span><span
+                        class="p">:</span> <span class="n">DataClass</span><span class="p">,</span> <span
+                        class="s1">&#39;FuncClass&#39;</span><span class="p">:</span> <span
+                        class="n">FuncClass</span><span class="p">,</span> <span class="s1">&#39;Saver&#39;</span><span
+                        class="p">:</span> <span class="n">Saver</span><span
+                        class="p">,</span> <span class="s1">&#39;Noop&#39;</span><span
+                        class="p">:</span> <span class="n">Noop</span><span class="p">})</span>
+<span class="n">TYPE_BIND</span><span class="o">.</span><span class="n">update</span><span
+                        class="p">({</span><span class="s1">&#39;Add&#39;</span><span
+                        class="p">:</span> <span class="n">BinaryOps</span><span
+                        class="o">.</span><span class="n">Add</span><span class="p">,</span> <span
+                        class="s1">&#39;Sub&#39;</span><span class="p">:</span> <span class="n">BinaryOps</span><span
+                        class="o">.</span><span class="n">Sub</span><span class="p">,</span> <span
+                        class="s1">&#39;Mul&#39;</span><span class="p">:</span> <span class="n">BinaryOps</span><span
+                        class="o">.</span><span class="n">Mul</span><span class="p">,</span> <span
+                        class="s1">&#39;Truediv&#39;</span><span class="p">:</span>
+    <span class="n">BinaryOps</span><span class="o">.</span><span class="n">Truediv</span><span
+                        class="p">})</span>
+
+<span class="n">TYPE_BIND</span><span class="o">.</span><span class="n">update</span><span
+                        class="p">({</span><span class="s1">&#39;Composited&#39;</span><span
+                        class="p">:</span> <span class="n">Composited</span><span class="p">,</span> <span
+                        class="s1">&#39;Curried&#39;</span><span class="p">:</span> <span class="n">Curried</span><span
+                        class="p">})</span>
+</pre>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <div aria-label="main navigation" class="sphinxsidebar" role="navigation">
+        <div class="sphinxsidebarwrapper">
+            <h1 class="logo"><a href="../../index.html">SRF-NEF</a></h1>
+
+
+            <h3>Navigation</h3>
+            <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a>
+                </li>
+                <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">QuickStart</a>
+                </li>
+            </ul>
+            <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../nefct.html">nefct
+                    package</a></li>
+            </ul>
+
+            <div class="relations">
+                <h3>Related Topics</h3>
+                <ul>
+                    <li><a href="../../index.html">Documentation overview</a>
+                        <ul>
+                            <li><a href="../index.html">Module code</a>
+                                <ul>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div id="searchbox" role="search" style="display: none">
+                <h3>Quick search</h3>
+                <div class="searchformwrapper">
+                    <form action="../../search.html" class="search" method="get">
+                        <input name="q" type="text"/>
+                        <input type="submit" value="Go"/>
+                        <input name="check_keywords" type="hidden" value="yes"/>
+                        <input name="area" type="hidden" value="default"/>
+                    </form>
+                </div>
+            </div>
+            <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+        </div>
+    </div>
+    <div class="clearer"></div>
+</div>
+<div class="footer">
+    &copy;2019, Minghao Guo.
+
+    |
+    Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+    &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,4 @@
+
+        [console_scripts]
+        nefct=nefct.app.cli:cli
+      
