@@ -9,7 +9,7 @@
 '''
 import inspect
 from abc import abstractmethod
-from srfnef import __version__
+# from srfnef import __version__
 import attr
 import types
 import numpy as np

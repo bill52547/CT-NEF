@@ -11,6 +11,7 @@ from .version import full_version as __version__
 from .base import *
 from . import data
 from .data import *
+from .io.local_io_mixin import save, load
 # from . import config, utils
 # from .utils import declare_eager_execution
 # # from . import tools

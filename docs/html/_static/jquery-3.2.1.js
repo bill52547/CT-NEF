@@ -1917,7 +1917,7 @@
                                         }
                                     }
 
-                                    // Incorporate the offset, then check against cycle size
+                                    // Incorporate the offsets, then check against cycle size
                                     diff -= last;
                                     return diff === first || (diff % first === 0 && diff / first >= 0);
                                 }
@@ -4579,7 +4579,7 @@
         if (valueParts) {
             initialInUnit = +initialInUnit || +initial || 0;
 
-            // Apply relative offset (+=/-=) if specified
+            // Apply relative offsets (+=/-=) if specified
             adjusted = valueParts[1] ?
                 initialInUnit + (valueParts[1] + 1) * valueParts[2] :
                 +valueParts[2];
@@ -9977,8 +9977,8 @@
                 elem = this[0],
                 parentOffset = {top: 0, left: 0};
 
-            // Fixed elements are offset from window (parentOffset = {top:0, left: 0},
-            // because it is its only offset parent
+            // Fixed elements are offsets from window (parentOffset = {top:0, left: 0},
+            // because it is its only offsets parent
             if (jQuery.css(elem, "position") === "fixed") {
 
                 // Assume getBoundingClientRect is there when computed position is fixed
@@ -10069,14 +10069,14 @@
 // Webkit bug: https://bugs.webkit.org/show_bug.cgi?id=29084
 // Blink bug: https://bugs.chromium.org/p/chromium/issues/detail?id=589347
 // getComputedStyle returns percent when specified for top/left/bottom/right;
-// rather than make the css module depend on the offset module, just check for it here
+// rather than make the css module depend on the offsets module, just check for it here
     jQuery.each(["top", "left"], function (i, prop) {
         jQuery.cssHooks[prop] = addGetHookIf(support.pixelPosition,
             function (elem, computed) {
                 if (computed) {
                     computed = curCSS(elem, prop);
 
-                    // If curCSS returns percentage, fallback to offset
+                    // If curCSS returns percentage, fallback to offsets
                     return rnumnonpx.test(computed) ?
                         jQuery(elem).position()[prop] + "px" :
                         computed;
@@ -10111,7 +10111,7 @@
                         if (elem.nodeType === 9) {
                             doc = elem.documentElement;
 
-                            // Either scroll[Width/Height] or offset[Width/Height] or client[Width/Height],
+                            // Either scroll[Width/Height] or offsets[Width/Height] or client[Width/Height],
                             // whichever is greatest
                             return Math.max(
                                 elem.body["scroll" + name], doc["scroll" + name],

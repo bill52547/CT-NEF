@@ -25,9 +25,9 @@ class FullProjection:
         _n_view = self.data.shape[3]
         if self.angle is None:
             _angle = [ind * 2 * np.pi / self.n_view for ind in range(_n_view)]
-            object.__setattr__(self, 'angle', _angle)
+            object.__setattr__(self, 'angles', _angle)
         if self.offset is None:
-            object.__setattr__(self, 'offset', [0.0, 0.0, 0.0])
+            object.__setattr__(self, 'offsets', [0.0, 0.0, 0.0])
         if self.timestamps is None:
             _time_stamp = [0.0 for _ in range(_n_view)]
             object.__setattr__(self, 'timestamps', _time_stamp)

@@ -15,7 +15,7 @@ class ImshowMixin:
 
     def imshow(self, *args, **kwargs) -> None:
         from matplotlib import pyplot as plt
-        if self.shape == 2:
+        if len(self.shape) == 2:
             plt.imshow(self.data, *args, **kwargs)
         else:
             plt.imshow(self.data[:, :, int(1 + self.shape[2] / 2)], *args, **kwargs)
@@ -29,3 +29,6 @@ class ImshowMixin:
         plt.imshow(self.central_slices[1], *args, **kwargs)
         plt.subplot(133)
         plt.imshow(self.central_slices[2], *args, **kwargs)
+
+    def imshow3D(self, *args, **kwargs) -> None:
+        return self.imshow3d(*args, **kwargs)

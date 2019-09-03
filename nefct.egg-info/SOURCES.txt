@@ -20,7 +20,10 @@ nefct/data/__init__.py
 nefct/data/full_projection.py
 nefct/data/image.py
 nefct/data/image_4d.py
+nefct/data/projection.py
 nefct/data/single_projection.py
+nefct/functions/__init__.py
+nefct/functions/project.py
 nefct/geometry/__init__.py
 nefct/geometry/detector_config.py
 nefct/geometry/scanner_config.py

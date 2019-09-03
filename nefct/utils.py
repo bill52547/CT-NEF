@@ -78,20 +78,20 @@ def get_hash_of_timestamp():
     return m.hexdigest()
 
 
-def file_hasher(path: str) -> str:
-    import os
-    if os.path.isdir(path):
-        raise ValueError('Only file can be hashed')
+# def file_hasher(path: str) -> str:
+#     import os
+#     if os.path.isdir(path):
+#         raise ValueError('Only file can be hashed')
 
-    BLOCKSIZE = 65536
-    m = hashlib.sha256()
+#     BLOCKSIZE = 65536
+#     m = hashlib.sha256()
 
-    with open(path, 'rb') as fin:
-        buf = fin.read(BLOCKSIZE)
-        while len(buf) > 0:
-            m._update(buf)
-            buf = fin.read(BLOCKSIZE)
-    return m.hexdigest()
+#     with open(path, 'rb') as fin:
+#         buf = fin.read(BLOCKSIZE)
+#         while len(buf) > 0:
+#             m._update(buf)
+#             buf = fin.read(BLOCKSIZE)
+#     return m.hexdigest()
 
 
 def declare_eager_execution():

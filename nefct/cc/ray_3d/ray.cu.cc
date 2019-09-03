@@ -4,6 +4,7 @@
 #include "cuda.h"
 #include "cuda_runtime.h"
 #define abs(x) ((x > 0) ? x : -(x))
+
 const float eps_ = 0.01;
 
 const int BLOCKWIDTH = 16;

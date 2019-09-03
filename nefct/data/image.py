@@ -8,17 +8,17 @@
 @desc:
 '''
 
-from nefct import nef_class, List, Any
+from nefct import nef_class, Any
 from nefct.ops.common.property_mixins import ShapePropertyMixin, UnitSizePropertyMixin, \
     CentralSlicesPropertyMixin, CentralProfilesPropertyMixin
 from nefct.ops.common.imshow_mixin import ImshowMixin
 from nefct.ops.common.arithmetic_mixins import ArithmeticMixin
 from nefct.ops.common.magic_method_mixins import GetItemMixin
 from nefct.io import LoadMixin, SaveMixin
-import attr
+import numpy as np
+from nefct.ops.common.arithmetic_mixins import ArithmeticMixin
 
-__all__ = ('Image', 'Image2D', 'Image3D', 'ImageSequence', 'ImageSequence2D',
-           'ImageSequence3D')
+__all__ = ('Image', 'Image2D', 'Image3D')
 
 
 @nef_class
@@ -29,63 +29,44 @@ class Image(ShapePropertyMixin, UnitSizePropertyMixin, GetItemMixin,
     Image data with center and size info.
     """
 
-    data: object
+    data: np.ndarray
     center: list
     size: list
 
 
 @nef_class
 class Image2D(Image):
-    data: object  # prefer numpy array
+    data: np.ndarray
     center: list
     size: list
+    timestamp: Any
 
 
 @nef_class
 class Image3D(Image):
-    data: object
+    data: np.ndarray
     center: list
     size: list
+    timestamp: Any
 
 
 @nef_class
-class ImageSequence(ShapePropertyMixin, UnitSizePropertyMixin, GetItemMixin,
-                    CentralSlicesPropertyMixin, CentralProfilesPropertyMixin,
-                    LoadMixin, SaveMixin, ArithmeticMixin):
-    """
-    Image sequence with center and size info. and timestamp(or surrogate data)
-    """
-
-    data: object  # should be list of np.ndarray
+class Image2DT(Image):
+    data: np.ndarray
     center: list
     size: list
-    timestamps: list  # can be number, tuple or a function that return booleans
-
-    def __getitem__(self, ind):
-        pass
-
-    @property
-    def n_view(self):
-        return self.data.shape[-1]
-
-
-@nef_class
-class ImageSequence2D(ImageSequence):
-    data: object  # should be list of np.ndarray
-    center: list
-    size: list
-    timestamps: list
+    timestamp: Any
 
     def __getitem__(self, item):
-        return Image(self.data[:, :, item], self.center, self.size)
+        return Image2D(self.data[:, :, item], self.center, self.size, self.timestamp[item])
 
 
 @nef_class
-class ImageSequence3D(ImageSequence):
-    data: object  # should be list of np.ndarray
+class Image3DT(Image):
+    data: np.ndarray
     center: list
     size: list
-    timestamps: list  # can be number, tuple or a function that return booleans
+    timestamp: Any
 
     def __getitem__(self, item):
-        return Image(self.data[:, :, :, item], self.center, self.size)
+        return Image2D(self.data[:, :, :, item], self.center, self.size, self.timestamp[item])
