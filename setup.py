@@ -11,10 +11,10 @@ MINOR_SUB = 1
 def get_version(major, minor, micro, minor_sub):
     from time import time
     from datetime import datetime
-    timestamp = int(time())
+    timestamps = int(time())
     short_version = str(major) + '.' + str(minor) + '.' + str(micro) + '.' + str(minor_sub)
-    full_version = short_version + '.' + str(timestamp)
-    time_string = datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
+    full_version = short_version + '.' + str(timestamps)
+    time_string = datetime.fromtimestamp(timestamps).strftime("%Y-%m-%d %H:%M:%S")
     return short_version, full_version, time_string
 
 

@@ -73,8 +73,8 @@ def convert_snake_to_Camel(name: str) -> str:
 def get_hash_of_timestamp():
     import time
     m = hashlib.sha256()
-    timestamp = time.time()
-    m.update(str(timestamp).encode('utf-8'))
+    timestamps = time.time()
+    m.update(str(timestamps).encode('utf-8'))
     return m.hexdigest()
 
 

@@ -5416,8 +5416,8 @@
             jQuery.extend(this, props);
         }
 
-        // Create a timestamp if incoming event doesn't have one
-        this.timeStamp = src && src.timeStamp || jQuery.now();
+        // Create a timestamps if incoming event doesn't have one
+        this.timestamps = src && src.timestamps || jQuery.now();
 
         // Mark it as fixed
         this[jQuery.expando] = true;
