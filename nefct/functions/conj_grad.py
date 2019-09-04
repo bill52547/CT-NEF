@@ -16,6 +16,7 @@ from nefct.functions.project import Project
 from nefct.functions.back_project import BackProject
 from nefct.functions.total_variation import TotalVari, InvertTotalVari, TotalVariT
 from nefct.utils import tqdm
+import numpy as np
 from copy import deepcopy
 
 ''' to solve
@@ -34,9 +35,8 @@ class ConjGrad:
     mu: float
 
     def __call__(self, projection: ProjectionSequence, d: TotalVariation = None) -> Image:
-        x = Image(np.zeros(self.back_project.shape),
-                  [0] * len(self.back_project.shape),
-                  [self.back_project.unit_size * s for s in self.back_project.shape])
+        x = self.back_project(projection) * 0
+
         if self.total_vari is None:
             b = self.back_project(projection)
             A = lambda x: self.back_project(self.project(x))
@@ -50,6 +50,7 @@ class ConjGrad:
         rsold = np.sum((r.data ** 2).data)
 
         for _ in range(self.n_iter):
+            print(np.max(x.data))
             Ap = A(p)
             alpha = rsold / np.sum(p.data * Ap.data)
             x = x + p * alpha

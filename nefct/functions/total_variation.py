@@ -160,7 +160,8 @@ class InvertTotalVari:
             itv_t.data[:, :, 1:] += tv_t.data[:, :, 1:]
             image = tv_val.x * 0
             for i in range(tv_x.shape[-1]):
-                image.data += itv_x.data[:, :, i] + itv_y.data[:, :, i] + itv_t.data[:, :, i]
+                image.data[:, :, i] += itv_x.data[:, :, i] + itv_y.data[:, :, i] + itv_t.data[:, :,
+                                                                                   i]
             return image
 
         elif isinstance(tv_val, TotalVariation3DT):

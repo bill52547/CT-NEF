@@ -17,6 +17,7 @@ from nefct.ops.common.magic_method_mixins import GetItemMixin
 from nefct.io import LoadMixin, SaveMixin
 import numpy as np
 from nefct.ops.common.arithmetic_mixins import ArithmeticMixin
+import attr
 
 __all__ = ('Image', 'Image2D', 'Image3D', 'Image2DT', 'Image3DT', 'all_one_image', 'all_zero_image')
 
@@ -28,7 +29,11 @@ class Image(ShapePropertyMixin, UnitSizePropertyMixin, GetItemMixin,
     """
     Image data with center and size info.
     """
-    pass
+    data: np.ndarray
+    center: list
+    size: list
+    timestamps: Any
+
 
 @nef_class
 class Image2D(Image):
@@ -51,7 +56,7 @@ class Image2DT(Image):
     data: np.ndarray
     center: list
     size: list
-    timestamps: Any
+    timestamps: Any = attr.ib(default = [0])
 
     def __getitem__(self, item):
         return Image2D(self.data[:, :, item], self.center, self.size, self.timestamps[item])
@@ -62,12 +67,13 @@ class Image3DT(Image):
     data: np.ndarray
     center: list
     size: list
-    timestamps: Any
+    timestamps: Any = attr.ib(default = [0])
 
     def __getitem__(self, item):
         return Image2D(self.data[:, :, :, item], self.center, self.size, self.timestamps[item])
 
-def all_one_image(shape:list, timestamps: (list, float) = None):
+
+def all_one_image(shape: list, timestamps: (list, float) = None):
     if timestamps is None:
         timestamps = 0
 
@@ -75,16 +81,16 @@ def all_one_image(shape:list, timestamps: (list, float) = None):
         if len(shape) == 2:
             return Image2D(np.ones(shape, np.float32), [0, 0], shape)
         else:
-            return Image3D(np.ones(shape, np.float32), [0,0,0], shape)
-    
+            return Image3D(np.ones(shape, np.float32), [0, 0, 0], shape)
+
     else:
         nt = len(timestamps)
         shape_ = shape + [nt]
         if len(shape) == 2:
-            return Image2DT(np.ones(shape_, np.float32), [0,0], shape, timestamps = timestamps)
+            return Image2DT(np.ones(shape_, np.float32), [0, 0], shape, timestamps = timestamps)
         else:
-            return Image3DT(np.ones(shape_, np.float32), [0,0,0], shape, timestamps = timestamps)
-        
+            return Image3DT(np.ones(shape_, np.float32), [0, 0, 0], shape, timestamps = timestamps)
+
 
 def all_zero_image(*args, **kwargs):
-    return all_one_image(*args, **kwargs)
+    return all_one_image(*args, **kwargs) * 0

@@ -5,6 +5,8 @@ from nefct.data.projection import ProjectionSequence2D, ProjectionSequence3D
 from nefct.geometry.scanner_config import ScannerConfig, ScannerConfig2D, ScannerConfig3D
 import numpy as np
 import tensorflow as tf
+from typing import Callable
+
 __all__ = ('BackProjectT', 'BackProject2DT', 'BackProject3DT', 'BackProject2DNT', 'BackProject3DNT')
 dist_mod_3d = tf.load_op_library(
     '/home/bill52547/Github/tensorflow/bazel-bin/tensorflow/core/user_ops/dist_3d_mod.so'
@@ -28,15 +30,16 @@ class BackProjectT:
     def __call__(self, *args, **kwargs) -> Image:
         pass
 
+
 @nef_class
 class BackProject2DT(BackProjectT):
     config: ScannerConfig2D
     shape: list
     unit_size: float
     timestamps: list
-    deformer: Any
+    deformer: Callable
 
-    def __call__(self, proj: ProjectionSequence2D) -> Image2D:
+    def __call__(self, proj: ProjectionSequence2D) -> Image2DT:
         mode = self.config.mode
         from nefct.utils import declare_eager_execution
         declare_eager_execution()
@@ -65,18 +68,18 @@ class BackProject2DT(BackProjectT):
             bproj_data += self.deformer(bproj_data_, time_, self.timestamps)
 
         return Image2DT(bproj_data * self.unit_size, [0, 0],
-                       [s * self.unit_size for s in self.shape],
-                       self.timestamps)
+                        [s * self.unit_size for s in self.shape],
+                        self.timestamps)
 
 
 @nef_class
-class BackProject2DNT(BackProject):
+class BackProject2DNT(BackProjectT):
     config: ScannerConfig2D
     shape: list
     unit_size: float
     timestamps: list
 
-    def __call__(self, proj: ProjectionSequence2D) -> list:
+    def __call__(self, proj: ProjectionSequence2D) -> Image2DT:
         mode = self.config.mode
         from nefct.utils import declare_eager_execution
         declare_eager_execution()
@@ -96,8 +99,8 @@ class BackProject2DNT(BackProject):
             config['ai'] /= self.unit_size
         else:
             dist_back_proj_2d = dist_back_proj_2d_cyli
-        timestamp_size = self.timestamps.size
-        bproj_data = np.zeros(self.shape + [len(self.timestamps)], np.float32)
+        timestamp_size = len(self.timestamps)
+        bproj_data = np.zeros(self.shape + [timestamp_size], np.float32)
         for i in tqdm(range(timestamp_size)):
             time_ = self.timestamps[i]
             inds = np.where(proj.timestamps == time_)[0]
@@ -107,9 +110,8 @@ class BackProject2DNT(BackProject):
             bproj_data[:, :, i] += bproj_data_
 
         return Image2DT(bproj_data * self.unit_size, [0, 0],
-                        [s * self.unit_size for s in self.shape]) for i in range(timestamp_size),
-                        self.timestamps]
-
+                        [s * self.unit_size for s in self.shape],
+                        self.timestamps)
 
 
 @nef_class
@@ -118,9 +120,9 @@ class BackProject3DT(BackProjectT):
     shape: list
     unit_size: float
     timestamps: list
-    deformer: Any
+    deformer: Callable
 
-    def __call__(self, proj: ProjectionSequence3D) -> Image3D:
+    def __call__(self, proj: ProjectionSequence3D) -> Image3DT:
         mode = self.config.mode
 
         config = {
@@ -153,17 +155,18 @@ class BackProject3DT(BackProjectT):
                                             **config).numpy().transpose()
             bproj_data += self.deformer(bproj_data_, time_, self.timestamps)
         return Image3DT(bproj_data * self.unit_size, [0, 0, 0],
-                       [s * self.unit_size for s in self.shape],
-                       self.timestamps)
+                        [s * self.unit_size for s in self.shape],
+                        self.timestamps)
+
 
 @nef_class
-class BackProject3DNT(BackProject):
+class BackProject3DNT(BackProjectT):
     config: ScannerConfig3D
     shape: list
     unit_size: float
     timestamps: list
 
-    def __call__(self, proj: ProjectionSequence3D) -> Image3D:
+    def __call__(self, proj: ProjectionSequence3D) -> Image3DT:
         mode = self.config.mode
 
         config = {
@@ -186,16 +189,16 @@ class BackProject3DNT(BackProject):
             config['ai'] /= self.unit_size
         else:
             dist_back_proj_3d = dist_back_proj_3d_cyli
-        timestamp_size = self.timestamps.size
+        timestamp_size = len(self.timestamps)
         bproj_data = np.zeros(self.shape + [timestamp_size], np.float32)
         for i in tqdm(range(timestamp_size)):
             time_ = self.timestamps[i]
-            ind = np.where(proj.timestamps == time_)[0]
-            config['angles'] = proj.angles[ind]
-            config['offsets'] = proj.offsets[ind] / self.unit_size
-            bproj_data_ = dist_back_proj_3d(proj.data[:, :, i].transpose(),
+            inds = np.where(proj.timestamps == time_)[0]
+            config['angles'] = proj.angles[inds]
+            config['offsets'] = proj.offsets[inds] / self.unit_size
+            bproj_data_ = dist_back_proj_3d(proj.data[:, :, inds].transpose(),
                                             **config).numpy().transpose()
-            bproj_data[:,:,:,i] += bproj_data_
+            bproj_data[:, :, :, i] += bproj_data_
         return Image3DT(bproj_data * self.unit_size, [0, 0, 0],
-                       [s * self.unit_size for s in self.shape],
-                       self.timestamps)
+                        [s * self.unit_size for s in self.shape],
+                        self.timestamps)

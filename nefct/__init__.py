@@ -34,3 +34,4 @@ from .io.local_io_mixin import save, load
 # from .tools import api, doc_gen
 
 # from .correction import *
+from .geometry.existing_geometry import *

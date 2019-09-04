@@ -6,6 +6,7 @@ from nefct.geometry.scanner_config import ScannerConfig, ScannerConfig2D, Scanne
 import numpy as np
 import tensorflow as tf
 from nefct.utils import tqdm
+from typing import Callable
 
 __all__ = ('ProjectT', 'Project2DT', 'Project3DT', 'Project2DNT', 'Project3DNT')
 
@@ -34,9 +35,11 @@ class Project2DT(ProjectT):
     config: ScannerConfig2D
     angles: list
     timestamps: list
-    deformer: Any
+    deformer: Callable
 
     def __call__(self, image: Image2D) -> ProjectionSequence2D:
+        if self.timestamps is None:
+            object.__setattr__(self, 'timestamps', self.angles * 0)
         mode = self.config.mode
 
         config = {
@@ -55,7 +58,8 @@ class Project2DT(ProjectT):
         else:
             dist_proj_2d = dist_proj_2d_cyli
         proj_data = np.zeros((self.config.detector.number, len(self.angles)), np.float32)
-        for i, time_ in enumerate(self.timestamps):
+        for i in tqdm(range(len(self.angles))):
+            time_ = self.timestamps[i]
             image_ = self.deformer(image, time_)
             config['angles'] = [self.angles[i]]
             proj_data_ = dist_proj_2d(image_.data.transpose(),
@@ -71,9 +75,10 @@ class Project2DNT(ProjectT):
     config: ScannerConfig2D
     angles: list
     timestamps: list
-    deformer: Any
 
     def __call__(self, image: Image2DT) -> ProjectionSequence2D:
+        if self.timestamps is None:
+            object.__setattr__(self, 'timestamps', self.angles * 0)
         mode = self.config.mode
 
         config = {
@@ -92,12 +97,13 @@ class Project2DNT(ProjectT):
         else:
             dist_proj_2d = dist_proj_2d_cyli
         proj_data = np.zeros((self.config.detector.number, len(self.angles)), np.float32)
-        for i, time_ in enumerate(image.timestamps):
+        for i in tqdm(range(len(image.timestamps))):
+            time_ = image.timestamps[i]
             image_ = image[i]
             config['angles'] = [self.angles[self.timestamps == time_]]
             proj_data_ = dist_proj_2d(image_.data.transpose(),
                                       **config).numpy().transpose()
-            proj_data[:, self.timestamps == time_] = proj_data_[:, 0]
+            proj_data[:, self.timestamps == time_] = proj_data_
 
         return ProjectionSequence2D(proj_data * image.unit_size[0], self.config, self.angles,
                                     self.timestamps)
@@ -109,9 +115,13 @@ class Project3DT(ProjectT):
     angles: list
     offsets: list
     timestamps: list
-    deformer: Any
+    deformer: Callable
 
     def __call__(self, image: Image3D) -> ProjectionSequence3D:
+        if self.timestamps is None:
+            object.__setattr__(self, 'timestamps', self.angles * 0)
+        if self.offsets is None:
+            object.__setattr__(self, 'offsets', self.angles * 0)
         mode = self.config.mode
         from nefct.utils import declare_eager_execution
         declare_eager_execution()
@@ -140,12 +150,11 @@ class Project3DT(ProjectT):
                               len(self.angles)), np.float32)
         from nefct.utils import tqdm
         import tensorflow as tf
-        for i in tqdm(range(len(self.timestamps))):
+        for i in tqdm(range(len(self.angles))):
             time_ = self.timestamps[i]
-            image_ = self.deformer(image_tf.data, time_)
+            image_ = self.deformer(image, time_)
             config['angles'] = [self.angles[i]]
             config['offsets'] = [self.offsets[i] / image.unit_size[0]]
-
             proj_data[:, :, i] = dist_proj_3d(tf.transpose(image_.data),
                                               **config).numpy().transpose()[:, :, 0]
 
@@ -153,15 +162,19 @@ class Project3DT(ProjectT):
                                     self.offsets,
                                     self.timestamps)
 
+
 @nef_class
 class Project3DNT(ProjectT):
     config: ScannerConfig3D
     angles: list
     offsets: list
     timestamps: list
-    deformer: Any
 
     def __call__(self, image: Image3DT) -> ProjectionSequence3D:
+        if self.timestamps is None:
+            object.__setattr__(self, 'timestamps', self.angles * 0)
+        if self.offsets is None:
+            object.__setattr__(self, 'offsets', self.angles * 0)
         mode = self.config.mode
         from nefct.utils import declare_eager_execution
         declare_eager_execution()
@@ -188,13 +201,14 @@ class Project3DNT(ProjectT):
         proj_data = np.zeros((self.config.detector_a.number,
                               self.config.detector_b.number,
                               len(self.angles)), np.float32)
-        for i, time_ in tqdm(enumerate(image.timestamps)):
+        for i in tqdm(range(len(image.timestamps))):
+            time_ = image.timestamps[i]
             image_ = image[i]
             config['angles'] = self.angles[self.timestamps == time_]
             config['offsets'] = self.offsets[self.timestamps == time_] / image.unit_size[0]
 
             proj_data[:, :, self.timestamps == time_] = dist_proj_3d(tf.transpose(image_.data),
-                                              **config).numpy().transpose()[:, :, 0]
+                                                                     **config).numpy().transpose()
 
         return ProjectionSequence3D(proj_data * image.unit_size[0], self.config, self.angles,
                                     self.offsets,

@@ -146,7 +146,7 @@ def phantom(n = 256, p_type = 'Modified Shepp-Logan', ellipses = None):
 
             idx = (x - x0) ** 2 / asq + (y - y0) ** 2 / bsq + (z - z0) ** 2 / csq <= 1
             p[idx] += A
-    return p
+    return p.astype(np.float32)
 
 
 def _select_phantom(name):

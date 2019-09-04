@@ -67,6 +67,8 @@ class Project3D(Project):
     offsets: list
 
     def __call__(self, image: Image) -> ProjectionSequence3D:
+        if self.offsets is None:
+            object.__setattr__(self, 'offsets', self.angles * 0)
         mode = self.config.mode
 
         config = {
@@ -94,4 +96,3 @@ class Project3D(Project):
                                  **config).numpy().transpose()
         return ProjectionSequence3D(proj_data * image.unit_size[0], self.config, self.angles,
                                     self.offsets)
-
