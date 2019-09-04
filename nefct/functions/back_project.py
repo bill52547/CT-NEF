@@ -6,6 +6,8 @@ from nefct.geometry.scanner_config import ScannerConfig, ScannerConfig2D, Scanne
 import numpy as np
 import tensorflow as tf
 
+
+__all__ = ('BackProject', 'BackProject2D', 'BackProject3D')
 dist_mod_3d = tf.load_op_library(
     '/home/bill52547/Github/tensorflow/bazel-bin/tensorflow/core/user_ops/dist_3d_mod.so'
 )
