@@ -34,8 +34,9 @@ class ConjGrad:
     invert_total_vari: InvertTotalVari
     mu: float
 
-    def __call__(self, projection: ProjectionSequence, d: TotalVariation = None) -> Image:
-        x = self.back_project(projection) * 0
+    def __call__(self, projection: ProjectionSequence, x: Image = None, d: TotalVariation = None) -> Image:
+        if x is None:
+            x = self.back_project(projection) * 0
 
         if self.total_vari is None:
             b = self.back_project(projection)
@@ -50,7 +51,6 @@ class ConjGrad:
         rsold = np.sum((r.data ** 2).data)
 
         for _ in range(self.n_iter):
-            print(np.max(x.data))
             Ap = A(p)
             alpha = rsold / np.sum(p.data * Ap.data)
             x = x + p * alpha

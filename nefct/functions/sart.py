@@ -26,13 +26,14 @@ class SART:
     project: Project
     back_project: BackProject
 
-    def __call__(self, projection: ProjectionSequence) -> Image:
-        x_tf = self.emap * 0
+    def __call__(self, projection: ProjectionSequence, x: Image = None) -> Image:
+        if x is None:
+            x = self.emap * 0
         for _ in tqdm(range(self.n_iter)):
-            _projection_tf = self.project(x_tf)
+            _projection_tf = self.project(x)
             _bproj_tf = self.back_project(projection - _projection_tf)
             _bproj_tf2 = _bproj_tf.update(data = tf.div_no_nan(_bproj_tf.data,
                                                                self.emap.data))
-            x_tf = x_tf.update(data = (x_tf + _bproj_tf2 * self.lambda_).data.numpy())
+            x = x.update(data = (x + _bproj_tf2 * self.lambda_).data.numpy())
 
-        return x_tf
+        return x
