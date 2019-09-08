@@ -15,10 +15,6 @@ class FBP:
     back_project: BackProject
 
     def __call__(self, projection: ProjectionSequence) -> Image:
-        ndim = len(self.shape)
-        x = Image(np.zeros(self.back_project.shape, dtype = np.float32), [0] * ndim, 
-        [s * self.back_project.unit_size for s in self.back_project.shape])
-
         proj_data_ = projection.data
         for i in tqdm(range(proj_data_.shape[-1])):
             f = fft(proj_data_[:, i])
