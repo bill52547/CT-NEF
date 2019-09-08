@@ -47,8 +47,8 @@ class BackProject2DT(BackProjectT):
         config = {
             'shape': self.shape,
             'angles': proj.angles,
-            'SID': self.config.SID,
-            'SAD': self.config.SAD,
+            'SID': self.config.SID / self.unit_size,
+            'SAD': self.config.SAD / self.unit_size,
             'na': self.config.detector.number,
             'da': self.config.detector.unit_size,
             'ai': self.config.detector.offset
@@ -59,7 +59,7 @@ class BackProject2DT(BackProjectT):
             config['ai'] /= self.unit_size
         else:
             dist_back_proj_2d = dist_back_proj_2d_cyli
-        bproj_data = np.zeros(self.shape + [len(self.timestamps)], np.float32)
+        bproj_data = np.zeros(self.shape, np.float32)
         for i in tqdm(range(len(proj.timestamps))):
             time_ = proj.timestamps[i]
             config['angles'] = [proj.angles[i]]
@@ -87,8 +87,8 @@ class BackProject2DNT(BackProjectT):
         config = {
             'shape': self.shape,
             'angles': proj.angles,
-            'SID': self.config.SID,
-            'SAD': self.config.SAD,
+            'SID': self.config.SID / self.unit_size,
+            'SAD': self.config.SAD / self.unit_size,
             'na': self.config.detector.number,
             'da': self.config.detector.unit_size,
             'ai': self.config.detector.offset
@@ -100,7 +100,7 @@ class BackProject2DNT(BackProjectT):
         else:
             dist_back_proj_2d = dist_back_proj_2d_cyli
         timestamp_size = len(self.timestamps)
-        bproj_data = np.zeros(self.shape + [timestamp_size], np.float32)
+        bproj_data = np.zeros(self.shape, np.float32)
         for i in tqdm(range(timestamp_size)):
             time_ = self.timestamps[i]
             inds = np.where(proj.timestamps == time_)[0]
@@ -146,7 +146,7 @@ class BackProject3DT(BackProjectT):
         else:
             dist_back_proj_3d = dist_back_proj_3d_cyli
 
-        bproj_data = np.zeros(self.shape + [len(self.timestamps)], np.float32)
+        bproj_data = np.zeros(self.shape, np.float32)
         for i in tqdm(range(len(proj.timestamps))):
             time_ = proj.timestamps[i]
             config['angles'] = [proj.angles[i]]
@@ -190,7 +190,7 @@ class BackProject3DNT(BackProjectT):
         else:
             dist_back_proj_3d = dist_back_proj_3d_cyli
         timestamp_size = len(self.timestamps)
-        bproj_data = np.zeros(self.shape + [timestamp_size], np.float32)
+        bproj_data = np.zeros(self.shape, np.float32)
         for i in tqdm(range(timestamp_size)):
             time_ = self.timestamps[i]
             inds = np.where(proj.timestamps == time_)[0]

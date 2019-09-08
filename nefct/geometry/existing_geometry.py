@@ -6,7 +6,7 @@ from nefct.geometry.detector_config import DetectorDirectAConfig, DetectorDirect
 __all__ = (
     'cbct_a_detector', 'cbct_b_detector', 'cbct_2d_scanner', 'cbct_3d_scanner', 'cbct_angles',
     'cbct_2d_full_fan_scanner', 'cbct_3d_full_fan_scanner', 'xcat_volumes', 'xcat_flows')
-cbct_a_detector = DetectorDirectAConfig(512, 0.388 * 1024, 148)
+cbct_a_detector = DetectorDirectAConfig(512, 0.388 * 1024, 147.44)
 cbct_b_detector = DetectorDirectBConfig(512, 0.388 * 1024, 0)
 cbct_2d_scanner = ScannerConfig2D('flat', 1500, 1000, cbct_a_detector)
 cbct_3d_scanner = ScannerConfig3D('flat', 1500, 1000, cbct_a_detector, cbct_b_detector)

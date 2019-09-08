@@ -8,7 +8,7 @@
 @desc:
 '''
 from nefct import nef_class, List
-from nefct.geometry.scanner_config import ScannerConfig
+from nefct.geometry.scanner_config import ScannerConfig, ScannerConfig2D, ScannerConfig3D
 import attr
 import numpy as np
 from nefct.ops.common.property_mixins import ShapePropertyMixin, UnitSizePropertyMixin, \
@@ -34,7 +34,7 @@ class ProjectionSequence(ArithmeticMixin):
 @nef_class
 class ProjectionSequence2D(ProjectionSequence):
     data: np.ndarray
-    scanner: ScannerConfig
+    scanner: ScannerConfig2D
     angles: list
     timestamps: list
 
@@ -70,7 +70,7 @@ class ProjectionSequence2D(ProjectionSequence):
 class ProjectionSequence3D(CentralSlicesPropertyMixin, ImshowMixin,
                            ShapePropertyMixin, ProjectionSequence):
     data: np.ndarray
-    scanner: ScannerConfig
+    scanner: ScannerConfig3D
     angles: list
     offsets: list
     timestamps: list
