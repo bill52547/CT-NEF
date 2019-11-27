@@ -22,6 +22,12 @@ dist_mod_2d = tf.load_op_library(
 dist_back_proj_2d_flat = dist_mod_2d.back_project_flat_two
 dist_back_proj_2d_cyli = dist_mod_2d.back_project_cyli_two
 
+pixel_mod_3d = tf.load_op_library(
+    '/home/bill52547/Github/tensorflow/bazel-bin/tensorflow/core/user_ops/ct_pixel3d_module.so'
+)
+
+pixel_mod_3d_flat = pixel_mod_3d.back_project_flat
+pixel_mod_3d_cyli = pixel_mod_3d.back_project_cyli
 
 @nef_class
 class BackProject:
@@ -175,7 +181,7 @@ class BackProject3D(BackProject):
 
         bproj_data = dist_back_proj_3d(proj.data.transpose(),
                                        **config).numpy().transpose()
-        return Image3D(bproj_data * self.unit_size, [0, 0],
+        return Image3D(bproj_data * self.unit_size, [0, 0, 0],
                        [s * self.unit_size for s in self.shape])
 
 #

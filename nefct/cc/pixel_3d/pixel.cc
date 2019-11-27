@@ -10,10 +10,9 @@ using namespace tensorflow;
 
 REGISTER_OP("BackProjectFlat")
 	.Input("projection_value: float")
-	.Input("grid: int32")
-	.Input("center: float")
-	.Input("size: float")
-	.Input("angle: float")
+	.Input("shape: int32")
+	.Input("offsets: float")
+	.Input("angles: float")
 	.Output("image: float")
 	.Attr("SID: float")
 	.Attr("SAD: float")
@@ -22,17 +21,13 @@ REGISTER_OP("BackProjectFlat")
 	.Attr("ai: float")
 	.Attr("nb: int")
 	.Attr("db: float")
-	.Attr("bi: float")
-	.Attr("nx: int")
-	.Attr("ny: int")
-	.Attr("nz: int");
+	.Attr("bi: float");
 
 REGISTER_OP("BackProjectCyli")
 	.Input("projection_value: float")
-	.Input("grid: int32")
-	.Input("center: float")
-	.Input("size: float")
-	.Input("angle: float")
+	.Input("shape: int32")
+	.Input("offsets: float")
+	.Input("angles: float")
 	.Output("image: float")
 	.Attr("SID: float")
 	.Attr("SAD: float")
@@ -41,21 +36,18 @@ REGISTER_OP("BackProjectCyli")
 	.Attr("ai: float")
 	.Attr("nb: int")
 	.Attr("db: float")
-	.Attr("bi: float")
-	.Attr("nx: int")
-	.Attr("ny: int")
-	.Attr("nz: int");
+	.Attr("bi: float");
 
-void backproject_flat(const float *pv_values, const int *grid, const float *center,
-					  const float *size, const float *angles,
+void backproject_flat(const float *pv_values, const int *shape, const float *offsets,
+					  const float *angles,
 					  const int na, const int nb, const int nv,
 					  const float SID, const float SAD,
 					  const float da, const float ai,
 					  const float db, const float bi,
 					  float *image);
 
-void backproject_cyli(const float *pv_values, const int *grid, const float *center,
-					  const float *size, const float *angles,
+void backproject_cyli(const float *pv_values, const int *shape, const float *offsets,
+					  const float *angles,
 					  const int na, const int nb, const int nv,
 					  const float SID, const float SAD,
 					  const float da, const float ai,
@@ -75,9 +67,6 @@ public:
 		OP_REQUIRES_OK(context, context->GetAttr("nb", &nb));
 		OP_REQUIRES_OK(context, context->GetAttr("db", &db));
 		OP_REQUIRES_OK(context, context->GetAttr("bi", &bi));
-		OP_REQUIRES_OK(context, context->GetAttr("nx", &nx));
-		OP_REQUIRES_OK(context, context->GetAttr("ny", &ny));
-		OP_REQUIRES_OK(context, context->GetAttr("nz", &nz));
 	}
 
 	void Compute(OpKernelContext *context) override
@@ -85,26 +74,26 @@ public:
 		// Grab the input tensor
 
 		const Tensor &projection_value = context->input(0);
-		const Tensor &grid = context->input(1);
-		const Tensor &center = context->input(2);
-		const Tensor &size = context->input(3);
-		const Tensor &angle = context->input(4);
+		const Tensor &shape = context->input(1);
+		const Tensor &offsets = context->input(2);
+		const Tensor &angles = context->input(3);
 
 		auto projection_value_flat = projection_value.flat<float>();
-		auto grid_flat = grid.flat<int>();
-		auto center_flat = center.flat<float>();
-		auto size_flat = size.flat<float>();
-		auto angle_flat = angle.flat<float>();
+		auto shape_flat = shape.flat<int>();
+		auto offsets_flat = offsets.flat<float>();
+		auto angle_flat = angles.flat<float>();
 		unsigned int nv = angle_flat.size();
 
 		// define the shape of output tensors.
 		Tensor *image_value = NULL;
-		OP_REQUIRES_OK(context, context->allocate_output(0, {nx, ny, nz}, &image_value));
-		auto image_value_flat = image_value->flat<float>();
+		int shape_cpu[3];
+		cudaMemcpy(shape_cpu, shape_flat.data(), 3 * sizeof(int), cudaMemcpyDeviceToHost);
+		OP_REQUIRES_OK(context, context->allocate_output(0, {shape_cpu[0], shape_cpu[1], shape_cpu[2]}, &image_value));
+        auto image_value_flat = image_value->flat<float>();
 		cudaMemset(image_value_flat.data(), 0, sizeof(float) * image_value_flat.size());
 
-		backproject_flat(projection_value_flat.data(), grid_flat.data(), center_flat.data(),
-						 size_flat.data(), angle_flat.data(),
+		backproject_flat(projection_value_flat.data(), shape_flat.data(), offsets_flat.data(),
+						 angle_flat.data(),
 						 na, nb, nv,
 						 SID, SAD, da, ai, db, bi,
 						 image_value_flat.data());
@@ -119,9 +108,6 @@ private:
 	int nb;
 	float db;
 	float bi;
-	int nx;
-	int ny;
-	int nz;
 };
 
 class BackProjectCyliOp : public OpKernel
@@ -137,9 +123,6 @@ public:
 		OP_REQUIRES_OK(context, context->GetAttr("nb", &nb));
 		OP_REQUIRES_OK(context, context->GetAttr("db", &db));
 		OP_REQUIRES_OK(context, context->GetAttr("bi", &bi));
-		OP_REQUIRES_OK(context, context->GetAttr("nx", &nx));
-		OP_REQUIRES_OK(context, context->GetAttr("ny", &ny));
-		OP_REQUIRES_OK(context, context->GetAttr("nz", &nz));
 	}
 
 	void Compute(OpKernelContext *context) override
@@ -147,26 +130,26 @@ public:
 		// Grab the input tensor
 
 		const Tensor &projection_value = context->input(0);
-		const Tensor &grid = context->input(1);
-		const Tensor &center = context->input(2);
-		const Tensor &size = context->input(3);
-		const Tensor &angle = context->input(4);
+		const Tensor &shape = context->input(1);
+		const Tensor &offsets = context->input(2);
+		const Tensor &angles = context->input(3);
 
 		auto projection_value_flat = projection_value.flat<float>();
-		auto grid_flat = grid.flat<int>();
-		auto center_flat = center.flat<float>();
-		auto size_flat = size.flat<float>();
-		auto angle_flat = angle.flat<float>();
+		auto shape_flat = shape.flat<int>();
+		auto offsets_flat = offsets.flat<float>();
+		auto angle_flat = angles.flat<float>();
 		unsigned int nv = angle_flat.size();
 
 		// define the shape of output tensors.
 		Tensor *image_value = NULL;
-		OP_REQUIRES_OK(context, context->allocate_output(0, {nx, ny, nz}, &image_value));
+		int shape_cpu[3];
+        cudaMemcpy(shape_cpu, shape_flat.data(), 3 * sizeof(int), cudaMemcpyDeviceToHost);
+		OP_REQUIRES_OK(context, context->allocate_output(0, {shape_cpu[0], shape_cpu[1], shape_cpu[2]}, &image_value));
 		auto image_value_flat = image_value->flat<float>();
 		cudaMemset(image_value_flat.data(), 0, sizeof(float) * image_value_flat.size());
 
-		backproject_cyli(projection_value_flat.data(), grid_flat.data(), center_flat.data(),
-						 size_flat.data(), angle_flat.data(),
+		backproject_cyli(projection_value_flat.data(), shape_flat.data(), offsets_flat.data(),
+						 angle_flat.data(),
 						 na, nb, nv,
 						 SID, SAD, da, ai, db, bi,
 						 image_value_flat.data());
@@ -181,9 +164,6 @@ private:
 	int nb;
 	float db;
 	float bi;
-	int nx;
-	int ny;
-	int nz;
 };
 
 #define REGISTER_GPU_KERNEL(name, op) \

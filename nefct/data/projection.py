@@ -109,5 +109,6 @@ class ProjectionSequence3D(CentralSlicesPropertyMixin, ImshowMixin,
         return self.data.shape[2]
 
     def __getitem__(self, item):
-        return ProjectionSequence2D(self.data[:, :, item], self.scanner, self.angles[item],
+        return ProjectionSequence3D(self.data[:, :, item], self.scanner, self.angles[item],
+                                    self.offsets[item],
                                     self.timestamps[item])

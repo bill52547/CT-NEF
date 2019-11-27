@@ -5,9 +5,9 @@
 #include "cuda_runtime.h"
 #define abs(x) ((x > 0) ? x : -(x))
 
-const int BLOCKWIDTH = 16;
-const int BLOCKHEIGHT = 16;
-const int BLOCKDEPTH = 4;
+const int GRIDDIM_X = 16;
+const int GRIDDIM_Y = 16;
+const int GRIDDIM_Z = 4;
 
 __device__ void backproject_flat_device(const float *pv_values, const float *angles,
                                         const int nv, const float SID, const float SAD,
@@ -128,8 +128,8 @@ void backproject_flat(const float *pv_values, const int *grid, const float *cent
     float cx = center_cpu[0], cy = center_cpu[1]; // position of center
     float sx = size_cpu[0], sy = size_cpu[1];
 
-    const dim3 gridSize((nx + BLOCKWIDTH - 1) / BLOCKWIDTH, (ny + BLOCKHEIGHT - 1) / BLOCKHEIGHT, 1);
-    const dim3 blockSize(BLOCKWIDTH, BLOCKHEIGHT, BLOCKDEPTH);
+    const dim3 gridSize((nx + GRIDDIM_X - 1) / GRIDDIM_X, (ny + GRIDDIM_Y - 1) / GRIDDIM_Y, 1);
+    const dim3 blockSize(GRIDDIM_X, GRIDDIM_Y, GRIDDIM_Z);
     BackProjectFlatKernel<<<gridSize, blockSize>>>(pv_values, angles,
                                                    nx, ny,
                                                    cx, cy,
@@ -156,8 +156,8 @@ void backproject_cyli(const float *pv_values, const int *grid, const float *cent
     float cx = center_cpu[0], cy = center_cpu[1]; // position of center
     float sx = size_cpu[0], sy = size_cpu[1];
 
-    const dim3 gridSize((nx + BLOCKWIDTH - 1) / BLOCKWIDTH, (ny + BLOCKHEIGHT - 1) / BLOCKHEIGHT, 1);
-    const dim3 blockSize(BLOCKWIDTH, BLOCKHEIGHT, 1);
+    const dim3 gridSize((nx + GRIDDIM_X - 1) / GRIDDIM_X, (ny + GRIDDIM_Y - 1) / GRIDDIM_Y, 1);
+    const dim3 blockSize(GRIDDIM_X, GRIDDIM_Y, 1);
     BackProjectCyliKernel<<<gridSize, blockSize>>>(pv_values, angles,
                                                    nx, ny,
                                                    cx, cy,

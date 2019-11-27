@@ -7,9 +7,9 @@
 
 const float eps_ = 0.01;
 
-const int BLOCKWIDTH = 16;
-const int BLOCKHEIGHT = 16;
-const int BLOCKDEPTH = 4;
+const int GRIDDIM_X = 16;
+const int GRIDDIM_Y = 16;
+const int GRIDDIM_Z = 4;
 
 __device__ void project_device(const float x1_, const float y1_, const float z1_,
                                const float x2_, const float y2_, const float z2_,
@@ -147,8 +147,8 @@ void project_flat(const float *image, const int *grid, const float *center,
     float cx = center_cpu[0], cy = center_cpu[1], cz = center_cpu[2]; // position of center
     float sx = size_cpu[0], sy = size_cpu[1], sz = size_cpu[2];
 
-    const dim3 gridSize((na + BLOCKWIDTH - 1) / BLOCKWIDTH, (nb + BLOCKHEIGHT - 1) / BLOCKHEIGHT, (nv + BLOCKDEPTH - 1) / BLOCKDEPTH);
-    const dim3 blockSize(BLOCKWIDTH, BLOCKHEIGHT, BLOCKDEPTH);
+    const dim3 gridSize((na + GRIDDIM_X - 1) / GRIDDIM_X, (nb + GRIDDIM_Y - 1) / GRIDDIM_Y, (nv + GRIDDIM_Z - 1) / GRIDDIM_Z);
+    const dim3 blockSize(GRIDDIM_X, GRIDDIM_Y, GRIDDIM_Z);
     ProjectFlatKernel<<<gridSize, blockSize>>>(image, angles,
                                                gx, gy, gz,
                                                cx, cy, cz,
@@ -176,8 +176,8 @@ void project_cyli(const float *image, const int *grid, const float *center,
     float cx = center_cpu[0], cy = center_cpu[1], cz = center_cpu[2]; // position of center
     float sx = size_cpu[0], sy = size_cpu[1], sz = size_cpu[2];
 
-    const dim3 gridSize((na + BLOCKWIDTH - 1) / BLOCKWIDTH, (nb + BLOCKHEIGHT - 1) / BLOCKHEIGHT, (nv + BLOCKDEPTH - 1) / BLOCKDEPTH);
-    const dim3 blockSize(BLOCKWIDTH, BLOCKHEIGHT, BLOCKDEPTH);
+    const dim3 gridSize((na + GRIDDIM_X - 1) / GRIDDIM_X, (nb + GRIDDIM_Y - 1) / GRIDDIM_Y, (nv + GRIDDIM_Z - 1) / GRIDDIM_Z);
+    const dim3 blockSize(GRIDDIM_X, GRIDDIM_Y, GRIDDIM_Z);
     ProjectCyliKernel<<<gridSize, blockSize>>>(image, angles,
                                                gx, gy, gz,
                                                cx, cy, cz,

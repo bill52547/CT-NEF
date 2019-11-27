@@ -170,8 +170,8 @@ def nef_class(cls) -> Any:
                               args_dict,
                               bases = (cls,),
                               auto_attribs = True,
-                              slots = True,
-                              frozen = True)
+                              # frozen = True,
+                              slots = True)
 
     return types.new_class(cls.__name__, (new_cls, NefBaseClass),
                            {'metaclass': BaseMeta})

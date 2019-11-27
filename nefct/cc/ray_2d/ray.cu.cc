@@ -5,9 +5,9 @@
 #include "cuda_runtime.h"
 #define abs(x) ((x > 0) ? x : -(x))
 
-const int BLOCKWIDTH = 16;
-const int BLOCKHEIGHT = 16;
-const int BLOCKDEPTH = 4;
+const int GRIDDIM_X = 16;
+const int GRIDDIM_Y = 16;
+const int GRIDDIM_Z = 4;
 const float eps_ = 0.01;
 
 __device__ void project_device(const float x1_, const float y1_,
@@ -129,8 +129,8 @@ void project_flat(const float *image, const int *grid, const float *center,
     float cx = center_cpu[0], cy = center_cpu[1]; // position of center
     float sx = size_cpu[0], sy = size_cpu[1];
 
-    const dim3 gridSize((na + BLOCKWIDTH - 1) / BLOCKWIDTH, (nv + BLOCKHEIGHT - 1) / BLOCKHEIGHT, 1);
-    const dim3 blockSize(BLOCKWIDTH, BLOCKHEIGHT, BLOCKDEPTH);
+    const dim3 gridSize((na + GRIDDIM_X - 1) / GRIDDIM_X, (nv + GRIDDIM_Y - 1) / GRIDDIM_Y, 1);
+    const dim3 blockSize(GRIDDIM_X, GRIDDIM_Y, GRIDDIM_Z);
     ProjectFlatKernel<<<gridSize, blockSize>>>(image, angles,
                                                gx, gy,
                                                cx, cy,
@@ -157,8 +157,8 @@ void project_cyli(const float *image, const int *grid, const float *center,
     float cx = center_cpu[0], cy = center_cpu[1]; // position of center
     float sx = size_cpu[0], sy = size_cpu[1];
 
-    const dim3 gridSize((na + BLOCKWIDTH - 1) / BLOCKWIDTH, (nv + BLOCKHEIGHT - 1) / BLOCKHEIGHT, 1);
-    const dim3 blockSize(BLOCKWIDTH, BLOCKHEIGHT, 1);
+    const dim3 gridSize((na + GRIDDIM_X - 1) / GRIDDIM_X, (nv + GRIDDIM_Y - 1) / GRIDDIM_Y, 1);
+    const dim3 blockSize(GRIDDIM_X, GRIDDIM_Y, 1);
     ProjectCyliKernel<<<gridSize, blockSize>>>(image, angles,
                                                gx, gy,
                                                cx, cy,
