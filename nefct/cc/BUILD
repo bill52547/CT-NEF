@@ -77,14 +77,14 @@ tf_custom_op_library(
 tf_custom_op_library(
   name = "generate_sys_mat_mod.so",
   srcs = ["gen_sys_mat/generate_sys_mat.cc"],
-  gpu_srcs = ["gen_sys_mat/count_sys_mat.cu.cc","gen_sys_mat/generate_sys_mat.cu.cc"]
+  gpu_srcs = ["gen_sys_mat/count_sys_mat.cu.cc","gen_sys_mat/generate_sys_mat.cu.cc","gen_sys_mat/count_sys_mat_back.cu.cc","gen_sys_mat/generate_sys_mat_back.cu.cc"]
 )
 
 
 tf_custom_op_library(
   name = "ssm_op_mod.so",
   srcs = ["ssm_ops/ssm_ops.cc"],
-  gpu_srcs = ["ssm_ops/ssm_ops.cu.cc"]
+  gpu_srcs = ["ssm_ops/ssm_ops.cu.cc", "ssm_ops/ssm_ops_back.cu.cc", "ssm_ops/ssm_sart.cu.cc"]
 )
 # tf_custom_op_library(
 #    name = "tf_siddon_module.so",

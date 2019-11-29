@@ -8,16 +8,14 @@
 #define MIN(a, b) (((a) < (b)) ? a : b)
 const int GRIDDIM_X = 16;
 const int GRIDDIM_Y = 16;
-const int GRIDDIM_Z = 4;
-const float eps_ = 0.01;
 
 // mode 0 for flat, mode 1 for cylin
 __global__ void kernel_generate(const int mode,
-                               const float SD, const float SO,
-                               const int nx, const int ny, const int nz,
-                               const float da, const float ai, const int na,
-                               const float db, const float bi, const int nb,
-                               const int *row, int *col, float *data)
+                                const float SD, const float SO,
+                                const int nx, const int ny, const int nz,
+                                const float da, const float ai, const int na,
+                                const float db, const float bi, const int nb,
+                                const int *row, int *col, float *data)
 {
     int ba = blockIdx.x;
     int bb = blockIdx.y;
@@ -55,12 +53,14 @@ __global__ void kernel_generate(const int mode,
     z21 = z2 - z1;
 
     // y - z plane, where ABS(x21) > ABS(y21)
-    if (ABS(x21) > ABS(y21)){
-    // if (ABS(cphi) > ABS(sphi)){
+    if (ABS(x21) > ABS(y21))
+    {
+        // if (ABS(cphi) > ABS(sphi)){
         float yi1, yi2, zi1, zi2;
         int Yi1, Yi2, Zi1, Zi2;
         // for each y - z plane, we calculate and add the contribution of related pixels
-        for (int ix = 0; ix < nx; ix++){
+        for (int ix = 0; ix < nx; ix++)
+        {
             // calculate y indices of intersecting voxel candidates
             float xl, xr, yl, yr, ratio;
             float cyll, cyrr, xc;
@@ -69,49 +69,57 @@ __global__ void kernel_generate(const int mode,
             yl = y21 - da / 2;
             yr = y21 + da / 2;
             xc = (float)ix + 0.5f - (float)nx / 2 - x1;
-            
+
             ratio = yl / xl;
             cyll = ratio * xc + y1 + ny / 2;
             ratio = yr / xr;
             cyrr = ratio * xc + y1 + ny / 2;
 
-            yi1 = MIN(cyll, cyrr); Yi1 = (int)floorf(yi1);
-            yi2 = MAX(cyll, cyrr); Yi2 = (int)floorf(yi2);
+            yi1 = MIN(cyll, cyrr);
+            Yi1 = (int)floorf(yi1);
+            yi2 = MAX(cyll, cyrr);
+            Yi2 = (int)floorf(yi2);
 
             float zl, zr, czl, czr;
             zl = z21 - db / 2;
             zr = z21 + db / 2;
-            xc = (float)ix + 0.5f - (float)nx / 2 - x1 ;
+            xc = (float)ix + 0.5f - (float)nx / 2 - x1;
 
             ratio = zl / x21;
             czl = ratio * xc + z1 + nz / 2;
             ratio = zr / x21;
             czr = ratio * xc + z1 + nz / 2;
 
-            zi1 = MIN(czl, czr); Zi1 = (int)floorf(zi1);
-            zi2 = MAX(czl, czr); Zi2 = (int)floorf(zi2);
+            zi1 = MIN(czl, czr);
+            Zi1 = (int)floorf(zi1);
+            zi2 = MAX(czl, czr);
+            Zi2 = (int)floorf(zi2);
 
             float wy, wz;
 
             for (int iy = MAX(0, Yi1); iy <= MIN(ny - 1, Yi2); iy++)
             {
-                wy = MIN(iy + 1.0f, yi2) - MAX(iy + 0.0f, yi1); wy /= (yi2 - yi1);
+                wy = MIN(iy + 1.0f, yi2) - MAX(iy + 0.0f, yi1);
+                wy /= (yi2 - yi1);
                 for (int iz = MAX(0, Zi1); iz <= MIN(nz - 1, Zi2); iz++)
                 {
-                    wz = MIN(iz + 1.0f, zi2) - MAX(iz + 0.0f, zi1); wz /= (zi2 - zi1);
+                    wz = MIN(iz + 1.0f, zi2) - MAX(iz + 0.0f, zi1);
+                    wz /= (zi2 - zi1);
                     col[c] = ix + iy * nx + iz * nx * ny;
                     data[c] = wy * wz;
                     c += 1;
-                }                
-            }        
+                }
+            }
         }
     }
-    // x - z plane, where ABS(x21) <= ABS(y21)    
-    else{
+    // x - z plane, where ABS(x21) <= ABS(y21)
+    else
+    {
         float xi1, xi2, zi1, zi2;
         int Xi1, Xi2, Zi1, Zi2;
         // for each y - z plane, we calculate and add the contribution of related pixels
-        for (int iy = 0; iy < ny; iy++){
+        for (int iy = 0; iy < ny; iy++)
+        {
             // calculate y indices of intersecting voxel candidates
             float yl, yr, xl, xr, ratio;
             float cxll, cxrr, yc;
@@ -120,14 +128,16 @@ __global__ void kernel_generate(const int mode,
             xl = x21;
             xr = x21;
             yc = (float)iy + 0.5f - (float)ny / 2 - y1;
-            
+
             ratio = xl / yl;
             cxll = ratio * yc + x1 + nx / 2;
             ratio = xr / yr;
             cxrr = ratio * yc + x1 + nx / 2;
 
-            xi1 = MIN(cxll, cxrr); Xi1 = (int)floorf(xi1);
-            xi2 = MAX(cxll, cxrr); Xi2 = (int)floorf(xi2);
+            xi1 = MIN(cxll, cxrr);
+            Xi1 = (int)floorf(xi1);
+            xi2 = MAX(cxll, cxrr);
+            Xi2 = (int)floorf(xi2);
 
             float zl, zr, czl, czr;
             zl = z21 - db / 2;
@@ -139,31 +149,35 @@ __global__ void kernel_generate(const int mode,
             ratio = zr / y21;
             czr = ratio * yc + z1 + nz / 2;
 
-            zi1 = MIN(czl, czr); Zi1 = (int)floorf(zi1);
-            zi2 = MAX(czl, czr); Zi2 = (int)floorf(zi2);
+            zi1 = MIN(czl, czr);
+            Zi1 = (int)floorf(zi1);
+            zi2 = MAX(czl, czr);
+            Zi2 = (int)floorf(zi2);
 
             float wx, wz;
 
             for (int ix = MAX(0, Xi1); ix <= MIN(nx - 1, Xi2); ix++)
             {
-                wx = MIN(ix + 1.0f, xi2) - MAX(ix + 0.0f, xi1); wx /= (xi2 - xi1);
+                wx = MIN(ix + 1.0f, xi2) - MAX(ix + 0.0f, xi1);
+                wx /= (xi2 - xi1);
                 for (int iz = MAX(0, Zi1); iz <= MIN(nz - 1, Zi2); iz++)
                 {
-                    wz = MIN(iz + 1.0f, zi2) - MAX(iz + 0.0f, zi1); wz /= (zi2 - zi1);
+                    wz = MIN(iz + 1.0f, zi2) - MAX(iz + 0.0f, zi1);
+                    wz /= (zi2 - zi1);
                     col[c] = ix + iy * nx + iz * nx * ny;
                     data[c] = wx * wz;
                     c += 1;
-                }                
-            }        
-        }            
+                }
+            }
+        }
     }
 }
 
 void generate_flat_gpu(const int *shape,
-                      const float SD, const float SO,
-                      const float da, const float ai, const int na,
-                      const float db, const float bi, const int nb,
-                      const int *row, int *col, float *data)
+                       const float SD, const float SO,
+                       const float da, const float ai, const int na,
+                       const float db, const float bi, const int nb,
+                       const int *row, int *col, float *data)
 {
     int shape_cpu[3];
     cudaMemcpy(shape_cpu, shape, 3 * sizeof(int), cudaMemcpyDeviceToHost);
@@ -171,20 +185,20 @@ void generate_flat_gpu(const int *shape,
 
     const dim3 shapeSize((na + GRIDDIM_X - 1) / GRIDDIM_X, (nb + GRIDDIM_Y - 1) / GRIDDIM_Y, 1);
     const dim3 blockSize(GRIDDIM_X, GRIDDIM_Y, 1);
+
     kernel_generate<<<shapeSize, blockSize>>>(0,
-                                        SD, SO,
-                                        nx, ny, nz,
-                                        da, ai, na,
-                                        db, bi, nb,
-                                        row, col, data);
+                                              SD, SO,
+                                              nx, ny, nz,
+                                              da, ai, na,
+                                              db, bi, nb,
+                                              row, col, data);
 }
 
-
 void generate_cyli_gpu(const int *shape,
-                      const float SD, const float SO,
-                      const float da, const float ai, const int na,
-                      const float db, const float bi, const int nb,
-                      const int *row, int *col, float *data)
+                       const float SD, const float SO,
+                       const float da, const float ai, const int na,
+                       const float db, const float bi, const int nb,
+                       const int *row, int *col, float *data)
 {
     int shape_cpu[3];
     cudaMemcpy(shape_cpu, shape, 3 * sizeof(int), cudaMemcpyDeviceToHost);
@@ -193,10 +207,10 @@ void generate_cyli_gpu(const int *shape,
     const dim3 shapeSize((na + GRIDDIM_X - 1) / GRIDDIM_X, (nb + GRIDDIM_Y - 1) / GRIDDIM_Y, 1);
     const dim3 blockSize(GRIDDIM_X, GRIDDIM_Y, 1);
     kernel_generate<<<shapeSize, blockSize>>>(1,
-                                            SD, SO,
-                                            nx, ny, nz,
-                                            da, ai, na,
-                                            db, bi, nb,
-                                            row, col, data);
-    }
+                                              SD, SO,
+                                              nx, ny, nz,
+                                              da, ai, na,
+                                              db, bi, nb,
+                                              row, col, data);
+}
 #endif
