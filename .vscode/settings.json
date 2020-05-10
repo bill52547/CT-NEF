@@ -1,5 +1,11 @@
 {
     "files.associations": {
-        "cmath": "cpp"
-    }
+        "cmath": "cpp",
+        "array": "cpp",
+        "string": "cpp",
+        "initializer_list": "cpp",
+        "utility": "cpp",
+        "type_traits": "cpp"
+    },
+    "python.pythonPath": "/home/bill52547/anaconda3/bin/python"
 }

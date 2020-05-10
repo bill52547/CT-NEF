@@ -109,6 +109,7 @@ class ProjectionSequence3D(CentralSlicesPropertyMixin, ImshowMixin,
         return self.data.shape[2]
 
     def __getitem__(self, item):
-        return ProjectionSequence3D(self.data[:, :, item], self.scanner, self.angles[item],
-                                    self.offsets[item],
-                                    self.timestamps[item])
+        v_data = np.array([vf[0] for vf in self.timestamps]).astype(np.float32)
+        f_data = np.array([vf[1] for vf in self.timestamps]).astype(np.float32)
+        new_timestamps = list(zip(v_data[item], f_data[item]))
+        return ProjectionSequence3D(self.data[:, :, item], self.scanner, self.angles[item], self.offsets[item], new_timestamps)

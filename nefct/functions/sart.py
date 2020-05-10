@@ -10,15 +10,19 @@
 
 from nefct import nef_class
 import numpy as np
-from nefct.data.image import Image
+from nefct.data.image import Image3DT, Image
 from nefct.data.projection import ProjectionSequence
 from nefct.functions.project import Project
 from nefct.functions.back_project import BackProject
 from nefct.geometry.scanner_config import ScannerConfig, ScannerConfig2D, ScannerConfig3D
-from nefct.functions import Project3D, Project3DT, BackProject3D, ProjectDeform3DT, \
-    BackProjectDeform3DT
+from nefct.functions.project import Project3D
+from nefct.functions.back_project import BackProject3D
 import tensorflow as tf
 from nefct.utils import tqdm
+from nefct.data.deform_para import DeformParameter
+from nefct.functions.binning_strategy import binning_strategy
+from nefct.functions.deform_and_cal_para import deform_and_cal_para
+from nefct.config import TF_USER_OP_PATH
 
 
 @nef_class
@@ -26,104 +30,306 @@ class SART:
     n_iter: int
     lambda_: float
     scanner: ScannerConfig
-    emap: Image
 
-    def __call__(self, projection: ProjectionSequence, x: Image = None) -> Image:
+    def __call__(self, projection: ProjectionSequence, nbin: int, x: Image = None) -> Image:
         angles = projection.angles
         offsets = projection.offsets
-        projector = Project3D(self.scanner, angles, offsets)
-        bprojector = BackProject3D(self.scanner, self.emap.shape, self.emap.unit_size[0])
-        if x is None:
-            x = self.emap * 0
-        for _ in tqdm(range(self.n_iter)):
-            _projection_tf = projector(x)
-            _bproj_tf = bprojector(projection - _projection_tf)
-            _bproj_tf2 = _bproj_tf.update(data = tf.div_no_nan(_bproj_tf.data,
-                                                               self.emap.data))
-            x = x.update(data = (x + _bproj_tf2 * self.lambda_).data.numpy())
+        new_op_mod = tf.load_op_library(TF_USER_OP_PATH + '/new_op_mod.so')
+        sart_op = new_op_mod.sart
+        v_data = np.array([time_[0] for time_ in projection.timestamps])
+        f_data = np.array([time_[1] for time_ in projection.timestamps])
+        bin_inds, v0_data, f0_data, num_in_bin = binning_strategy(v_data, f_data, nbin)
+        dx = x.unit_size[0]
+        if projection.scanner.mode.startswith('f'):
+            mode = 0
+            da = projection.scanner.detector_a.unit_size / dx
+            ai = projection.scanner.detector_a.offset / dx
+        else:
+            mode = 1
+            da = projection.scanner.detector_a.unit_size
+            ai = projection.scanner.detector_a.offset
+        x_data = x.data
+        for ibin in tqdm(range(nbin)):
+            filt = bin_inds[num_in_bin[ibin]: num_in_bin[ibin + 1]]
+            x_data[:, :, :, ibin] = sart_op(image=x_data[:, :, :, ibin].transpose(),
+                                            projection=projection.data[:, :, filt].transpose(),
+                                            angles=projection.angles[filt],
+                                            offsets=projection.offsets[filt] / dx,
+                                            mode=mode,
+                                            SO=projection.scanner.SAD / dx,
+                                            SD=projection.scanner.SID / dx,
+                                            nx=x.shape[0],
+                                            ny=x.shape[1],
+                                            nz=x.shape[2],
+                                            da=da,
+                                            ai=ai,
+                                            na=projection.scanner.detector_a.number,
+                                            db=projection.scanner.detector_b.unit_size / dx,
+                                            bi=projection.scanner.detector_b.offset / dx,
+                                            nb=projection.scanner.detector_b.number,
+                                            n_iter=self.n_iter,
+                                            lamb=self.lambda_
+                                            ).numpy().transpose()
+        x = x.update(data=x_data)
 
         return x
 
 
 @nef_class
 class MCSART:
+    out_n_iter: int
     n_iter: int
     lambda_: float
     scanner: ScannerConfig
-    emap: Image
-    dvf: tuple
+    dvf: DeformParameter
 
-    def __call__(self, projection: ProjectionSequence, x: Image = None) -> Image:
-        angles = projection.angles
-        offsets = projection.offsets
-        timestamps = projection.timestamps
-        projector = ProjectDeform3DT(self.scanner, angles, offsets, timestamps, self.dvf)
-        bprojector = BackProjectDeform3DT(self.scanner, self.emap.shape, self.emap.unit_size[0],
-                                          timestamps, self.dvf)
-        if x is None:
-            x = self.emap * 0
-        for _ in tqdm(range(self.n_iter)):
-            _projection_tf = projector(x)
-            _bproj_tf = bprojector(projection - _projection_tf)
-            _bproj_tf2 = _bproj_tf.update(data = tf.div_no_nan(_bproj_tf.data,
-                                                               self.emap.data))
-            x = x.update(data = (x + _bproj_tf2 * self.lambda_).data.numpy())
-
-        return x
+    def __call__(self, projection: ProjectionSequence,
+                 nbin: int,
+                 x: Image3DT = None,
+                 *,
+                 is_deform=True) -> Image3DT:
+        new_op_mod = tf.load_op_library(
+            TF_USER_OP_PATH + '/new_op_mod.so')
+        mc_sart_op = new_op_mod.mc_sart
+        v_data = np.array([time_[0] for time_ in projection.timestamps])
+        f_data = np.array([time_[1] for time_ in projection.timestamps])
+        bin_inds, v0_data, f0_data, num_in_bin = binning_strategy(v_data, f_data, nbin)
+        x_data = x.data
+        dx = x.unit_size[0]
+        new_dvf_para = self.dvf
+        if projection.scanner.mode.startswith('f'):
+            mode = 0
+            da = projection.scanner.detector_a.unit_size / dx
+            ai = projection.scanner.detector_a.offset / dx
+        else:
+            mode = 1
+            da = projection.scanner.detector_a.unit_size
+            ai = projection.scanner.detector_a.offset
+        for i in tqdm(range(self.out_n_iter)):
+            if not is_deform:
+                v_data_ = v_data[bin_inds]
+                f_data_ = f_data[bin_inds]
+                v0_data_ = v0_data
+                f0_data_ = f0_data
+            else:
+                v_data_ = v_data[bin_inds] - v0_data[0]
+                f_data_ = f_data[bin_inds] - f0_data[0]
+                v0_data_ = v0_data - v0_data[0]
+                f0_data_ = f0_data - f0_data[0]
+            x_data = mc_sart_op(image=x_data.transpose(),
+                                projection=projection.data[:, :, bin_inds].transpose(),
+                                angles=projection.angles[bin_inds],
+                                offsets=projection.offsets[bin_inds] / dx,
+                                ax=self.dvf.ax.transpose(),
+                                ay=self.dvf.ay.transpose(),
+                                az=self.dvf.az.transpose(),
+                                bx=self.dvf.bx.transpose(),
+                                by=self.dvf.by.transpose(),
+                                bz=self.dvf.bz.transpose(),
+                                cx=self.dvf.cx.transpose(),
+                                cy=self.dvf.cy.transpose(),
+                                cz=self.dvf.cz.transpose(),
+                                v_data=v_data_,
+                                f_data=f_data_,
+                                v0_data=v0_data_,
+                                f0_data=f0_data_,
+                                num_in_bin=num_in_bin,
+                                mode=mode,
+                                SO=projection.scanner.SAD / dx,
+                                SD=projection.scanner.SID / dx,
+                                nx=x.shape[0],
+                                ny=x.shape[1],
+                                nz=x.shape[2],
+                                da=da,
+                                ai=ai,
+                                na=projection.scanner.detector_a.number,
+                                db=projection.scanner.detector_b.unit_size / dx,
+                                bi=projection.scanner.detector_b.offset / dx,
+                                nb=projection.scanner.detector_b.number,
+                                n_iter=self.n_iter,
+                                lamb=self.lambda_,
+                                out_iter=i).numpy().transpose()
+            x = x.update(data=x_data, timestamps=list(zip(v0_data, f0_data)))
+            if not is_deform:
+                continue
+            if i < self.out_n_iter - 1 or not self.out_n_iter > 1:
+                new_dvf_para = deform_and_cal_para(x)
+                object.__setattr__(self, 'dvf', new_dvf_para)
+        return x, new_dvf_para
 
 
 @nef_class
-class MCSART2:
+class SMEIR:
+    out_n_iter: int
     n_iter: int
     lambda_: float
     scanner: ScannerConfig
-    emap: Image
-    dvf: list
+    dvf: DeformParameter
 
-    def __call__(self, projection: ProjectionSequence, ind_bin: np.ndarray,
-                 x: Image = None) -> Image:
-        angles = projection.angles
-        offsets = projection.offsets
-        timestamps = projection.timestamps
-        n_bin = np.unique(ind_bin).size
-        v = np.array([ts[0] for ts in timestamps])
-        f = np.array([ts[1] for ts in timestamps])
-        m_v = np.zeros(n_bin, dtype = np.float32)
-        m_f = np.zeros(n_bin, dtype = np.float32)
-        for i in range(n_bin):
-            m_v[i] = np.mean(v[ind_bin == i])
-            m_f[i] = np.mean(f[ind_bin == i])
+    def __call__(self, projection: ProjectionSequence,
+                 nbin: int,
+                 x: Image3DT = None,
+                 *,
+                 is_deform=True) -> Image3DT:
+        new_op_mod = tf.load_op_library(
+            TF_USER_OP_PATH + '/new_op_mod.so')
+        mc_sart_op = new_op_mod.mc_sart
+        v_data = np.array([time_[0] for time_ in projection.timestamps])
+        f_data = np.array([time_[1] for time_ in projection.timestamps])
+        bin_inds, v0_data, f0_data, num_in_bin = binning_strategy(v_data, f_data, nbin)
+        for ibin in range(nbin):
+            v_data[bin_inds[num_in_bin[ibin]: num_in_bin[ibin + 1]]] = v0_data[ibin]
+            f_data[bin_inds[num_in_bin[ibin]: num_in_bin[ibin + 1]]] = f0_data[ibin]
+        x_data = x.data
+        dx = x.unit_size[0]
+        new_dvf_para = self.dvf
+        if projection.scanner.mode.startswith('f'):
+            mode = 0
+            da = projection.scanner.detector_a.unit_size / dx
+            ai = projection.scanner.detector_a.offset / dx
+        else:
+            mode = 1
+            da = projection.scanner.detector_a.unit_size
+            ai = projection.scanner.detector_a.offset
+        for i in tqdm(range(self.out_n_iter)):
+            if not is_deform:
+                v_data_ = v_data[bin_inds]
+                f_data_ = f_data[bin_inds]
+                v0_data_ = v0_data
+                f0_data_ = f0_data
+            else:
+                v_data_ = v_data[bin_inds] - v0_data[0]
+                f_data_ = f_data[bin_inds] - f0_data[0]
+                v0_data_ = v0_data - v0_data[0]
+                f0_data_ = f0_data - f0_data[0]
+            x_data = mc_sart_op(image=x_data.transpose(),
+                                projection=projection.data[:, :, bin_inds].transpose(),
+                                angles=projection.angles[bin_inds],
+                                offsets=projection.offsets[bin_inds] / dx,
+                                ax=self.dvf.ax.transpose(),
+                                ay=self.dvf.ay.transpose(),
+                                az=self.dvf.az.transpose(),
+                                bx=self.dvf.bx.transpose(),
+                                by=self.dvf.by.transpose(),
+                                bz=self.dvf.bz.transpose(),
+                                cx=self.dvf.cx.transpose(),
+                                cy=self.dvf.cy.transpose(),
+                                cz=self.dvf.cz.transpose(),
+                                v_data=v_data_,
+                                f_data=f_data_,
+                                v0_data=v0_data_,
+                                f0_data=f0_data_,
+                                num_in_bin=num_in_bin,
+                                mode=mode,
+                                SO=projection.scanner.SAD / dx,
+                                SD=projection.scanner.SID / dx,
+                                nx=x.shape[0],
+                                ny=x.shape[1],
+                                nz=x.shape[2],
+                                da=da,
+                                ai=ai,
+                                na=projection.scanner.detector_a.number,
+                                db=projection.scanner.detector_b.unit_size / dx,
+                                bi=projection.scanner.detector_b.offset / dx,
+                                nb=projection.scanner.detector_b.number,
+                                n_iter=self.n_iter,
+                                lamb=self.lambda_,
+                                out_iter=i).numpy().transpose()
+            x = x.update(data=x_data, timestamps=list(zip(v0_data, f0_data)))
+            if not is_deform:
+                continue
+            if i < self.out_n_iter - 1 or not self.out_n_iter > 1:
+                new_dvf_para = deform_and_cal_para(x)
+                object.__setattr__(self, 'dvf', new_dvf_para)
+        return x, new_dvf_para
 
-        if x is None:
-            x = [self.emap * 0] * n_bin
-        for _ in tqdm(range(self.n_iter)):
-            for ibin in range(n_bin):
-                ax, ay, az, bx, by, bz = self.dvf[ibin][:6]
-                if ibin > 0:
-                    v_d = m_v[ibin] - m_v[ibin - 1]
-                    f_d = m_f[ibin] - m_f[ibin - 1]
-                    x_ = x[ibin - 1].deform(v_d * ax + f_d * bx,
-                                            v_d * ay + f_d * by,
-                                            v_d * az + f_d * bz)
-                else:
-                    v_d = m_v[ibin] - m_v[n_bin - 1]
-                    f_d = m_f[ibin] - m_f[n_bin - 1]
-                    x_ = x[n_bin - 1].deform(v_d * ax + f_d * bx,
-                                             v_d * ay + f_d * by,
-                                             v_d * az + f_d * bz)
-                inds = np.where(ind_bin == ibin)[0]
 
-                new_timestamps = [(v_ - m_v[ibin], f_ - m_f[ibin]) for (v_, f_) in timestamps[inds]]
+def norm2(data0, data1):
+    return np.sqrt(np.sum((data0 - data1) ** 2) / np.sum(data0 ** 2))
 
-                projector = ProjectDeform3DT(self.scanner, angles[inds], offsets[inds],
-                                             new_timestamps, self.dvf[ibin])
-                bprojector = BackProjectDeform3DT(self.scanner, self.emap.shape,
-                                                  self.emap.unit_size[0],
-                                                  new_timestamps, self.dvf[ibin])
-                _projection_tf = projector(x_)
-                _bproj_tf = bprojector(projection - _projection_tf)
-                _bproj_tf2 = _bproj_tf.update(data = tf.div_no_nan(_bproj_tf.data,
-                                                                   self.emap.data))
-                x[ibin] = x[ibin].update(data = (x + _bproj_tf2 * self.lambda_).data.numpy())
 
-        return x
+@nef_class
+class SART2:
+    n_iter: int
+    lambda_: float
+    scanner: ScannerConfig
+
+    def __call__(self, projection: ProjectionSequence, nbin: int, x: Image = None) -> Image:
+        new_op_mod = tf.load_op_library(TF_USER_OP_PATH + '/new_op_mod.so')
+
+        v_data = np.array([time_[0] for time_ in projection.timestamps])
+        f_data = np.array([time_[1] for time_ in projection.timestamps])
+        bin_inds, v0_data, f0_data, num_in_bin = binning_strategy(v_data, f_data, nbin)
+        dx = x.unit_size[0]
+        if projection.scanner.mode.startswith('f'):
+            mode = 0
+            da = projection.scanner.detector_a.unit_size / dx
+            ai = projection.scanner.detector_a.offset / dx
+        else:
+            mode = 1
+            da = projection.scanner.detector_a.unit_size
+            ai = projection.scanner.detector_a.offset
+        x_data = x.data
+        err = np.zeros((num_in_bin[-1], self.n_iter), dtype=np.float32)
+        img1 = np.ones((x.shape[::-1]), dtype=np.float32)
+        for ibin in tqdm(range(nbin)):
+            filt = bin_inds[num_in_bin[ibin]: num_in_bin[ibin + 1]]
+            for iter_ in tqdm(range(self.n_iter)):
+                for iangle in tqdm(filt):
+                    projector = lambda x: new_op_mod.project(image=x_data.transpose(),
+                                                             angles=projection.angles[iangle],
+                                                             offsets=projection.offsets[iangle] / dx,
+                                                             mode=mode,
+                                                             SO=projection.scanner.SAD / dx,
+                                                             SD=projection.scanner.SID / dx,
+                                                             nx=x.shape[0],
+                                                             ny=x.shape[1],
+                                                             nz=x.shape[2],
+                                                             da=da,
+                                                             ai=ai,
+                                                             na=projection.scanner.detector_a.number,
+                                                             db=projection.scanner.detector_b.unit_size / dx,
+                                                             bi=projection.scanner.detector_b.offset / dx,
+                                                             nb=projection.scanner.detector_b.number)
+
+                    bprojector = lambda x: new_op_mod.back_project(projection=x.data[:, :, iangle].transpose(),
+                                                                   angles=projection.angles[iangle],
+                                                                   offsets=projection.offsets[iangle] / dx,
+                                                                   mode=mode,
+                                                                   SO=projection.scanner.SAD / dx,
+                                                                   SD=projection.scanner.SID / dx,
+                                                                   nx=x.shape[0],
+                                                                   ny=x.shape[1],
+                                                                   nz=x.shape[2],
+                                                                   da=da,
+                                                                   ai=ai,
+                                                                   na=projection.scanner.detector_a.number,
+                                                                   db=projection.scanner.detector_b.unit_size / dx,
+                                                                   bi=projection.scanner.detector_b.offset / dx,
+                                                                   nb=projection.scanner.detector_b.number)
+                    bp = bprojector(projection.data[:, :, iangle].transpose() - projector(x_data[:, :, :, ibin]))
+                    ebp = bprojector(projector(img1))
+                    x_data[:, :, :, ibin] += bp / ebp
+                    err[iangle, iter_] = norm2(projection.data[:, :, iangle], projector(x_data[:, :, :, ibin]))
+            # x_data[:, :, :, ibin] = sart_op(image=x_data[:, :, :, ibin].transpose(),
+            #                                 projection=projection.data[:, :, filt].transpose(),
+            #                                 angles=projection.angles[filt],
+            #                                 offsets=projection.offsets[filt] / dx,
+            #                                 mode=mode,
+            #                                 SO=projection.scanner.SAD / dx,
+            #                                 SD=projection.scanner.SID / dx,
+            #                                 nx=x.shape[0],
+            #                                 ny=x.shape[1],
+            #                                 nz=x.shape[2],
+            #                                 da=da,
+            #                                 ai=ai,
+            #                                 na=projection.scanner.detector_a.number,
+            #                                 db=projection.scanner.detector_b.unit_size / dx,
+            #                                 bi=projection.scanner.detector_b.offset / dx,
+            #                                 nb=projection.scanner.detector_b.number,
+            #                                 n_iter=self.n_iter,
+            #                                 lamb=self.lambda_
+            #                                 ).numpy().transpose()
+        x = x.update(data=x_data)
+
+        return x, err

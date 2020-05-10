@@ -3,233 +3,264 @@
 #define EIGEN_USE_GPU
 #include "cuda.h"
 #include "cuda_runtime.h"
-#define ABS(x) ((x > 0) ? x : -(x))
 #define MAX(a, b) (((a) > (b)) ? a : b)
-#define MIN(a, b) (((a) < (b)) ? a : b)
 #define MAX4(a, b, c, d) MAX(MAX(a, b), MAX(c, d))
+#define MAX6(a, b, c, d, e, f) MAX(MAX(MAX(a, b), MAX(c, d)), MAX(e, f))
+
+//#define MAX4(a, b, c, d) (((((a) > (b)) ? (a) : (b)) > (((c) > (d)) ? (c) : (d))) > (((a) > (b)) ? (a) : (b)) : (((c) > (d)) ? (c) : (d)))
+#define MIN(a, b) (((a) < (b)) ? a : b)
 #define MIN4(a, b, c, d) MIN(MIN(a, b), MIN(c, d))
+#define MIN6(a, b, c, d, e, f) MIN(MIN(MIN(a, b), MIN(c, d)), MIN(e, f))
+#define ABS(x) ((x) > 0 ? x : -(x))
+#define PI 3.141592653589793f
 const int GRIDDIM_X = 16;
 const int GRIDDIM_Y = 16;
 const int GRIDDIM_Z = 4;
 const float eps_ = 0.01;
 
-// mode 0 for flat, mode 1 for cylin
-__global__ void back_project_kernel(const int mode, const float *angles, const int nv, const float SID, const float SAD,
-                                    const int nx, const int ny, const float da, const float ai, const int na, const float *vproj,
-                                    float *image)
+__global__ void kernel_backprojection(const float *vproj,
+                                      const float *angles,
+                                      const int mode,
+                                      const float SD, const float SO,
+                                      const int nx, const int ny,
+                                      const float da, const float ai, const int na,
+                                      float *image)
 {
-    int ba = blockIdx.x;
-    int bv = blockIdx.y;
-
-    int ta = threadIdx.x;
-    int tv = threadIdx.y;
-
-    int ia = ba * GRIDDIM_X + ta;
-    int iv = bv * GRIDDIM_Y + tv;
-
-    if (ia >= na || iv >= nv)
+    int ix = GRIDDIM_X * blockIdx.x + threadIdx.x;
+    int iy = GRIDDIM_Y * blockIdx.y + threadIdx.y;
+    if (ix >= nx || iy >= ny)
         return;
-    float x20, y20, x2, y2, x2n, y2n, x2m, y2m, p2x, p2y, p2xn, p2yn, ptmp;
-    float talpha, calpha, ds, temp, dst;
-    const float cphi = cosf(angles[iv]);
-    const float sphi = sinf(angles[iv]);
 
-    const float x1 = -SAD * cphi;
-    const float y1 = -SAD * sphi;
+    int id = ix + iy * nx;
 
-    const int id = ia + iv * na;
+    float angle = angles[0];
+    float sphi = __sinf(angle);
+    float cphi = __cosf(angle);
+    // float dd_voxel[3];
+    float xc, yc, zc;
+    xc = (float)ix - nx / 2 + 0.5f;
+    yc = (float)iy - ny / 2 + 0.5f;
 
+    // voxel boundary coordinates
+    float xll, yll, xlr, ylr, xrl, yrl, xrr, yrr, xt, yt;
+    xll = +xc * cphi + yc * sphi - 0.5f;
+    yll = -xc * sphi + yc * cphi - 0.5f;
+    xrr = +xc * cphi + yc * sphi + 0.5f;
+    yrr = -xc * sphi + yc * cphi + 0.5f;
+    xrl = +xc * cphi + yc * sphi + 0.5f;
+    yrl = -xc * sphi + yc * cphi - 0.5f;
+    xlr = +xc * cphi + yc * sphi - 0.5f;
+    ylr = -xc * sphi + yc * cphi + 0.5f;
+
+    // the coordinates of source and detector plane here are after rotation
+    float ratio, all, alr, arl, arr, at, ab, a_max, a_min;
+    // calculate a value for each boundary coordinates
+
+    // the a and b here are all absolute positions from isocenter, which are on detector planes
     if (mode == 0)
     {
-        x20 = SID - SAD;
-        y20 = (ia + 0.5) * da + ai - na * da / 2;
+        ratio = SD / (xll + SO);
+        all = ratio * yll;
+        ratio = SD / (xrr + SO);
+        arr = ratio * yrr;
+        ratio = SD / (xlr + SO);
+        alr = ratio * ylr;
+        ratio = SD / (xrl + SO);
+        arl = ratio * yrl;
     }
     else
     {
-        float ang = (ia + 0.5) * da + ai - na * da / 2;
-        x20 = SID * cosf(ang) - SAD;
-        y20 = SID * sinf(ang);
+        all = (float)atan2(yll, xll + SO);
+        ratio = SD * cosf(all) / (xll + SO);
+        arr = (float)atan2(yrr, xrr + SO);
+        ratio = SD * cosf(arr) / (xrr + SO);
+        alr = (float)atan2(ylr, xlr + SO);
+        ratio = SD * cosf(alr) / (xlr + SO);
+        arl = (float)atan2(yrl, xrl + SO);
+        ratio = SD * cosf(arl) / (xrl + SO);
     }
-    x2 = x20 * cphi - y20 * sphi;
-    y2 = x20 * sphi + y20 * cphi;
 
-    float x21, y21; // offset between SADurce and detector center
-    x21 = x2 - x1;
-    y21 = y2 - y1;
+    a_max = MAX4(all, arr, alr, arl);
+    a_min = MIN4(all, arr, alr, arl);
 
-    if (ABS(x21) > ABS(y21))
+    // the related positions on detector plane from start points
+    a_max = (a_max - ai) / da + na / 2; //  now they are the detector coordinates
+    a_min = (a_min - ai) / da + na / 2;
+    int a_ind_max = (int)floorf(a_max);
+    int a_ind_min = (int)floorf(a_min);
+
+    float bin_bound_1, bin_bound_2, wa;
+    for (int ia = MAX(0, a_ind_min); ia < MIN(na, a_max); ia++)
     {
-        // if (ABS(cphi) > ABS(sphi)){
-        float yi1, yi2;
-        int Yi1, Yi2;
-        // for each y - z plane, we calculate and add the contribution of related pixels
-        for (int ix = 0; ix < nx; ix++)
-        {
-            // calculate y indices of intersecting voxel candidates
-            float xl, xr, yl, yr, ratio;
-            float cyll, cylr, cyrl, cyrr, xc;
-            if (mode == 0)
-            {
-                x20 = SID - SAD;
-                y20 = ia * da + ai - na * da / 2;
-            }
-            else
-            {
-                float ang = ia * da + ai - na * da / 2;
-                x20 = SID * cosf(ang) - SAD;
-                y20 = SID * sinf(ang);
-            }
-            xl = x20 * cphi - y20 * sphi - x1;
-            yl = x20 * sphi + y20 * cphi - y1;
+        bin_bound_1 = ia + 0.0f;
+        bin_bound_2 = ia + 1.0f;
 
-            if (mode == 0)
-            {
-                x20 = SID - SAD;
-                y20 = (ia + 1) * da + ai - na * da / 2;
-            }
-            else
-            {
-                float ang = (ia + 1) * da + ai - na * da / 2;
-                x20 = SID * cosf(ang) - SAD;
-                y20 = SID * sinf(ang);
-            }
-            xr = x20 * cphi - y20 * sphi - x1;
-            yr = x20 * sphi + y20 * cphi - y1;
+        wa = MIN(bin_bound_2, a_max) - MAX(bin_bound_1, a_min); wa /= a_max - a_min;
 
-            // xl = x21 - da / 2 * sphi;
-            // xr = x21 + da / 2 * sphi;
-            // yl = y21 - da / 2 * cphi;
-            // yr = y21 + da / 2 * cphi;
-            xc = (float)ix + 0.5f - (float)nx / 2 - x1;
-
-            ratio = yl / xl;
-            cyll = ratio * xc + y1 + ny / 2;
-            ratio = yr / xr;
-            cyrr = ratio * xc + y1 + ny / 2;
-
-            yi1 = MIN(cyll, cyrr);
-            Yi1 = (int)floorf(yi1);
-            yi2 = MAX(cyll, cyrr);
-            Yi2 = (int)floorf(yi2);
-
-            xc = (float)ix + 0.5f - (float)nx / 2 - x1;
-
-            float wy;
-
-            for (int iy = MAX(0, Yi1); iy <= MIN(ny - 1, Yi2); iy++)
-            {
-                wy = MIN(iy + 1.0f, yi2) - MAX(iy + 0.0f, yi1);
-                wy /= (yi2 - yi1);
-                atomicAdd(image + ix + iy * nx, vproj[id] * wy / ABS(x21) * sqrt(x21 * x21 + y21 * y21));
-            }
-        }
+        image[id] += wa * vproj[ia];
     }
-    // x - z plane, where ABS(x21) <= ABS(y21)
-    else
+}
+
+//__global__ void kernel_backprojection2(const float *vproj,
+//                                       const float *angles, const float *offsets,
+//                                       const int mode,
+//                                       const float SD, const float SO,
+//                                       const int nx, const int ny, const int nz,
+//                                       const float da, const float ai, const int na,
+//                                       const float db, const float bi, const int nb,
+//                                       float *image)
+//{
+//    int ix = GRIDDIM_X * blockIdx.x + threadIdx.x;
+//    int iy = GRIDDIM_Y * blockIdx.y + threadIdx.y;
+//    int iz = GRIDDIM_Z * blockIdx.z + threadIdx.z;
+//    if (ix >= nx || iy >= ny || iz >= nz)
+//        return;
+//
+//    int id = ix + iy * nx + iz * nx * ny;
+//
+//    float angle = angles[0];
+//    float sphi = __sinf(angle);
+//    float cphi = __cosf(angle);
+//    // float dd_voxel[3];
+//    float xc, yc, zc;
+//    xc = (float)ix - nx / 2 + 0.5f;
+//    yc = (float)iy - ny / 2 + 0.5f;
+//    zc = (float)iz - nz / 2 + 0.5f - offsets[0];
+//
+//    // voxel boundary coordinates
+//    float xc1, yc1, zc1;
+//    xc1 = +xc * cphi + yc * sphi;
+//    yc1 = -xc * sphi + yc * cphi;
+//    zc1 = zc;
+//
+//    // the coordinates of source and detector plane here are after rotation
+//    float ratio, a, b;
+//    // calculate a value for each boundary coordinates
+//
+//    // the a and b here are all absolute positions from isocenter, which are on detector planes
+//    if (mode == 0)
+//    {
+//        ratio = SD / (xc1 + SO);
+//        a = ratio * yc1;
+//        b = ratio * zc1;
+//    }
+//    else
+//    {
+//        a = (float)atan2(yc1, xc1 + SO);
+//        ratio = SD * cosf(a) / (xc1 + SO);
+//        b = ratio * zc1;
+//    }
+//
+//    int ia1, ia2, ib1, ib2;
+//    float wa1, wa2, wb1, wb2;
+//    float ta = (a - ai) / da + na / 2;
+//    float tb = (b - bi) / db + nb / 2;
+//    ia1 = (int)floorf(ta);
+//    ia2 = ia1 + 1;
+//    ib1 = (int)floorf(tb);
+//    ib2 = ib1 + 1;
+//    wa2 = ta - ia1;
+//    wa1 = 1 - wa2;
+//    wb2 = tb - ib1;
+//    wb1 = 1 - wb2;
+//    if (0 <= ia1 && ia2 < na && 0 <= ib1 && ib2 < nb)
+//    {
+//        image[id] += wa1 * wb1 * vproj[ia1 + ib1 * na] +
+//                     wa2 * wb1 * vproj[ia2 + ib1 * na] +
+//                     wa1 * wb2 * vproj[ia1 + ib2 * na] +
+//                     wa2 * wb2 * vproj[ia2 + ib2 * na];
+//    }
+//}
+
+__global__ void initial_kernel(float *image1, const int N, const float beta)
+{
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    if (tid >= N)
     {
-        float xi1, xi2;
-        int Xi1, Xi2;
-        // for each y - z plane, we calculate and add the contribution of related pixels
-        for (int iy = 0; iy < ny; iy++)
-        {
-            // calculate y indices of intersecting voxel candidates
-            float yl, yr, xl, xr, ratio;
-            float cxll, cxlr, cxrl, cxrr, yc;
-            if (mode == 0)
-            {
-                x20 = SID - SAD;
-                y20 = ia * da + ai - na * da / 2;
-            }
-            else
-            {
-                float ang = ia * da + ai - na * da / 2;
-                x20 = SID * cosf(ang) - SAD;
-                y20 = SID * sinf(ang);
-            }
-            xl = x20 * cphi - y20 * sphi - x1;
-            yl = x20 * sphi + y20 * cphi - y1;
+        return;
+    }
 
-            if (mode == 0)
-            {
-                x20 = SID - SAD;
-                y20 = (ia + 1) * da + ai - na * da / 2;
-            }
-            else
-            {
-                float ang = (ia + 1) * da + ai - na * da / 2;
-                x20 = SID * cosf(ang) - SAD;
-                y20 = SID * sinf(ang);
-            }
-            xr = x20 * cphi - y20 * sphi - x1;
-            yr = x20 * sphi + y20 * cphi - y1;
+    image1[tid] = beta;
+}
 
-            // yl = y21 - da / 2 * cphi;
-            // yr = y21 + da / 2 * cphi;
-            // xl = x21 - da / 2 * sphi;
-            // xr = x21 + da / 2 * sphi;
-            yc = (float)iy + 0.5f - (float)ny / 2 - y1;
-
-            ratio = xl / yl;
-            cxll = ratio * yc + x1 + nx / 2;
-            ratio = xr / yr;
-            cxrr = ratio * yc + x1 + nx / 2;
-
-            xi1 = MIN(cxll, cxrr);
-            Xi1 = (int)floorf(xi1);
-            xi2 = MAX(cxll, cxrr);
-            Xi2 = (int)floorf(xi2);
-
-            yc = (float)iy + 0.5f - (float)ny / 2 - y1;
-
-            float wx;
-
-            for (int ix = MAX(0, Xi1); ix <= MIN(nx - 1, Xi2); ix++)
-            {
-                wx = MIN(ix + 1.0f, xi2) - MAX(ix + 0.0f, xi1);
-                wx /= (xi2 - xi1);
-                atomicAdd(image + ix + iy * nx, vproj[id] * wx / ABS(y21) * sqrt(x21 * x21 + y21 * y21));
-            }
-        }
+void back_project_gpu(const float *pv_values, const float *angles,
+                      const int mode,
+                      const int nv,
+                      const float SD, const float SO,
+                      const int nx, const int ny,
+                      const float da, const float ai, const int na,
+                      float *image)
+{
+    const dim3 shapeSize((nx + GRIDDIM_X - 1) / GRIDDIM_X,
+                         (ny + GRIDDIM_Y - 1) / GRIDDIM_Y, 1);
+    const dim3 blockSize(GRIDDIM_X, GRIDDIM_Y, 1);
+    initial_kernel<<<ny, nx>>>(image, nx * ny, 0.0f);
+    for (int iv = 0; iv < nv; iv++)
+    {
+        kernel_backprojection<<<shapeSize, blockSize>>>(pv_values + iv * na,
+                                                        angles + iv,
+                                                        mode,
+                                                        SD, SO,
+                                                        nx, ny,
+                                                        da, ai, na,
+                                                        image);
+        cudaDeviceSynchronize();
     }
 }
 
 void back_project_flat_gpu(const float *pv_values, const int *shape,
-                           const float *angles, const int nv,
-                           const float SID, const float SAD,
-                           const float da, const float ai, const int na,
-                           float *image)
+						   const float *angles, const int nv,
+						   const float SD, const float SO,
+						   const float da, const float ai, const int na,
+						   float *image)
 {
     int shape_cpu[2];
     cudaMemcpy(shape_cpu, shape, 2 * sizeof(int), cudaMemcpyDeviceToHost);
-    int nx = shape_cpu[0], ny = shape_cpu[1]; //number of meshes
-
-    const dim3 shapeSize((na + GRIDDIM_X - 1) / GRIDDIM_X, (nv + GRIDDIM_Y - 1) / GRIDDIM_Y, 1);
-    const dim3 blockSize(GRIDDIM_X, GRIDDIM_Y, GRIDDIM_Z);
-    back_project_kernel<<<shapeSize, blockSize>>>(0, angles, nv,
-                                                  SID, SAD,
-                                                  nx, ny,
-                                                  da, ai, na,
-                                                  pv_values, image);
+    int nx = shape_cpu[0];
+    int ny = shape_cpu[1];
+    const dim3 shapeSize((nx + GRIDDIM_X - 1) / GRIDDIM_X,
+                         (ny + GRIDDIM_Y - 1) / GRIDDIM_Y, 1);
+    const dim3 blockSize(GRIDDIM_X, GRIDDIM_Y, 1);
+    initial_kernel<<<ny, nx>>>(image, nx * ny, 0.0f);
+    for (int iv = 0; iv < nv; iv++)
+    {
+        kernel_backprojection<<<shapeSize, blockSize>>>(pv_values + iv * na,
+                                                        angles + iv,
+                                                        0,
+                                                        SD, SO,
+                                                        nx, ny,
+                                                        da, ai, na,
+                                                        image);
+        cudaDeviceSynchronize();
+    }
 }
 
 void back_project_cyli_gpu(const float *pv_values, const int *shape,
-                           const float *angles, const int nv,
-                           const float SID, const float SAD,
-                           const float da, const float ai, const int na,
-                           float *image)
+						   const float *angles, const int nv,
+						   const float SD, const float SO,
+						   const float da, const float ai, const int na,
+						   float *image)
 {
     int shape_cpu[2];
     cudaMemcpy(shape_cpu, shape, 2 * sizeof(int), cudaMemcpyDeviceToHost);
-    int nx = shape_cpu[0], ny = shape_cpu[1]; //number of meshes
+    int nx = shape_cpu[0];
+    int ny = shape_cpu[1];
 
-    const dim3 shapeSize((na + GRIDDIM_X - 1) / GRIDDIM_X, (nv + GRIDDIM_Y - 1) / GRIDDIM_Y, 1);
-    const dim3 blockSize(GRIDDIM_X, GRIDDIM_Y, GRIDDIM_Z);
+    const dim3 shapeSize((nx + GRIDDIM_X - 1) / GRIDDIM_X,
+                         (ny + GRIDDIM_Y - 1) / GRIDDIM_Y, 1);
+    const dim3 blockSize(GRIDDIM_X, GRIDDIM_Y, 1);
+    initial_kernel<<<ny, nx>>>(image, nx * ny, 0.0f);
 
-    back_project_kernel<<<shapeSize, blockSize>>>(1, angles, nv,
-                                                  SID, SAD,
-                                                  nx, ny,
-                                                  da, ai, na,
-                                                  pv_values, image);
+    for (int iv = 0; iv < nv; iv++)
+    {
+        kernel_backprojection<<<shapeSize, blockSize>>>(pv_values + iv * na,
+                                                        angles + iv,
+                                                        1,
+                                                        SD, SO,
+                                                        nx, ny,
+                                                        da, ai, na,
+                                                        image);
+        cudaDeviceSynchronize();
+    }
 }
-
 #endif

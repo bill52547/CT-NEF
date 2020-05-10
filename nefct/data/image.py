@@ -17,9 +17,9 @@ from nefct.io import LoadMixin, SaveMixin
 import numpy as np
 from nefct.ops.common.arithmetic_mixins import ArithmeticMixin
 import attr
-from nefct.ops.deform import Deform2DMixin, DeformMixin
+from nefct.ops.deform import DeformMixin
 
-__all__ = ('Image', 'Image2D', 'Image3D', 'Image2DT', 'Image3DT', 'all_one_image', 'all_zero_image')
+__all__ = ('Image', 'Image2D', 'Image3D', 'Image2DT', 'Image3DT')
 
 
 @nef_class
@@ -36,37 +36,37 @@ class Image(ShapePropertyMixin, UnitSizePropertyMixin, GetItemMixin,
 
 
 @nef_class
-class Image2D(Image, Deform2DMixin):
+class Image2D(Image):
     data: np.ndarray
     center: list
     size: list
     timestamps: Any
 
-    def deform(self, mx, my):
-        if isinstance(mx, Image):
-            mx_data = mx.data
-        else:
-            mx_data = mx
+    # def deform(self, mx, my):
+    #     if isinstance(mx, Image):
+    #         mx_data = mx.data
+    #     else:
+    #         mx_data = mx
 
-        if isinstance(my, Image):
-            my_data = my.data
-        else:
-            my_data = my
+    #     if isinstance(my, Image):
+    #         my_data = my.data
+    #     else:
+    #         my_data = my
 
-        return self.update(data = self._deform_2d_tf(self.data, mx_data, my_data).numpy())
+    #     return self.update(data = self._deform_2d_tf(self.data, mx_data, my_data).numpy())
 
-    def deform_invert(self, mx, my):
-        if isinstance(mx, Image):
-            mx_data = mx.data
-        else:
-            mx_data = mx
+    # def deform_invert(self, mx, my):
+    #     if isinstance(mx, Image):
+    #         mx_data = mx.data
+    #     else:
+    #         mx_data = mx
 
-        if isinstance(my, Image):
-            my_data = my.data
-        else:
-            my_data = my
+    #     if isinstance(my, Image):
+    #         my_data = my.data
+    #     else:
+    #         my_data = my
 
-        return self.update(data = self._deform_invert_2d_tf(self.data, mx_data, my_data).numpy())
+    #     return self.update(data = self._deform_invert_2d_tf(self.data, mx_data, my_data).numpy())
 
 
 @nef_class
@@ -130,31 +130,10 @@ class Image3DT(Image):
     data: np.ndarray
     center: list
     size: list
-    timestamps: Any = attr.ib(default = [0])
+    timestamps: Any = attr.ib(default = [0] * 12)
 
     def __getitem__(self, item):
         return Image3D(self.data[:, :, :, item], self.center, self.size, self.timestamps[item])
 
-
-def all_one_image(shape: list, timestamps: (list, float) = None):
-    if timestamps is None:
-        timestamps = 0
-
-    if np.isscalar(timestamps):
-        if len(shape) == 2:
-            return Image2D(np.ones(shape, np.float32), [0, 0], shape)
-        else:
-            return Image3D(np.ones(shape, np.float32), [0, 0, 0], shape)
-
-    else:
-        nt = len(timestamps)
-        shape_ = shape + [nt]
-        if len(shape) == 2:
-            return Image2DT(np.ones(shape_, np.float32), [0, 0], shape, timestamps = timestamps)
-        else:
-            return Image3DT(np.ones(shape_, np.float32), [0, 0, 0], shape,
-                            timestamps = timestamps)
-
-
-def all_zero_image(*args, **kwargs):
-    return all_one_image(*args, **kwargs) * 0
+    def __len__(self):
+        return self.data.shape[3]

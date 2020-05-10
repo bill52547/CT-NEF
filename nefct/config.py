@@ -26,6 +26,11 @@ LOG_DIR = DATABASE_DIR + 'logs' + separator
 DOC_DIR = DATABASE_DIR + 'docs' + separator
 TMP_DIR = DATABASE_DIR + 'tmp' + separator
 
+TF_USER_OP_PATH = ''
+if 'TF_USER_OP_PATH' not in os.environ:
+    TF_USER_OP_PATH = ''
+else:
+    TF_USER_OP_PATH = os.environ['TF_USER_OP_PATH']
 # if 'TF_USER_OP_PATH' not in os.environ:
 #     raise ValueError(
 #         'Please declare `TF_USER_OP_PATH` in system env first\n',

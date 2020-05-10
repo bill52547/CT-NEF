@@ -5,38 +5,31 @@
 #include "cuda.h"
 #include "cuda_runtime.h"
 #define abs(x) ((x) < 0 ? (-x) : (x))
-
+#define EPS 0.0001
 const int GRIDDIM_X = 16;
 const int GRIDDIM_Y = 16;
 const int GRIDDIM_Z = 4;
 
-__constant__ int const_image_shape[3];
-
 __global__ void
 DeformKernel(cudaTextureObject_t tex_img,
              const float *mx, const float *my, const float *mz,
+             const int nx, const int ny, const int nz,
              float *img1)
 {
     int ix = GRIDDIM_X * blockIdx.x + threadIdx.x;
     int iy = GRIDDIM_Y * blockIdx.y + threadIdx.y;
     int iz = GRIDDIM_Z * blockIdx.z + threadIdx.z;
-    if (ix >= const_image_shape[0] || iy >= const_image_shape[1] || iz >= const_image_shape[2])
+    if (ix >= nx || iy >= ny || iz >= nz)
         return;
-    int id = ix + iy * const_image_shape[0] + iz * const_image_shape[0] * const_image_shape[1];
+    int id = ix + iy * nx + iz * nx * ny;
     img1[id] = tex3D<float>(tex_img, ix + mx[id] + 0.5f, iy + my[id] + 0.5f, iz + mz[id] + 0.5f);
 }
 
 void deform_tex(const float *img,
                 const float *mx, const float *my, const float *mz,
-                const int *grid, float *img1)
+                const int nx, const int ny, const int nz,
+                float *img1)
 {
-    int grid_cpu[3];
-    cudaMemcpy(grid_cpu, grid, 3 * sizeof(int), cudaMemcpyDeviceToHost);
-
-    const int nx = grid_cpu[0];
-    const int ny = grid_cpu[1];
-    const int nz = grid_cpu[2];
-    cudaMemcpyToSymbol(const_image_shape, &grid_cpu, 3 * sizeof(int), 0, cudaMemcpyHostToDevice);
     const dim3 gridSize((nx + GRIDDIM_X - 1) / GRIDDIM_X,
                         (ny + GRIDDIM_Y - 1) / GRIDDIM_Y,
                         (nz + GRIDDIM_Z - 1) / GRIDDIM_Z);
@@ -69,7 +62,7 @@ void deform_tex(const float *img,
     resDesc.res.array.array = array_img;
     cudaTextureObject_t tex_img = 0;
     cudaCreateTextureObject(&tex_img, &resDesc, &texDesc, NULL);
-    DeformKernel<<<gridSize, blockSize>>>(tex_img, mx, my, mz, img1);
+    DeformKernel<<<gridSize, blockSize>>>(tex_img, mx, my, mz, nx, ny, nz, img1);
     cudaDeviceSynchronize();
     cudaDestroyTextureObject(tex_img);
     cudaFreeArray(array_img);
@@ -79,20 +72,28 @@ __global__ void
 DeformInvertKernel(cudaTextureObject_t tex_mx,
                    cudaTextureObject_t tex_my,
                    cudaTextureObject_t tex_mz,
+                   const int nx, const int ny, const int nz,
                    float *mx, float *my, float *mz)
 {
     int ix = GRIDDIM_X * blockIdx.x + threadIdx.x;
     int iy = GRIDDIM_Y * blockIdx.y + threadIdx.y;
     int iz = GRIDDIM_Z * blockIdx.z + threadIdx.z;
-    if (ix >= const_image_shape[0] || iy >= const_image_shape[1] || iz >= const_image_shape[2])
+    if (ix >= nx || iy >= ny || iz >= nz)
         return;
-    int id = ix + iy * const_image_shape[0] + iz * const_image_shape[0] * const_image_shape[1];
-    float x = 0, y = 0, z = 0;
-    for (int iter = 0; iter < 30; iter++)
+    int id = ix + iy * nx + iz * nx * ny;
+    float x = 0, y = 0, z = 0, x_, y_, z_;
+    for (int iter = 0; iter < 100; iter++)
     {
-        x = -tex3D<float>(tex_mx, x + ix + 0.5f, y + iy + 0.5f, z + iz + 0.5f);
-        y = -tex3D<float>(tex_my, x + ix + 0.5f, y + iy + 0.5f, z + iz + 0.5f);
-        z = -tex3D<float>(tex_mz, x + ix + 0.5f, y + iy + 0.5f, z + iz + 0.5f);
+        x_ = -tex3D<float>(tex_mx, x + ix + 0.5f, y + iy + 0.5f, z + iz + 0.5f);
+        y_ = -tex3D<float>(tex_my, x + ix + 0.5f, y + iy + 0.5f, z + iz + 0.5f);
+        z_ = -tex3D<float>(tex_mz, x + ix + 0.5f, y + iy + 0.5f, z + iz + 0.5f);
+        if (abs(x - x_) < EPS || abs(y - y_) < EPS || abs(z - z_) < EPS)
+        {
+            break;
+        }
+        x = x_;
+        y = y_;
+        z = z_;
     }
     mx[id] = x;
     my[id] = y;
@@ -157,7 +158,8 @@ __host__ void invert(const float *mx, const float *my, const float *mz,
     cudaTextureObject_t tex_mz = 0;
     cudaCreateTextureObject(&tex_mz, &resDesc, &texDesc, NULL);
 
-    DeformInvertKernel<<<gridSize, blockSize>>>(tex_mx, tex_my, tex_mz, mx2, my2, mz2);
+    DeformInvertKernel<<<gridSize, blockSize>>>(tex_mx, tex_my, tex_mz,
+                                                nx, ny, nz, mx2, my2, mz2);
     cudaDeviceSynchronize();
     cudaDestroyTextureObject(tex_mx);
     cudaFreeArray(array_mx);
@@ -169,15 +171,9 @@ __host__ void invert(const float *mx, const float *my, const float *mz,
 
 void deform_invert_tex(const float *img,
                        const float *mx, const float *my, const float *mz,
-                       const int *grid, float *img1)
+                       const int nx, const int ny, const int nz,
+                       float *img1)
 {
-    int grid_cpu[3];
-    cudaMemcpy(grid_cpu, grid, 3 * sizeof(int), cudaMemcpyDeviceToHost);
-
-    const int nx = grid_cpu[0];
-    const int ny = grid_cpu[1];
-    const int nz = grid_cpu[2];
-    cudaMemcpyToSymbol(const_image_shape, &grid_cpu, 3 * sizeof(int), 0, cudaMemcpyHostToDevice);
     const dim3 gridSize((nx + GRIDDIM_X - 1) / GRIDDIM_X,
                         (ny + GRIDDIM_Y - 1) / GRIDDIM_Y,
                         (nz + GRIDDIM_Z - 1) / GRIDDIM_Z);
@@ -216,7 +212,7 @@ void deform_invert_tex(const float *img,
     resDesc.res.array.array = array_img;
     cudaTextureObject_t tex_img = 0;
     cudaCreateTextureObject(&tex_img, &resDesc, &texDesc, NULL);
-    DeformKernel<<<gridSize, blockSize>>>(tex_img, mx2, my2, mz2, img1);
+    DeformKernel<<<gridSize, blockSize>>>(tex_img, mx2, my2, mz2, nx, ny, nz, img1);
     cudaDeviceSynchronize();
     cudaDestroyTextureObject(tex_img);
     cudaFreeArray(array_img);

@@ -30,9 +30,12 @@ class Register3D(Register):
         demons_filter.SetStandardDeviations(2.0)
         demons_filter.AddCommand(sitk.sitkIterationEvent, lambda: iteration_callback(demons_filter))
         fixed_image = sitk.GetImageFromArray(fixed.data)
-        fixed_image.SetSpacing([fixed.size[i] / fixed.shape[i] for i in range(3)])
+        # fixed_image.SetSpacing([fixed.size[i] / fixed.shape[i] for i in range(3)])
+        fixed_image.SetSpacing([1,1,1])
         moving_image = sitk.GetImageFromArray(moved.data)
-        moving_image.SetSpacing([moved.size[i] / moved.shape[i] for i in range(3)])
+        # moving_image.SetSpacing([moved.size[i] / moved.shape[i] for i in range(3)])
+        moving_image.SetSpacing([1,1,1])
+
         tx = multiscale_demons(registration_algorithm = demons_filter,
                                fixed_image = fixed_image,
                                moving_image = moving_image,

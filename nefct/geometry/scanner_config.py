@@ -20,7 +20,7 @@ class ScannerConfig2D(ScannerConfig):
     detector: DetectorDirectAConfig
 
     @property
-    def IAD(self):
+    def AID(self):
         return self.SID - self.SAD
 
     @property
@@ -50,7 +50,7 @@ class ScannerConfig3D(ScannerConfig):
     detector_b: DetectorDirectBConfig
 
     @property
-    def IAD(self):
+    def AID(self):
         return self.SID - self.SAD
 
     @property

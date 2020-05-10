@@ -18,9 +18,8 @@ import numpy as np
 
 def _soft_shrink(z: Image, lambda_: float):
     _temp = z.data * 0
-    _temp[z.data - lambda_ > 0] = z.data[z.data - lambda_ > 0] - lambda_
+    _temp[np.abs(z.data) > lambda_] = z.data[np.abs(z.data) > lambda_] - lambda_
     return z.update(data = np.sign(z.data) * _temp)
-
 
 @nef_class
 class SoftShrink:
@@ -28,17 +27,3 @@ class SoftShrink:
 
     def __call__(self, d: TotalVariation):
         return _soft_shrink(d, self.lambda_)
-        # if isinstance(d, TotalVariation2D):
-        #     sol = _soft_shrink(d, self.lambda_)
-        #     return TotalVariation2D(sol)
-        # elif isinstance(d, TotalVariation3D):
-        #     sol = _soft_shrink(d.x, self.lambda_)
-        #     return TotalVariation3D(sol)
-        # elif isinstance(d, TotalVariation2DT):
-        #     sol = _soft_shrink(d, self.lambda_)
-        #     return TotalVariation2DT(sol)
-        # elif isinstance(d, TotalVariation3DT):
-        #     sol = _soft_shrink(d, self.lambda_)
-        #     return TotalVariation3DT(sol)
-        # else:
-        #     raise NotImplementedError
