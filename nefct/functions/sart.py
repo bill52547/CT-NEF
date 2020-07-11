@@ -34,7 +34,7 @@ class SART:
     def __call__(self, projection: ProjectionSequence, nbin: int, x: Image = None) -> Image:
         angles = projection.angles
         offsets = projection.offsets
-        new_op_mod = tf.load_op_library(TF_USER_OP_PATH + '/new_op_mod.so')
+        new_op_mod = tf.load_op_library(TF_USER_OP_PATH + '/new_op_mod2.so')
         sart_op = new_op_mod.sart
         v_data = np.array([time_[0] for time_ in projection.timestamps])
         f_data = np.array([time_[1] for time_ in projection.timestamps])

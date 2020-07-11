@@ -2,71 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f17fe03a-edba-4bed-a375-811ccb4248ff" name="Default Changelist" comment="update 20190908-night&#10;finish fbp">
-      <change afterPath="$PROJECT_DIR$/nefct/cc/gen_sys_mat/count_sys_mat_bk.cc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nefct/cc/gen_sys_mat/generate_sys_mat_bk.cu.cc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nefct/cc/new_ops_2d/dist_2d.cu.cc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nefct/cc/new_ops_2d/dist_2d_back.cu.cc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nefct/cc/new_ops_2d/new_ops_2d.cc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nefct/functions/binning_strategy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/NefCT.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/NefCT.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API_function.json" beforeDir="false" afterPath="$PROJECT_DIR$/API_function.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API_object.json" beforeDir="false" afterPath="$PROJECT_DIR$/API_object.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LICENCE" beforeDir="false" afterPath="$PROJECT_DIR$/LICENCE" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.rst" beforeDir="false" afterPath="$PROJECT_DIR$/README.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/CTbackprojection.m" beforeDir="false" afterPath="$PROJECT_DIR$/bin/CTbackprojection.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/CTprojection.m" beforeDir="false" afterPath="$PROJECT_DIR$/bin/CTprojection.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/ParkerWeight.m" beforeDir="false" afterPath="$PROJECT_DIR$/bin/ParkerWeight.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/backprojection.m" beforeDir="false" afterPath="$PROJECT_DIR$/bin/backprojection.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/filtering.m" beforeDir="false" afterPath="$PROJECT_DIR$/bin/filtering.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/projection.m" beforeDir="false" afterPath="$PROJECT_DIR$/bin/projection.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpp/BUILD" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/BUILD" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpp/compile.sh" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/compile.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpp/deform/BUILD" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/deform/BUILD" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpp/deform/deform.cc" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/deform/deform.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpp/deform/deform.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/deform/deform.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpp/generate_system_matrix/generate_system_matrix.cc" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/generate_system_matrix/generate_system_matrix.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpp/generate_system_matrix/generate_system_matrix.cu" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/generate_system_matrix/generate_system_matrix.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpp/mcsart/tf_mcsart.cc" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/mcsart/tf_mcsart.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpp/mcsart/tf_mcsart.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/mcsart/tf_mcsart.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpp/scatter/scatter_correction.cc" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/scatter/scatter_correction.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpp/scatter/scatter_correction.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/scatter/scatter_correction.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpp/siddon/BUILD" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/siddon/BUILD" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpp/siddon/siddon_gpu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/siddon/siddon_gpu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpp/siddon/siddon_gpu.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/cpp/siddon/siddon_gpu.cu.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/.doctrees/environment.pickle" beforeDir="false" afterPath="$PROJECT_DIR$/docs/.doctrees/environment.pickle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/.doctrees/index.doctree" beforeDir="false" afterPath="$PROJECT_DIR$/docs/.doctrees/index.doctree" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/api/modules.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/api/modules.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/api/srfnef.correction.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/api/srfnef.correction.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/api/srfnef.model_impl.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/api/srfnef.model_impl.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/api/srfnef.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/api/srfnef.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/conf.py" beforeDir="false" afterPath="$PROJECT_DIR$/docs/conf.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/.buildinfo" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/.buildinfo" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/.nojekyll" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/.nojekyll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_modules/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_modules/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_modules/srfnef/adapter.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_modules/srfnef/adapter.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_modules/srfnef/correction/PsfMaker.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_modules/srfnef/correction/PsfMaker.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_modules/srfnef/func_types.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_modules/srfnef/func_types.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_modules/srfnef/templating.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_modules/srfnef/templating.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_modules/types.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_modules/types.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_sources/api/modules.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/api/modules.rst.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_sources/api/srfnef.correction.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/api/srfnef.correction.rst.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_sources/api/srfnef.model_impl.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/api/srfnef.model_impl.rst.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_sources/api/srfnef.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/api/srfnef.rst.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_sources/index.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/index.rst.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_sources/installation.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/installation.rst.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_sources/modules.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/modules.rst.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_sources/quickstart.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/quickstart.rst.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_sources/srfnef.correction.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/srfnef.correction.rst.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_sources/srfnef.model_impl.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/srfnef.model_impl.rst.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_sources/srfnef.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_sources/srfnef.rst.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/_static/ajax-loader.gif" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/ajax-loader.gif" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/_static/alabaster.css" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/alabaster.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/_static/basic.css" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/basic.css" afterDir="false" />
@@ -81,52 +23,18 @@
       <change beforePath="$PROJECT_DIR$/docs/html/_static/down-pressed.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/down-pressed.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/_static/down.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/down.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/_static/file.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/file.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_static/jquery-3.2.1.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/jquery-3.2.1.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_static/jquery.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/jquery.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/_static/language_data.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/language_data.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/_static/minus.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/minus.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/_static/plus.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/plus.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/_static/pygments.css" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/pygments.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/_static/searchtools.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/searchtools.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/_static/sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/sidebar.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/_static/underscore-1.3.1.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/underscore-1.3.1.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/_static/underscore.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/underscore.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/_static/up-pressed.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/up-pressed.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/_static/up.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/up.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/_static/websupport.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/_static/websupport.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/api/modules.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/api/modules.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/api/srfnef.correction.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/api/srfnef.correction.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/api/srfnef.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/api/srfnef.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/api/srfnef.model_impl.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/api/srfnef.model_impl.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/genindex.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/genindex.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/installation.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/installation.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/modules.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/modules.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/html/objects.inv" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/objects.inv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/py-modindex.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/py-modindex.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/quickstart.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/quickstart.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/search.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/search.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/searchindex.js" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/searchindex.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/srfnef.correction.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/srfnef.correction.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/srfnef.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/srfnef.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/html/srfnef.model_impl.html" beforeDir="false" afterPath="$PROJECT_DIR$/docs/html/srfnef.model_impl.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/index.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/index.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/installation.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/installation.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/introduction.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/introduction.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/make.bat" beforeDir="false" afterPath="$PROJECT_DIR$/docs/make.bat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/modules.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/modules.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/pic/fig1.png" beforeDir="false" afterPath="$PROJECT_DIR$/docs/pic/fig1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/pic/fig1.tif" beforeDir="false" afterPath="$PROJECT_DIR$/docs/pic/fig1.tif" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/quickstart.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/quickstart.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/srfnef.correction.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/srfnef.correction.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/srfnef.model_impl.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/srfnef.model_impl.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/srfnef.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/srfnef.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mat_codes/CTbackprojection.m" beforeDir="false" afterPath="$PROJECT_DIR$/mat_codes/CTbackprojection.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mat_codes/CTprojection.m" beforeDir="false" afterPath="$PROJECT_DIR$/mat_codes/CTprojection.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mat_codes/ParkerWeight.m" beforeDir="false" afterPath="$PROJECT_DIR$/mat_codes/ParkerWeight.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mat_codes/backprojection.m" beforeDir="false" afterPath="$PROJECT_DIR$/mat_codes/backprojection.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mat_codes/filtering.m" beforeDir="false" afterPath="$PROJECT_DIR$/mat_codes/filtering.m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mat_codes/projection.m" beforeDir="false" afterPath="$PROJECT_DIR$/mat_codes/projection.m" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nefct.egg-info/PKG-INFO" beforeDir="false" afterPath="$PROJECT_DIR$/nefct.egg-info/PKG-INFO" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nefct.egg-info/SOURCES.txt" beforeDir="false" afterPath="$PROJECT_DIR$/nefct.egg-info/SOURCES.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nefct.egg-info/dependency_links.txt" beforeDir="false" afterPath="$PROJECT_DIR$/nefct.egg-info/dependency_links.txt" afterDir="false" />
@@ -134,165 +42,16 @@
       <change beforePath="$PROJECT_DIR$/nefct.egg-info/not-zip-safe" beforeDir="false" afterPath="$PROJECT_DIR$/nefct.egg-info/not-zip-safe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nefct.egg-info/requires.txt" beforeDir="false" afterPath="$PROJECT_DIR$/nefct.egg-info/requires.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nefct.egg-info/top_level.txt" beforeDir="false" afterPath="$PROJECT_DIR$/nefct.egg-info/top_level.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/base/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/base/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/base/barrier_single.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/base/barrier_single.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/base/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/base/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/base/basic_types.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/base/basic_types.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/BUILD" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/BUILD" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/affine_tex/affine_deform_tex.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/affine_tex/affine_deform_tex.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/affine_tex/affine_deform_tex.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/affine_tex/affine_deform_tex.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/AUMISART.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/AUMISART.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/CG_A_operation.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/CG_A_operation.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_add.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_add.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_backprojection.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_backprojection.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_deform.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_deform.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_diff.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_diff.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_division.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_division.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_dot_product.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_dot_product.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_initial.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_initial.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_multiple.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_multiple.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_projection.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_projection.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_update_udvf.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_update_udvf.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_vector_multiply.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/cu_vector_multiply.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/dist_forward_3D.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/dist_forward_3D.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/dist_forward_time.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/dist_forward_time.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/entry_AUMISART.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/entry_AUMISART.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/forwardTV.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/forwardTV.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/invertTV.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/invertTV.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_CG.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_CG.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_deform2.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_deform2.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_deform_invert.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_deform_invert.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_deformation.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_deformation.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_diff.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_diff.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_fullbackprojection.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_fullbackprojection.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_fullprojection.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_fullprojection.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_grad.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_grad.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_projection.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/mex_projection.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/aumisart_2d/processBar.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/aumisart_2d/processBar.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/compile.sh" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/compile.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/deform/deform.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/deform/deform.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/deform/deform.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/deform/deform.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/deform/deform_2d_tex.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/deform/deform_2d_tex.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/deform/deform_2d_tex.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/deform/deform_2d_tex.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/deform/deform_tex.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/deform/deform_tex.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/deform/deform_tex.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/deform/deform_tex.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/distance_2d/BUILD" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/distance_2d/BUILD" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/distance_2d/dist_2d.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/distance_2d/dist_2d.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/distance_2d/dist_2d.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/distance_2d/dist_2d.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/distance_2d/dist_2d_back.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/distance_2d/dist_2d_back.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/distance_3d/dist_3d.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/distance_3d/dist_3d.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/distance_3d/dist_3d.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/distance_3d/dist_3d.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/distance_3d/dist_3d_back.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/distance_3d/dist_3d_back.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/distance_deform_3d/dist_3d.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/distance_deform_3d/dist_3d.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/distance_deform_3d/dist_3d.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/distance_deform_3d/dist_3d.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/distance_deform_3d/dist_3d_back.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/distance_deform_3d/dist_3d_back.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/gen_sys_mat/count_sys_mat.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/gen_sys_mat/count_sys_mat.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/gen_sys_mat/count_sys_mat_back.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/gen_sys_mat/count_sys_mat_back.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/gen_sys_mat/generate_sys_mat.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/gen_sys_mat/generate_sys_mat.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/gen_sys_mat/generate_sys_mat.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/gen_sys_mat/generate_sys_mat.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/gen_sys_mat/generate_sys_mat_back.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/gen_sys_mat/generate_sys_mat_back.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/kernel_example/BUILD" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/kernel_example/BUILD" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/kernel_example/kernel_example.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/kernel_example/kernel_example.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/kernel_example/kernel_example.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/kernel_example/kernel_example.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/kernel_example/kernel_example.h" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/kernel_example/kernel_example.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/new_matrix/BUILD" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/new_matrix/BUILD" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/new_matrix/new_mat.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/new_matrix/new_mat.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/new_matrix/new_mat.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/new_matrix/new_mat.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/pixel_2d/pixel.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/pixel_2d/pixel.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/pixel_2d/pixel.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/pixel_2d/pixel.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/pixel_3d/pixel.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/pixel_3d/pixel.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/pixel_3d/pixel.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/pixel_3d/pixel.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/ray_2d/ray.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/ray_2d/ray.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/ray_2d/ray.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/ray_2d/ray.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/ray_3d/ray.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/ray_3d/ray.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/ray_3d/ray.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/ray_3d/ray.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/siddon_2d/siddon.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/siddon_2d/siddon.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/siddon_2d/siddon.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/siddon_2d/siddon.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/siddon_3d/siddon.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/siddon_3d/siddon.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/siddon_3d/siddon.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/siddon_3d/siddon.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/ssm_ops/affine_deform_tex.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/ssm_ops/affine_deform_tex.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/ssm_ops/ssm_ops.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/ssm_ops/ssm_ops.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/ssm_ops/ssm_ops.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/ssm_ops/ssm_ops.cu.cc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nefct/cc/ssm_ops/ssm_ops.cu.o" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/ssm_ops/ssm_ops.cu.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/ssm_ops/ssm_ops_back.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/ssm_ops/ssm_ops_back.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/ssm_ops/ssm_sart.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/ssm_ops/ssm_sart.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/temp/BUILD" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/temp/BUILD" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/temp/add_one.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/temp/add_one.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/temp/add_one.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/temp/add_one.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/temp/c_api.cu" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/temp/c_api.cu" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/temp/compile.sh" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/temp/compile.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/temp2/BUILD" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/temp2/BUILD" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/temp2/mul_two.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/temp2/mul_two.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/cc/temp2/mul_two.cu.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/cc/temp2/mul_two.cu.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/data/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/data/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/data/existing_data.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/data/full_projection.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/data/full_projection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/data/image.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/data/image.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/data/projection.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/data/projection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/data/single_projection.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/data/single_projection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/data/sl_phantom.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/data/sl_phantom.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/data/total_variation.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/data/total_variation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/existing_geometry.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/existing_geometry.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/functions/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/functions/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/functions/back_project.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/functions/back_project.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/functions/back_project_t.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/functions/conj_grad.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/functions/conj_grad.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/functions/fbp.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/functions/fbp.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/functions/project.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/functions/project.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/functions/project_t.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/functions/register.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/functions/register.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/data/timestamps.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/data/timestamps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/functions/deform.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/functions/deform.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/functions/fdk.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/functions/fdk.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nefct/functions/sart.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/functions/sart.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/functions/soft_shrinkage.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/functions/soft_shrinkage.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/functions/total_variation.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/functions/total_variation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/geometry/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/geometry/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/geometry/detector_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/geometry/detector_config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/geometry/scanner_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/geometry/scanner_config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/io/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/io/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/io/data_io_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/io/data_io_mixin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/io/db_io_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/io/db_io_mixin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/io/json_io_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/io/json_io_mixin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/io/local_io_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/io/local_io_mixin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/ops/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/ops/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/ops/common/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/ops/common/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/ops/common/arithmetic_mixins.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/ops/common/arithmetic_mixins.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/ops/common/imshow_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/ops/common/imshow_mixin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/ops/common/magic_method_mixins.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/ops/common/magic_method_mixins.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/ops/common/plot_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/ops/common/plot_mixin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/ops/common/property_mixins.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/ops/common/property_mixins.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/ops/deform.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/ops/deform.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/toy_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/toy_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/version.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/version.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/xcat_fall.npy" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/xcat_fall.npy" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nefct/xcat_vall.npy" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/xcat_vall.npy" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nefct/tools/plotly/animate3d.py" beforeDir="false" afterPath="$PROJECT_DIR$/nefct/tools/plotly/animate3d.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/release.sh" beforeDir="false" afterPath="$PROJECT_DIR$/release.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/srfnefschema.json" beforeDir="false" afterPath="$PROJECT_DIR$/srfnefschema.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/.pytest_cache/v/cache/nodeids" beforeDir="false" afterPath="$PROJECT_DIR$/tests/.pytest_cache/v/cache/nodeids" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/.pytest_cache/v/cache/stepwise" beforeDir="false" afterPath="$PROJECT_DIR$/tests/.pytest_cache/v/cache/stepwise" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/base/test_base.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/base/test_base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/base/test_basic_types.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/base/test_basic_types.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/mixins/test_arithmetic_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/mixins/test_arithmetic_mixin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/mixins/test_backproject_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/mixins/test_backproject_mixin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/mixins/test_magic_method_mixins.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/mixins/test_magic_method_mixins.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/mixins/test_project_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/mixins/test_project_mixin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/nef_class/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/nef_class/corrections/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/corrections/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/nef_class/corrections/attenuation/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/corrections/attenuation/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/nef_class/corrections/attenuation/test_attenuation_correction.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/corrections/attenuation/test_attenuation_correction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/nef_class/corrections/normalization/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/corrections/normalization/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/nef_class/corrections/normalization/test_angled_normalization_correction.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/corrections/normalization/test_angled_normalization_correction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/nef_class/corrections/psf/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/corrections/psf/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/nef_class/corrections/psf/_test_deconv.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/corrections/psf/_test_deconv.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/nef_class/corrections/psf/_test_generate_fit_parameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/corrections/psf/_test_generate_fit_parameters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/nef_class/io/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/io/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/nef_class/io/test_data_io_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/io/test_data_io_mixin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/nef_class/io/test_local_io_mixin.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/nef_class/io/test_local_io_mixin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/pytest.ini" beforeDir="false" afterPath="$PROJECT_DIR$/tests/pytest.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/write_rst_doc.sh" beforeDir="false" afterPath="$PROJECT_DIR$/write_rst_doc.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -334,7 +93,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/nefct/cc" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
@@ -418,6 +177,8 @@
       <workItem from="1584620513302" duration="8227000" />
       <workItem from="1585052594441" duration="3307000" />
       <workItem from="1585130075198" duration="28819000" />
+      <workItem from="1589109260861" duration="1478000" />
+      <workItem from="1594088107158" duration="6318000" />
     </task>
     <task id="LOCAL-00001" summary="update 20190903">
       <created>1567517390522</created>
