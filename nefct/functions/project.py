@@ -19,8 +19,8 @@ CTYPE_SO_FILE = '/home/bill52547/Workspace/NefCT/nefct/ctypes/'
 class Project:
     scanner: ScannerConfig
     angles: np.ndarray
-    offsets_b: np.ndarray
     offsets_a: np.ndarray
+    offsets_b: np.ndarray
 
     def __call__(self, image: Image3D) -> ProjectionSequence3D:
         dll = ctypes.CDLL(CTYPE_SO_FILE + 'forward_dd.so',

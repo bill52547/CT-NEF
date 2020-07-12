@@ -113,3 +113,11 @@ class ProjectionSequence3D(CentralSlicesPropertyMixin, ImshowMixin,
         f_data = np.array([vf[1] for vf in self.timestamps]).astype(np.float32)
         new_timestamps = list(zip(v_data[item], f_data[item]))
         return ProjectionSequence3D(self.data[:, :, item], self.scanner, self.angles[item], self.offsets[item], new_timestamps)
+
+    @property
+    def offsets_a(self):
+        return np.zeros(self.scanner.detector_a.number, dtype=np.float32)
+
+    @property
+    def offsets_b(self):
+        return self.offsets
