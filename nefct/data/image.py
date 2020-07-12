@@ -17,7 +17,6 @@ from nefct.io import LoadMixin, SaveMixin
 import numpy as np
 from nefct.ops.common.arithmetic_mixins import ArithmeticMixin
 import attr
-from nefct.ops.deform import DeformMixin
 
 __all__ = ('Image', )
 
@@ -25,45 +24,8 @@ __all__ = ('Image', )
 @nef_class
 class Image(ShapePropertyMixin, UnitSizePropertyMixin, GetItemMixin,
             CentralSlicesPropertyMixin, CentralProfilesPropertyMixin,
-            LoadMixin, SaveMixin, ImshowMixin, ArithmeticMixin, DeformMixin):
+            LoadMixin, SaveMixin, ImshowMixin, ArithmeticMixin):
     data: np.ndarray
     center: list
     size: list
     timestamps: Any
-
-    def deform(self, mx, my, mz):
-        if isinstance(mx, Image):
-            mx_data = mx.data
-        else:
-            mx_data = mx
-
-        if isinstance(my, Image):
-            my_data = my.data
-        else:
-            my_data = my
-
-        if isinstance(mz, Image):
-            mz_data = mz.data
-        else:
-            mz_data = mz
-
-        return self.update(data=self._deform_tf(self.data, mx_data, my_data, mz_data).numpy())
-
-    def deform_invert(self, mx, my, mz):
-        if isinstance(mx, Image):
-            mx_data = mx.data
-        else:
-            mx_data = mx
-
-        if isinstance(my, Image):
-            my_data = my.data
-        else:
-            my_data = my
-
-        if isinstance(mz, Image):
-            mz_data = mz.data
-        else:
-            mz_data = mz
-
-        new_data = self._deform_invert_tf(self.data, mx_data, my_data, mz_data)
-        return self.update(data=new_data.numpy())
