@@ -30,49 +30,6 @@ class NefBaseClass:
     def __new__(cls, *args, **kwargs):
         if not hasattr(cls, '__annotations__'):
             return super(NefBaseClass, cls).__new__(cls)
-        #
-        # new_kwargs = {}
-        # for ind, val in enumerate(args):
-        #     try:
-        #         name, type_ = list(cls.__annotations__.items())[ind]
-        #     except IndexError:
-        #         raise IndexError(
-        #             f'can not find positive argument ind={ind}',
-        #             f' hint: length of arguments = {len(list(cls.__annotations__.items()))}')
-        #     if not isinstance_(val, Optional(type_)):
-        #         if issubclass(type_, list):
-        #             raise TypeError(f'field {name} should be in type {type_} when building a ',
-        #                             f'`{cls.__name__}` isinstance',
-        #                             f'hint: List({type_.dtype.__name__},{type_.length})')
-        #         elif issubclass(type_, tuple):
-        #             raise TypeError(f'field {name} should be in type {type_} when building a ',
-        #                             f'`{cls.__name__}` isinstance',
-        #                             f'hint: Tuple({[tp.__name__ for tp in type_.dtype]})')
-        #         else:
-        #             raise TypeError(f'field {name} should be in type {type_} when building a ',
-        #                             f'`{cls.__name__}` isinstance', f'hint: {type_}')
-        #     new_kwargs.update({name: val})
-        #
-        # for name, type_ in cls.__annotations__.items():
-        #     if name in new_kwargs:
-        #         continue
-        #     elif name in kwargs:
-        #         if not isinstance_(kwargs[name], Optional(type_)):
-        #             if issubclass(type_, list):
-        #                 raise TypeError(f'field {name} should be in type {type_} when building a ',
-        #                                 f'`{cls.__name__}` isinstance',
-        #                                 f'hint: List({type_.dtype.__name__},{type_.length})')
-        #             elif issubclass(type_, tuple):
-        #                 raise TypeError(f'field {name} should be in type {type_} when building a ',
-        #                                 f'`{cls.__name__}` isinstance',
-        #                                 f'hint: Tuple({[tp.__name__ for tp in type_.dtype]})')
-        #             else:
-        #                 raise TypeError(f'field {name} should be in type {type_} when building a ',
-        #                                 f'`{cls.__name__}` isinstance', f'hint: {type_}')
-        #
-        #         new_kwargs.update({name: kwargs[name]})
-        #     else:
-        #         new_kwargs.update({name: None})
         return super(NefBaseClass, cls).__new__(cls)
 
     @classmethod
@@ -83,7 +40,7 @@ class NefBaseClass:
         return [getattr(self, key) for key in self.keys()]
 
     def items(self, recurse: bool = False) -> list:
-        return list(attr.asdict(self, recurse = recurse).items())
+        return list(attr.asdict(self, recurse=recurse).items())
 
     @classmethod
     def types(cls) -> list:
@@ -92,8 +49,8 @@ class NefBaseClass:
     def update(self, **kwargs) -> 'NefBaseClass':
         return attr.evolve(self, **kwargs)
 
-    def asdict(self, recurse = False) -> dict:
-        return attr.asdict(self, recurse = recurse)
+    def asdict(self, recurse=False) -> dict:
+        return attr.asdict(self, recurse=recurse)
 
     @classmethod
     def from_dict(cls, dct: dict) -> object:
@@ -118,11 +75,7 @@ class NefBaseClass:
         return cls(**attr_dict)
 
     def astype(self, cls: type) -> object:
-        return cls.from_dict(self.asdict(recurse = True))
-
-    @property
-    def __version__(self):
-        return __version__
+        return cls.from_dict(self.asdict(recurse=True))
 
     @abstractmethod
     def __attrs_post_init__(self) -> None:
@@ -135,7 +88,7 @@ class NefBaseClass:
         if not isinstance(other, NefBaseClass):
             return False
         if hasattr(self, 'data'):
-            return self.update(data = 0).asdict() == other.update(data = 0).asdict()
+            return self.update(data=0).asdict() == other.update(data=0).asdict()
         else:
             return self.asdict() == other.asdict()
 
@@ -152,7 +105,7 @@ class NefBaseClass:
 
 
 def nef_class(cls) -> Any:
-    attr_cls = attr.s(auto_attribs = True)(cls)
+    attr_cls = attr.s(auto_attribs=True)(cls)
     args_dict = {}
     for key, val in attr.fields_dict(attr_cls).items():
         if isinstance(val.default, attr._make._Nothing):
@@ -164,14 +117,14 @@ def nef_class(cls) -> Any:
             type_ = Optional(val.type)
         else:
             type_ = val.type
-        args_dict.update({key: attr.ib(type = type_, default = _default)})
+        args_dict.update({key: attr.ib(type=type_, default=_default)})
 
     new_cls = attr.make_class(cls.__name__,
                               args_dict,
-                              bases = (cls,),
-                              auto_attribs = True,
+                              bases=(cls,),
+                              auto_attribs=True,
                               # frozen = True,
-                              slots = True)
+                              slots=True)
 
     return types.new_class(cls.__name__, (new_cls, NefBaseClass),
                            {'metaclass': BaseMeta})

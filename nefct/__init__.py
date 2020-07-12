@@ -37,4 +37,4 @@ from .data import *
 # from .correction import *
 from nefct.existing_geometry import *
 
-from nefct.functions.new_ops import NewDeformer, NewInvertDeformer, NewProjector, NewBackProjector, NewSart
+# from nefct.functions.new_ops import NewDeformer, NewInvertDeformer, NewProjector, NewBackProjector, NewSart

@@ -2,10 +2,9 @@ from ctypes import *
 import ctypes
 import numpy as np
 from nefct import nef_class, Any
-from nefct.data.image import Image2D, Image3D, Image, Image2DT, Image3DT
-from nefct.data.projection import ProjectionSequence2D, \
-    ProjectionSequence3D, ProjectionSequence
-from nefct.geometry.scanner_config import ScannerConfig, ScannerConfig2D, ScannerConfig3D
+from nefct.data.image import Image
+from nefct.data.projection import ProjectionSequence
+from nefct.geometry.scanner_config import ScannerConfig
 import numpy as np
 import tensorflow as tf
 from nefct.utils import tqdm
@@ -19,7 +18,7 @@ CTYPE_SO_FILE = '/home/bill52547/Workspace/NefCT/nefct/ctypes/'
 class Backproject:
     scanner: ScannerConfig
 
-    def __call__(self, projection: ProjectionSequence3D, image: Image3D) -> Image3D:
+    def __call__(self, projection: ProjectionSequence, image: Image) -> Image:
         dll = ctypes.CDLL(CTYPE_SO_FILE + 'back_dd.so',
                           mode=ctypes.RTLD_GLOBAL)
         func = dll.backproject
@@ -39,9 +38,9 @@ class Backproject:
         proj_p = projection.data.ctypes.data_as(POINTER(c_float))
         angles_p = projection.angles.astype(
             np.float32).ctypes.data_as(POINTER(c_float))
-        off_a_p = (projection.offsets_a).astype(
+        off_a_p = (projection.offsets_a + projection.scanner.detector_a.offset).astype(
             np.float32).ctypes.data_as(POINTER(c_float))
-        off_b_p = (projection.offsets_b).astype(
+        off_b_p = (projection.offsets_b + projection.scanner.detector_b.offset).astype(
             np.float32).ctypes.data_as(POINTER(c_float))
 
         func(img_p, proj_p,
@@ -53,4 +52,4 @@ class Backproject:
              self.scanner.detector_b.unit_size, nb,
              nv)
 
-        return image.update(data=image_data)
+        return image.update(data=image_data.reshape(*image.shape[::-1]).T)
