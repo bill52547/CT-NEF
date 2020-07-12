@@ -18,9 +18,6 @@ CTYPE_SO_FILE = '/home/bill52547/Workspace/NefCT/nefct/ctypes/'
 @nef_class
 class Backproject:
     scanner: ScannerConfig
-    angles: np.ndarray
-    offsets_b: np.ndarray
-    offsets_a: np.ndarray
 
     def __call__(self, projection: ProjectionSequence3D, image: Image3D) -> Image3D:
         dll = ctypes.CDLL(CTYPE_SO_FILE + 'back_dd.so',
@@ -36,15 +33,15 @@ class Backproject:
                          c_int]
         na = self.scanner.detector_a.number
         nb = self.scanner.detector_b.number
-        nv = self.angles.size
+        nv = projection.angles.size
         image_data = np.zeros(image.shape, dtype=np.float32).ravel()
         img_p = image_data.ravel().ctypes.data_as(POINTER(c_float))
         proj_p = projection.data.ctypes.data_as(POINTER(c_float))
-        angles_p = self.angles.astype(
+        angles_p = projection.angles.astype(
             np.float32).ctypes.data_as(POINTER(c_float))
-        off_a_p = (self.offsets_a).astype(
+        off_a_p = (projection.offsets_a).astype(
             np.float32).ctypes.data_as(POINTER(c_float))
-        off_b_p = (self.offsets_b).astype(
+        off_b_p = (projection.offsets_b).astype(
             np.float32).ctypes.data_as(POINTER(c_float))
 
         func(img_p, proj_p,
