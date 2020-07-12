@@ -12,7 +12,7 @@ from nefct import nef_class
 from nefct.data import Image
 from nefct.data.image import Image2DT, Image3DT
 from nefct.data.total_variation import TotalVariation2D, TotalVariation2DT, TotalVariation3D, \
-    TotalVariation3DT, TotalVariation
+    TotalVariation3DT, TotalVariation, TotalVariation3DTSingle
 import numpy as np
 
 
@@ -22,17 +22,17 @@ class TotalVari:
         if len(image.shape) == 2:
             tv_x_data = image.data * 0
             tv_y_data = image.data * 0
-            tv_x_data[1:, :] = image.data[1:, :] - image.data[:-1, :]
-            tv_y_data[:, 1:] = image.data[:, 1:] - image.data[:, :-1]
-            return TotalVariation2D(np.stack([tv_x_data, tv_y_data], axis = 2))
+            tv_x_data[:-1, :] = image.data[:-1, :] - image.data[1:, :]
+            tv_y_data[:, :-1] = image.data[:, :-1] - image.data[:, 1:]
+            return TotalVariation2D(np.stack([tv_x_data, tv_y_data], axis=2))
         else:
             tv_x_data = image.data * 0
             tv_y_data = image.data * 0
             tv_z_data = image.data * 0
-            tv_x_data[1:, :, :] = image.data[1:, :, :] - image.data[:-1, :, :]
-            tv_y_data[:, 1:, :] = image.data[:, 1:, :] - image.data[:, :-1, :]
-            tv_z_data[:, :, 1:] = image.data[:, :, 1:] - image.data[:, :, :-1]
-            return TotalVariation3D(np.stack([tv_x_data, tv_y_data, tv_z_data], axis = 3))
+            tv_x_data[:-1, :, :] = image.data[:-1, :, :] - image.data[1:, :, :]
+            tv_y_data[:, :-1, :] = image.data[:, :-1, :] - image.data[:, 1:, :]
+            tv_z_data[:, :, :-1] = image.data[:, :, :-1] - image.data[:, :, 1:]
+            return TotalVariation3D(np.stack([tv_x_data, tv_y_data, tv_z_data], axis=3))
 
 
 #
@@ -68,19 +68,20 @@ class TotalVariT:
             tv_x_data[1:, :, :] = image_array[1:, :, :] - image_array[:-1, :, :]
             tv_y_data[:, 1:, :] = image_array[:, 1:, :] - image_array[:, :-1, :]
             tv_t_data[:, :, 1:] = image_array[:, :, 1:] - image_array[:, :, :-1]
-            return TotalVariation2DT(np.stack((tv_x_data, tv_y_data, tv_t_data), axis = 3))
+            return TotalVariation2DT(np.stack((tv_x_data, tv_y_data, tv_t_data), axis=3))
         else:
             image_array = image.data
             tv_x_data = image_array * 0
             tv_y_data = image_array * 0
             tv_z_data = image_array * 0
             tv_t_data = image_array * 0
+
             tv_x_data[1:, :, :, :] = image_array[1:, :, :, :] - image_array[:-1, :, :, :]
             tv_y_data[:, 1:, :, :] = image_array[:, 1:, :, :] - image_array[:, :-1, :, :]
             tv_z_data[:, :, 1:, :] = image_array[:, :, 1:, :] - image_array[:, :, :-1, :]
             tv_t_data[:, :, :, 1:] = image_array[:, :, :, 1:] - image_array[:, :, :, :-1]
             return TotalVariation3DT(np.stack((tv_x_data, tv_y_data, tv_t_data, tv_t_data),
-                                              axis = 4))
+                                              axis=4))
 
 
 # @nef_class
@@ -130,22 +131,41 @@ class InvertTotalVari:
             tv_x, tv_y = tv_val.x, tv_val.y
             itv_x = tv_x * 0
             itv_y = tv_y * 0
-            itv_x.data[:-1, :] = -tv_x.data[1:, :]
-            itv_x.data[1:, :] += tv_x.data[1:, :]
-            itv_y.data[:, :-1] = -tv_y.data[:, 1:]
-            itv_y.data[:, 1:] += tv_y.data[:, 1:]
+            itv_x.data[1:, :] = -tv_x.data[:-1, :] + tv_x.data[1:, :]
+            itv_x.data[0, :] = tv_x.data[0, :]
+            itv_x.data[-1, :] = -tv_x.data[-1, :]
+
+            itv_y.data[:, 1:] = -tv_y.data[:, :-1] + tv_y.data[:, 1:]
+            itv_y.data[:, 0] = tv_y.data[:, 0]
+            itv_y.data[:, -1] = -tv_y.data[:, -1]
             return itv_x + itv_y
         elif isinstance(tv_val, TotalVariation3D):
             tv_x, tv_y, tv_z = tv_val.x, tv_val.y, tv_val.z
             itv_x = tv_x * 0
             itv_y = tv_y * 0
             itv_z = tv_z * 0
-            itv_x.data[:-1, :, :] = -tv_x.data[1:, :, :]
-            itv_x.data[1:, :, :] += tv_x.data[1:, :, :]
-            itv_y.data[:, :-1, :] = -tv_y.data[:, 1:, :]
-            itv_y.data[:, 1:, :] += tv_y.data[:, 1:, :]
-            itv_z.data[:, :, :-1] = -tv_z.data[:, :, 1:]
-            itv_z.data[:, :, 1:] += tv_z.data[:, :, 1:]
+            itv_x.data[1:, :, :] = -tv_x.data[:-1, :, :] + tv_x.data[1:, :, :]
+            itv_x.data[0, :, :] = tv_x.data[0, :, :]
+            itv_x.data[-1:, :, :] = -tv_x.data[-1:, :, :]
+
+            itv_y.data[:, 1:, :] = -tv_y.data[:, :-1, :] + tv_y.data[:, 1:, :]
+            itv_y.data[:, 0, :] = tv_y.data[:, 0, :]
+            itv_y.data[:, -1, :] = -tv_y.data[:, -1, :]
+
+            itv_z.data[:, :, 1:] = -tv_z.data[:, :, :-1] + tv_z.data[:, :, 1:]
+            itv_z.data[:, :, 0] = tv_z.data[:, :, 0]
+            itv_z.data[:, :, -1] = -tv_z.data[:, :, -1]
+            #
+            # itv_x.data[:-1, :, :] = -tv_x.data[:-1, :, :]
+            # itv_x.data[:-1, :, :] += tv_x.data[1:, :, :]
+            # itv_x.data[-1, :, :] = -tv_x.data[-2, :, :]
+            # itv_y.data[:, :-1, :] = -tv_y.data[:, :-1, :]
+            # itv_y.data[:, :-1, :] += tv_y.data[:, 1:, :]
+            # itv_y.data[:, -1, :] += -tv_y.data[:, -2, :]
+            # itv_z.data[:, :, :-1] = -tv_z.data[:, :, :-1]
+            # itv_z.data[:, :, :-1] += tv_z.data[:, :, 1:]
+            # itv_z.data[:, :, -1] += -tv_z.data[:, :, -2]
+
             return itv_x + itv_y + itv_z
         elif isinstance(tv_val, TotalVariation2DT):
             tv_x, tv_y, tv_t = tv_val.x, tv_val.y, tv_val.t
@@ -183,10 +203,39 @@ class InvertTotalVari:
                 image.data += itv_x[:, :, :, i] + itv_y[:, :, :, i] + itv_z[:, :, :, i] + itv_t[:,
                                                                                           :, :, i]
             return image
-
         else:
             raise NotImplementedError
 
+
+@nef_class
+class InvertTotalVariSingle3DT:
+    ind: int
+
+    def __call__(self, tv_val: TotalVariation) -> (Image, list):
+        if isinstance(tv_val, TotalVariation3DT):
+            tv_x, tv_y, tv_z, tv_t = tv_val.x, tv_val.y, tv_val.z, tv_val.t
+            itv_x = tv_x * 0
+            itv_y = tv_y * 0
+            itv_z = tv_z * 0
+            itv_t = tv_t * 0
+            itv_x.data[:-1, :, :, self.ind] = -tv_x.data[1:, :, :, self.ind]
+            itv_x.data[1:, :, :, self.ind] += tv_x.data[1:, :, :, self.ind]
+            itv_y.data[:, :-1, :, self.ind] = -tv_y.data[:, 1:, :, self.ind]
+            itv_y.data[:, 1:, :, self.ind] += tv_y.data[:, 1:, :, self.ind]
+            itv_z.data[:, :, :-1, self.ind] = -tv_z.data[:, :, 1:, self.ind]
+            itv_z.data[:, :, 1:, self.ind] += tv_z.data[:, :, 1:, self.ind]
+            if (self.ind == 0):
+                itv_t.data[:, :, :, self.ind] = tv_t.data[:, :, :, self.ind]
+            else:
+                itv_t.data[:, :, :, self.ind] = tv_t.data[:, :, :, self.ind] - tv_t.data[:, :, :, self.ind - 1]
+            image = tv_val.x * 0
+            for i in range(tv_x.shape[-1]):
+                image.data[:, :, :, self.ind] += itv_x.data[:, :, :, i] + itv_y.data[:, :, :, i] + itv_z.data[:, :, :,
+                                                                                                   i] + itv_t.data[:, :,
+                                                                                                        :, i]
+            return image.update(data=image.data[:, :, :, self.ind])
+        else:
+            raise NotImplementedError
 #
 # @nef_class
 # class InvertTotalVariT:

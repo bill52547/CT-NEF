@@ -1,20 +1,10 @@
-# encoding: utf-8
-'''
-@author: Minghao Guo
-@contact: mh.guo0111@gmail.com
-@software: nef
-@file: sart.py
-@date: 8/28/2019
-@desc:
-'''
-
 from nefct import nef_class
 import numpy as np
 from nefct.data.image import Image
 from nefct.data.projection import ProjectionSequence
 from nefct.functions.project import Project
-from nefct.functions.back_project import BackProject
-import tensorflow as tf
+from nefct.geometry.scanner_config import ScannerConfig
+from nefct.functions.back_project import Backproject
 from nefct.utils import tqdm
 
 
@@ -22,18 +12,22 @@ from nefct.utils import tqdm
 class SART:
     n_iter: int
     lambda_: float
-    emap: Image
-    project: Project
-    back_project: BackProject
+    scanner: ScannerConfig
 
     def __call__(self, projection: ProjectionSequence, x: Image = None) -> Image:
-        if x is None:
-            x = self.emap * 0
-        for _ in tqdm(range(self.n_iter)):
-            _projection_tf = self.project(x)
-            _bproj_tf = self.back_project(projection - _projection_tf)
-            _bproj_tf2 = _bproj_tf.update(data = tf.div_no_nan(_bproj_tf.data,
-                                                               self.emap.data))
-            x = x.update(data = (x + _bproj_tf2 * self.lambda_).data.numpy())
 
-        return x
+        angles = projection.angles
+        offsets_a = projection.offsets_a
+        offsets_b = projection.offsets_b
+        x_out = x * 0
+        projector = Project(self.scanner, angles, offsets_a, offsets_b)
+        bprojector = Backproject(self.scanner)
+
+        emap = bprojector(projector(x_out + 1), x)
+        emap.data[emap.data == 0] = 1e8
+
+        for iter in tqdm(range(self.n_iter)):
+            proj = projector(x_out)
+            bproj = bprojector(projection - proj, x)
+            x_out = x_out + (bproj / emap) * self.lambda_
+        return x_out

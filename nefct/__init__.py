@@ -9,9 +9,10 @@
 '''
 from .version import full_version as __version__
 from .base import *
+from .io.local_io_mixin import save, load
 from . import data
 from .data import *
-from .io.local_io_mixin import save, load
+
 # from . import config, utils
 # from .utils import declare_eager_execution
 # # from . import tools
@@ -34,4 +35,6 @@ from .io.local_io_mixin import save, load
 # from .tools import api, doc_gen
 
 # from .correction import *
-from .geometry.existing_geometry import *
+from nefct.existing_geometry import *
+
+# from nefct.functions.new_ops import NewDeformer, NewInvertDeformer, NewProjector, NewBackProjector, NewSart
